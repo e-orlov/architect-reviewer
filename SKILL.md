@@ -52,6 +52,7 @@ Read [source-synthesis.md](references/source-synthesis.md) for the exact adoptio
 8. Bind mutable repository, CI, release, configuration, and production claims to exact identity and UTC observation time.
 9. Treat probes, hooks, plugins, generators, extensions, and automation as executable actors with authority, side effects, persistent state, cleanup, and rollback.
 10. Reserve product tradeoffs and residual-risk acceptance for the accountable user or operator.
+11. For every executable behavior change, define where each required check runs from local work through real-world acceptance, and record environment differences instead of assuming staging equals production. Use [testing-strategy.md](references/testing-strategy.md).
 
 ## Execute the workflow
 
@@ -236,5 +237,6 @@ All files are inside this skill directory; paths below are relative to `SKILL.md
 - [operating-model.md](references/operating-model.md): precedence, truth hierarchy, status, authority, handoffs, concurrency, configuration, automation, and full wisdom set.
 - [task-routes.md](references/task-routes.md): idea, feature, bug, migration, incident, release, and review routes with A0–A4 controls.
 - [evidence-and-gates.md](references/evidence-and-gates.md): falsifiable gates, real-path proof, CI, production, retry, independent review, risk, and STOP conditions.
+- [testing-strategy.md](references/testing-strategy.md): stage-by-stage test pipeline, test levels, AAA and Given/When/Then conventions, coverage, regression, API checks, and environment-difference rules.
 - [templates.md](references/templates.md): State Capsule, V trace matrix, architecture packet, gate, verdict, risk, release, error, registry, side-effect, and handoff templates.
 - [source-synthesis.md](references/source-synthesis.md): requested-source ledger, adoption/adaptation/rejection decisions, immutable source snapshots, and documented limits.
