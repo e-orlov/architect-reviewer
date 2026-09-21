@@ -4,9 +4,7 @@
 
 ## Is this the best architect and reviewer skill?
 
-That is not a defensible claim yet. Calling any skill “the best” requires a reproducible comparison against credible alternatives on representative tasks, with measures such as defect detection, false-positive rate, decision quality, actionability, time, and cost. This project has a deliberately rigorous method; it does not yet have that comparative benchmark.
-
-The evidence-supported claim is narrower and more useful: **Architect Reviewer is designed to be an unusually complete, project-agnostic, high-assurance architect and reviewer without imposing high ceremony on every task.** It combines:
+**Architect Reviewer is designed to be an unusually complete, project-agnostic, high-assurance architect and reviewer without imposing high ceremony on every task.** It combines:
 
 - an iterative V-model that designs the matching proof with each requirement;
 - different routes for ideas, features, bugs, migrations, incidents, releases, and audits;
