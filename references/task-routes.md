@@ -1,0 +1,170 @@
+# Task routes and assurance levels
+
+## Contents
+
+1. Route selection
+2. V-model overlay
+3. Idea route
+4. Feature route
+5. Bug route
+6. Refactor and migration route
+7. Incident route
+8. Release route
+9. Review and audit route
+10. Assurance controls
+11. Proportionality and parallelism
+
+## 1. Route selection
+
+Choose one primary route. Add a secondary route only when the work genuinely crosses a boundary, such as a bug fix that requires a production release.
+
+| Need | Primary route | Required terminal result |
+|---|---|---|
+| Decide whether to invest | Idea | `GO`, `CLARIFY`, or `STOP`, with evidence |
+| Add or materially change behavior | Feature | Verified requirements and implementation evidence |
+| Repair broken behavior | Bug | Assessed cause, scoped repair, original-symptom verification |
+| Improve structure or move data/contracts | Refactor/migration | Behavior lock, compatibility and rollback evidence |
+| Restore degraded service | Incident | Stabilized service, verified recovery, follow-up controls |
+| Move an artifact toward users | Release | Exact identity, staged exposure, monitoring, rollback, acceptance |
+| Judge an existing claim or artifact | Review/audit | Findings, evidence gaps, typed verdict, residual risk |
+
+Do not force a full feature lifecycle onto a narrow bug. Do not start a significant feature with code before defining what and why.
+
+## 2. V-model overlay
+
+The route chooses the sequence; the V-model checks completeness inside it. For every route:
+
+1. identify the highest left-side definition needed: outcome, requirement, architecture contract, component contract, or local invariant;
+2. define the matching right-side proof at the same time;
+3. trace the row through design owner, implementation slice, criterion, evidence, and lifecycle state;
+4. keep verification of the specified contract distinct from validation of the real need;
+5. reject a terminal claim while any blocking row is orphaned, uses the wrong proof level, or has stale evidence.
+
+Use [v-model.md](v-model.md) for the full traceability contract.
+
+## 3. Idea route
+
+Use: `intake → research → define → shape → decide`.
+
+1. Capture the problem, beneficiaries, constraints, and decision deadline.
+2. Separate facts from hypotheses.
+3. Research the current state, alternatives, costs, risks, and reversibility.
+4. Define the smallest outcome worth buying, not a preferred implementation.
+5. Shape at least one credible alternative and a do-nothing baseline.
+6. Decide `GO`, `CLARIFY`, or `STOP`; list the evidence that would change the decision.
+
+A stopped idea with a documented reason is a valid result.
+
+## 4. Feature route
+
+Use: `principles/constraints → specify → clarify → checklist → plan → tasks → analyze → implement → converge`.
+
+1. Confirm governing principles and quality constraints; define them once if missing.
+2. Specify WHAT and WHY: observable behavior, non-goals, users, interfaces, data, and failure semantics; defer HOW until planning.
+3. Mark and resolve material ambiguity; preserve unresolved points as `UNKNOWN`, not invented detail.
+4. Have a reviewer-owned requirements checklist test clarity, completeness, consistency, measurability, and boundary coverage. It reviews the requirements, not the implementation.
+5. Map requirements to acceptance criteria and paired V-model verification.
+6. Plan architecture, compatibility, observability, rollout, rollback, and risk.
+7. Split the dependency graph into small vertical tasks with one primary invariant each; give every task acceptance and verification.
+8. Analyze consistency across requirements, plan, tasks, risks, and trace rows before implementation.
+9. Implement incrementally, collecting evidence at the matching boundary and checkpointing reviewable batches.
+10. Converge code, docs, tests, configuration, contracts, release controls, and operational artifacts.
+
+Do not call the feature complete when required verification is absent.
+
+## 5. Bug route
+
+Use: `reproduce → assess → localize → repair → verify → guard`.
+
+1. Capture the original symptom and exact environment.
+2. Reproduce it or state why reproduction is unavailable.
+3. Trace the real path and classify the narrowest owning cause.
+4. Add a failing criterion or negative control where safe and useful.
+5. Repair the cause, not only the visible symptom.
+6. Verify the original symptom and nearby regression surface.
+7. Add the smallest durable guard against recurrence.
+
+Classify red evidence before editing production code: implementation defect, stale fixture, invalid expectation, oracle defect, or environment mismatch.
+
+## 6. Refactor and migration route
+
+Use: `baseline → contract lock → stage → reconcile → cut over → retire`.
+
+1. Record existing behavior and consumers.
+2. Define compatibility, data-integrity, and rollback invariants.
+3. Establish a baseline that can detect unintended change.
+4. Stage reversible steps and preserve mixed-version compatibility when needed.
+5. Reconcile data and configuration before cutover.
+6. Cut over with exact identity, monitoring, and a tested rollback.
+7. Remove old paths only after consumers and recovery obligations are closed.
+
+For destructive migrations, require backup/restore proof and accountable risk acceptance.
+
+## 7. Incident route
+
+Use: `detect → stabilize → contain → recover → verify → learn`.
+
+1. Establish incident command, impact, time, and current system state.
+2. Stabilize the service and stop harmful automation or propagation.
+3. Contain blast radius; preserve evidence.
+4. Recover to a known-good state using the safest reversible action.
+5. Verify user-visible service, data integrity, and automation recovery.
+6. Write a blameless postmortem with owned preventive actions.
+
+Do not let deep root-cause exploration delay necessary containment.
+
+## 8. Release route
+
+Use: `identify → preflight → expose gradually → observe → accept or roll back`.
+
+1. Bind source, build, config, schema, and target-environment identities.
+2. Confirm required checks, ownership, change window, backup, and rollback.
+3. Start with the smallest meaningful exposure: dry run, canary, shadow, or cohort.
+4. Monitor user-facing invariants and failure signals at every stage.
+5. Hold or roll back automatically or manually on a predefined breach.
+6. Perform real-world acceptance on the deployed identity.
+7. Record the terminal state separately from merge and deployment.
+
+## 9. Review and audit route
+
+Use: `inventory → extract claims → inspect evidence → attack assumptions → verdict`.
+
+1. Inventory changed files, interfaces, surfaces, consumers, data, configuration, and operational dependencies.
+2. Extract explicit claims and map each to required evidence.
+3. Inspect the exact artifact and current mutable state.
+4. Challenge correctness, safety, recovery, compatibility, observability, simplicity, and test adequacy.
+5. Run or inspect negative controls for blocking claims.
+6. Report findings by severity; distinguish defects from evidence gaps.
+7. Issue a typed, scoped verdict and name the next authority.
+
+For code review, prioritize behavioral and operational consequences over formatting preferences.
+
+When review scope is budgeted, list inspected candidates and carry all remaining candidates as `UNJUDGED`. For every material finding, either write it to the durable review artifact or explicitly decline it with a reason; do not leave decisive findings only in transient chat.
+
+## 10. Assurance controls
+
+| Control | A0 | A1 | A2 | A3 | A4 |
+|---|:---:|:---:|:---:|:---:|:---:|
+| Explicit objective and non-goals | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Current target identity | if mutable | ✓ | ✓ | ✓ | ✓ |
+| Acceptance criteria | concise | ✓ | ✓ | ✓ | ✓ |
+| Automated verification | optional | targeted | targeted + integration | required | required + adversarial |
+| Negative control/falsifiability | optional | when cheap | blocking criteria | required | required + independent witness |
+| Risk record | optional | concise | concise | full | full + accountable acceptance |
+| Rollback/recovery | n/a | simple | defined | tested | rehearsed or formally justified |
+| Observability | n/a | result evidence | relevant signals | rollout + user signals | continuous + escalation |
+| Independent review | no | optional | recommended for material boundaries | required | required, strongest available independence |
+| Real-world acceptance | n/a | if user-facing | if environment-sensitive | required | required with explicit owner |
+| Durable handoff/evidence | optional | concise | required | required | required + retention/integrity |
+
+These are minimums, not a substitute for domain controls. Promote a task when it touches security, privacy, money, persistent data, external side effects, shared systems, production, or irreversible state.
+
+## 11. Proportionality and parallelism
+
+Scale depth, not truthfulness:
+
+- A one-line A1 fix can use one criterion and one targeted test.
+- An A3 migration needs identity, risk, recovery, observability, independent review, and real-world acceptance even if the diff is small.
+- A broad diff can remain A1 if it is generated, reversible, and isolated, but verify that assumption.
+
+Parallelize research, inventory, and independent read-only reviews. Serialize conflicting edits and every unisolated shared mutation lane. Merge parallel evidence only after reconciling artifact identities and assumptions.
