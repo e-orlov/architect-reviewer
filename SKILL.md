@@ -59,6 +59,7 @@ Read [source-synthesis.md](references/source-synthesis.md) for the exact adoptio
 11. For every executable behavior change, define where each required check runs from local work through real-world acceptance, and record environment differences instead of assuming staging equals production. Use [testing-strategy.md](references/testing-strategy.md).
 12. Require all three AI gates when work introduces AI/ML or materially increases its lifecycle complexity. Apply the reduced comparison or simplification path defined in [ai-complexity-strategy.md](references/ai-complexity-strategy.md) to other AI changes; incident containment may bypass promotion only as a bounded, expiring exception.
 13. Before accepting an executor result as the basis for a downstream implementation mandate, merge/release/deployment `GO`, or `CERTIFIED`, independently complete the Result-Acceptance Gate over the complete bounded evidence lineage from the last accepted immutable baseline to the exact target. A latest green result or executor summary is insufficient. For a GitHub-backed target, an authenticated GitHub connector with material access to repository/PR state and Actions runs, attempts, jobs, steps, logs, and artifacts is mandatory; missing material access makes the affected claim `UNKNOWN` and forbids downstream authority. Use [evidence-and-gates.md](references/evidence-and-gates.md) and the Result-Acceptance Record in [templates.md](references/templates.md).
+14. Apply delta-first evidence selection before implementation or review: establish the exact baseline-to-target delta, trace direct and transitive impact, classify each relevant claim's evidence, and select the smallest sufficient proof at the matching V-model boundary. A2+ work requires a recorded Delta Evidence Plan before implementation, review certification, or downstream `GO`. Neither a file-only test selection nor an unjustified full-suite run is acceptable. Use [delta-first.md](references/delta-first.md) and the Delta Evidence Plan in [templates.md](references/templates.md).
 
 ## Execute the workflow
 
@@ -78,6 +79,8 @@ Read [source-synthesis.md](references/source-synthesis.md) for the exact adoptio
 - Stop before consequential action when target identity, authority, canonical instruction, or current process state is ambiguous.
 
 For a GitHub-backed target or GitHub-hosted material evidence, establish the authenticated GitHub connector before making a live repository, pull-request, CI, merge, release, or certification claim. Confirm that it exposes the exact repository, PR/base/head identities, required checks, workflow definitions, every relevant run attempt, jobs, steps, logs, and artifacts. Public search, screenshots, a latest-check summary, or an executor's report cannot replace the connector. If a material evidence surface is unavailable, record the affected claim as `UNKNOWN`. For a non-GitHub forge, require the equivalent authenticated native connector or API rather than GitHub.
+
+Before broad reading or testing, determine the exact delta from the last accepted immutable baseline, including source, schema, configuration, workflow, dependencies, generated artifacts, environment, and external interfaces. Build the direct and transitive impact graph; a working-tree or changed-file list alone is not sufficient. For A2+ work, create the Delta Evidence Plan before implementation or review.
 
 For cross-session work, create or refresh the State Capsule in [templates.md](references/templates.md). Read [operating-model.md](references/operating-model.md) when continuity, authority, configuration, automation, parallel work, or handoff is material.
 
@@ -168,6 +171,11 @@ Use the applicability matrix in [ai-complexity-strategy.md](references/ai-comple
 
 ### 7. Plan vertical slices and evidence gates
 
+- Use `delta → transitive impact → invalidated claims → required proof → targeted execution → final convergence if justified` to select evidence.
+- Classify every relevant gate as `INVALIDATED`, `PARTIALLY_INVALIDATED`, `REUSABLE`, `NEWLY_REQUIRED`, `N/A`, or `UNKNOWN`; cite dependency-based rationale for reuse and broaden inspection when impact is unknown.
+- Run the smallest sufficient test set at the matching V-model boundary. Do not omit unchanged transitive consumers, and do not run unrelated tests merely to increase the `PASS` count.
+- Require a broad convergence gate only for a named dependency, uncertainty, risk, release boundary, or project policy. Run an expensive broad gate once on the exact final target unless a later change invalidates it.
+- Order evidence by information value and stop on a blocking prerequisite failure unless a downstream action is specifically needed for diagnosis.
 - Split work by user-visible or contract-visible behavior, not horizontal technical layers alone.
 - Give each slice one primary invariant, explicit dependencies, acceptance criteria, and paired V-model gates.
 - Order slices by dependency graph and risk; make intermediate states safe.
@@ -177,9 +185,12 @@ Use the applicability matrix in [ai-complexity-strategy.md](references/ai-comple
 
 Every blocking gate records claim, invariant, exact artifact, scope and applicable expected count, oracle and its independence limits, logical counterexample, negative-control status, environment/config identity, action, raw result, UTC time/TTL, invalidation dependencies, owner, gate verdict, lifecycle impact, and next authority. Use the Gate Record in [templates.md](references/templates.md).
 
+For A2+ work, record the Delta Evidence Plan before implementation or review. Preserve raw logs outside the active context, load summaries/counts/failure intervals first, estimate expensive reads and executions, and update the plan whenever a new failure, contradiction, unexpected coupling, or unplanned change expands impact. Cost reduction never removes proof required by risk, trust boundaries, persistence, rollback, security, accounting, or real-world acceptance.
+
 ### 8. Review adversarially and independently
 
 - Review requirements and trace completeness before code style.
+- Challenge the Delta Evidence Plan before consuming its reuse or test-selection conclusions. Verify the exact delta, dependency graph, direct and transitive consumers, evidence states, expansion triggers, and any broad-gate rationale.
 - Inventory changed and affected surfaces before claiming coverage.
 - Verify the exact production symbol/path and real call path; structural copies and happy-path mocks are weaker evidence.
 - When a test gate applies, confirm its discovered count is nonzero and expected; for a non-executable or inapplicable gate, record `N/A` with a reason.
@@ -196,7 +207,7 @@ For A3/A4, use a reviewer with separate context and no authorship of the change.
 
 ### 9. Issue a typed verdict and durable handoff
 
-Do not issue a progression mandate, merge/release/deployment `GO`, or `CERTIFIED` until the Result-Acceptance Gate is `PASS`. A completed `FAIL` or `BLOCKED` gate may authorize only a bounded diagnostic or corrective task that names and directly addresses the reconciled evidence item; it cannot authorize progression. `UNKNOWN` permits evidence recovery or an access request, not implementation based on the unknown claim. An incomplete gate authorizes neither. A failure still reproducible on the exact target makes the affected gate `FAIL` and lifecycle state `BLOCKED`.
+Do not issue a progression mandate, merge/release/deployment `GO`, or `CERTIFIED` until the Result-Acceptance Gate is `PASS`; for A2+ work, the current Delta Evidence Plan must also account for every `INVALIDATED`, `PARTIALLY_INVALIDATED`, `NEWLY_REQUIRED`, `REUSABLE`, `N/A`, and `UNKNOWN` claim. A completed `FAIL` or `BLOCKED` gate may authorize only a bounded diagnostic or corrective task that names and directly addresses the reconciled evidence item; it cannot authorize progression. `UNKNOWN` permits evidence recovery or an access request, not implementation based on the unknown claim. An incomplete gate authorizes neither. A failure still reproducible on the exact target makes the affected gate `FAIL` and lifecycle state `BLOCKED`.
 
 Never return a bare `PASS`, `READY`, `DONE`, `DEPLOYED`, or `CLOSED`. Keep the namespaces separate:
 
@@ -222,6 +233,8 @@ End execution and review deliverables with `Errors encountered and corrections` 
 | Exit 0 is only a transport signal | Inspect what ran, the count, target, and asserted values. |
 | Inventory precedes coverage | Enumerate consumers and surfaces before claiming completeness. |
 | Evidence has TTL and dependencies | Reuse only while exact dependencies remain unchanged. |
+| Delta is dependency-based, not file-based | Trace direct and transitive impact through contracts, data, configuration, workflows, generated artifacts, and runtime state before selecting proof. |
+| A broad PASS cannot repair a selection gap | Run every affected test; use full convergence only for an explicit risk, uncertainty, boundary, or policy reason. |
 | A latest green result is not a lineage | Reconcile every relevant attempt and correction from the last accepted immutable baseline to the exact target. |
 | Configuration is part of the release | Bind source, build, config, schema, flags, and runtime identity. |
 | File isolation is not world isolation | Worktrees do not isolate ports, databases, networks, schedulers, quotas, or release lanes. |
@@ -241,6 +254,8 @@ The complete doctrine is in [operating-model.md](references/operating-model.md).
 |---|---|
 | "The command exited 0" | Prove intended artifact, applicable expected count, oracle, and invariant. |
 | "All tests passed" | Verify discovery, target, falsifiability, and environment. |
+| "Run everything to be safe" | Select tests from invalidated claims and transitive impact; name the convergence or policy reason for every broad gate. |
+| "Only test the files that changed" | Include every affected direct and transitive consumer, even when its files are unchanged. |
 | "All checks are green" | Use the authenticated forge connector to bind required checks to the exact target and reconcile the complete bounded attempt history, including failures, cancellations, skips, retries, reruns, and superseded runs. |
 | "It passed after rerun" | Preserve the failure, classify and prove its cause, inspect any intervening diff, and rerun every invalidated gate on the exact corrected target. |
 | "The executor says it passed" | Inspect primary evidence independently; the executor supplies evidence, not the acceptance verdict. |
@@ -261,8 +276,9 @@ All files are inside this skill directory; paths below are relative to `SKILL.md
 - [v-model.md](references/v-model.md): V-model spine, trace matrix, continuous use, and route overlays.
 - [operating-model.md](references/operating-model.md): precedence, truth hierarchy, status, authority, handoffs, concurrency, configuration, automation, and full wisdom set.
 - [task-routes.md](references/task-routes.md): idea, feature, bug, migration, incident, release, and review routes with A0–A4 controls.
+- [delta-first.md](references/delta-first.md): exact-delta and transitive-impact analysis, evidence reuse/invalidation states, targeted test selection, convergence triggers, cost controls, and the mandatory A2+ Delta Evidence Plan.
 - [evidence-and-gates.md](references/evidence-and-gates.md): falsifiable gates, authenticated forge evidence, evidence-lineage reconciliation, Result-Acceptance Gate, production, retry, independent review, risk, and STOP conditions.
 - [testing-strategy.md](references/testing-strategy.md): stage-by-stage test pipeline, test levels, AAA and Given/When/Then conventions, coverage, regression, API checks, and environment-difference rules.
 - [ai-complexity-strategy.md](references/ai-complexity-strategy.md): project-agnostic Baseline, Experiment, and Complexity-Promotion gates for models, data, prompts, retrieval, tools, agents, cascades, and fine-tuning.
-- [templates.md](references/templates.md): State Capsule, V trace matrix, architecture packet, gate, Result-Acceptance/evidence-lineage record, AI complexity decision, verdict, risk, release, error, registry, side-effect, and handoff templates.
+- [templates.md](references/templates.md): State Capsule, V trace matrix, architecture packet, gate, Delta Evidence Plan, Result-Acceptance/evidence-lineage record, AI complexity decision, verdict, risk, release, error, registry, side-effect, and handoff templates.
 - [source-synthesis.md](references/source-synthesis.md): requested-source ledger, adoption/adaptation/rejection decisions, immutable source snapshots, and documented limits.

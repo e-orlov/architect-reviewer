@@ -56,6 +56,7 @@ Create one row per blocking requirement, risk control, or operational invariant:
 | Environment identity | Runtime, services, data, configuration, and topology |
 | Evidence | Exact artifact/result identity, raw output location, UTC time |
 | Invalidation dependencies | Changes that require this evidence to be refreshed |
+| Delta evidence state | `INVALIDATED`, `PARTIALLY_INVALIDATED`, `REUSABLE`, `NEWLY_REQUIRED`, `N/A`, or `UNKNOWN`, with rationale |
 | Owner | Person/system responsible for closure |
 | State | One exact lifecycle state from [operating-model.md](operating-model.md) |
 
@@ -72,12 +73,13 @@ For each safe vertical slice:
 
 1. Select one user-visible behavior, boundary contract, or risk reduction.
 2. Write or refine its left-side trace rows.
-3. Design right-side criteria before changing implementation.
-4. Confirm the criteria observe the real boundary and name a falsifying defect; execute a safe negative control when required by assurance.
-5. Implement the minimum complete slice.
-6. Run the earliest matching checks immediately: local, component, contract, then higher-level when available.
-7. Preserve exact evidence and update lifecycle state.
-8. Reconcile new evidence into requirements, design, risk, and the next slice.
+3. For A2+ work, establish the exact baseline-to-target delta, trace direct and transitive impact, and record the [Delta Evidence Plan](delta-first.md).
+4. Design right-side criteria before changing implementation.
+5. Confirm the criteria observe the real boundary and name a falsifying defect; execute a safe negative control when required by assurance.
+6. Implement the minimum complete slice.
+7. Run the earliest matching checks immediately: local, component, contract, then higher-level when justified by impact or policy.
+8. Preserve exact evidence and update lifecycle state.
+9. Reconcile new evidence into requirements, design, risk, the Delta Evidence Plan, and the next slice.
 
 Clarification is allowed at any point. When evidence contradicts a requirement or design, return to the affected left-side row, change it explicitly, and invalidate only dependent proof. Do not patch the implementation while leaving the governing contract stale.
 
@@ -132,6 +134,8 @@ Prefer an independent oracle. If implementation and test repeat the same assumpt
 
 Bind evidence to the narrowest proved unit: criterion ID, exact production symbol or path, artifact identity, environment/config identity, oracle version, and time.
 
+Apply [delta-first evidence selection](delta-first.md) before rereading artifacts or choosing tests. Map each source, schema, configuration, workflow, dependency, environment, generated-artifact, and external-interface change to every affected trace row, including rows owned by unchanged direct or transitive consumers. Classify each row's evidence as `INVALIDATED`, `PARTIALLY_INVALIDATED`, `REUSABLE`, `NEWLY_REQUIRED`, `N/A`, or `UNKNOWN`; artifact identity alone does not establish relevance.
+
 - A local logic change invalidates dependent unit/component evidence.
 - A contract change invalidates provider, consumer, compatibility, and integration evidence.
 - A config, schema, flag, or dependency change invalidates tests whose environment identity no longer matches.
@@ -139,7 +143,7 @@ Bind evidence to the narrowest proved unit: criterion ID, exact production symbo
 - A deployment change invalidates real-world acceptance for the prior deployed identity.
 - A requirement change invalidates every downstream row that depends on it.
 
-Do not rerun unrelated expensive gates solely because a file changed elsewhere. Conversely, do not reuse a green report because its timestamp looks recent.
+Run the smallest test set that proves all invalidated and newly required rows at their matching V-model boundaries. Broaden to a full suite or system convergence gate only for an explicit dependency, uncertainty, assurance, release, or policy reason. Do not rerun unrelated expensive gates solely because a file changed elsewhere. Conversely, do not reuse a green report because its timestamp looks recent or its artifact hash is unchanged.
 
 ## 8. Review rules and failure patterns
 
@@ -153,6 +157,8 @@ Do not rerun unrelated expensive gates solely because a file changed elsewhere. 
 | Brownfield spec generated from prose | It may contradict live behavior and consumers | Validate executable criteria against the actual system |
 | Same author declares independent success | Correlated assumptions remain unchallenged | Use separate context/reviewer or label self-review |
 | CI result belongs to another SHA | Evidence and artifact identities do not match | Read live forge state for the exact head and required checks |
+| Only tests near changed files are selected | File proximity misses shared contracts, schemas, configuration, generated artifacts, and transitive consumers | Build the impact graph and test every invalidated trace row |
+| Every available test is run without rationale | PASS volume spends time and context without proving that affected claims were selected | Use the Delta Evidence Plan; reserve broad convergence for explicit triggers or policy |
 | Worktree treated as environment isolation | Shared ports, services, data, quotas, and schedulers can interfere | Inventory and isolate or serialize shared resources |
 | V-model treated as a one-way stage gate | Learning is suppressed and verification arrives too late | Use recursive vertical slices and explicit backtracking |
 

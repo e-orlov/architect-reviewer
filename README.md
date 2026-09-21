@@ -10,6 +10,7 @@
 - different routes for ideas, features, bugs, migrations, incidents, releases, and audits;
 - assurance levels that scale controls to uncertainty, blast radius, reversibility, and exposure;
 - exact artifact and environment identity instead of narrative “green” claims;
+- delta-first evidence selection from transitive impact rather than file proximity or indiscriminate full-suite execution;
 - bounded evidence-lineage reconciliation from the last accepted immutable baseline to the exact target;
 - independent challenge for high-risk work;
 - explicit reliability, recovery, residual-risk, and real-world acceptance controls;
@@ -20,7 +21,7 @@ That combination makes the skill a strong candidate when the cost of a plausible
 
 ## What problem it solves
 
-Architecture and review often fail in predictable ways: requirements are not testable, tests prove the wrong boundary, a green CI result is treated as production acceptance, reviewers inspect only the diff, operational risk is deferred, and AI complexity is promoted because it is impressive rather than necessary.
+Architecture and review often fail in predictable ways: requirements are not testable, tests prove the wrong boundary, changed files are mistaken for complete impact, full suites are repeated without information value, a green CI result is treated as production acceptance, reviewers inspect only the diff, operational risk is deferred, and AI complexity is promoted because it is impressive rather than necessary.
 
 Architect Reviewer turns those failure modes into explicit controls. It asks four separate questions:
 
@@ -112,12 +113,30 @@ AI/ML introduction or a material increase in lifecycle complexity must pass thre
 
 The comparison is project-specific. The skill deliberately rejects universal claims such as “70% is enough,” “agents are more flexible,” “a larger model is safer,” “data-centric means change only data,” or “a cascade is automatically cheaper.” Read [references/ai-complexity-strategy.md](references/ai-complexity-strategy.md) for the full protocol.
 
+## Delta-first evidence and test selection
+
+Before implementation or review, the skill applies:
+
+```text
+delta → transitive impact → invalidated claims → required proof →
+targeted execution → final convergence if justified
+```
+
+The analysis is dependency-based rather than file-based. It includes source, schemas, configuration, workflows, dependencies, generated artifacts, environment state, external interfaces, direct consumers, and transitive consumers. Every relevant claim is classified as `INVALIDATED`, `PARTIALLY_INVALIDATED`, `REUSABLE`, `NEWLY_REQUIRED`, `N/A`, or `UNKNOWN`.
+
+For A2+ work, a Delta Evidence Plan is mandatory before implementation, review certification, or downstream `GO`. It records the exact baseline and target, impact graph, evidence-reuse rationale, smallest sufficient test set, justified broad gates, expansion triggers, and expected evidence/context cost. A full suite is still required when shared foundations, incomplete dependency knowledge, multiple persistence boundaries, A3/A4 exposure, release boundaries, or project policy justify convergence. It is not run merely to produce a larger `PASS` count.
+
+This design is consistent with dependency-based selection and safe fallback described by [Microsoft Test Impact Analysis](https://learn.microsoft.com/en-us/azure/devops/pipelines/test/test-impact-analysis?view=azure-devops), direct/transitive/reverse-dependency analysis in the [Bazel Query Guide](https://bazel.build/query/guide), immutable baseline comparison through the [GitHub Compare Commits API](https://docs.github.com/en/rest/commits/commits#compare-two-commits), and lifecycle-aware selective/comprehensive execution in [Develocity Predictive Test Selection](https://docs.develocity.ai/2026.2/guides/predictive-test-selection/). These are supporting mechanics, not required products.
+
+The full rule is in [references/delta-first.md](references/delta-first.md).
+
 ## Testing and acceptance
 
 The testing strategy separates **test level** from **execution stage**. Unit, component, contract, integration, system/E2E, regression, and acceptance checks prove different boundaries; local, CI, shared integration, preproduction, and progressive production are places where evidence is produced.
 
 Core rules include:
 
+- derive test selection from the exact delta, transitive impact, and invalidated claims;
 - design each blocking test from a requirement or risk, not from a desire to fill every layer;
 - use AAA or Given–When–Then when they improve clarity, not as mandatory tooling;
 - require applicable nonzero test discovery or a justified `N/A`;
@@ -156,6 +175,9 @@ This requirement follows the evidence surfaces and semantics documented by GitHu
 - One heavyweight workflow for every task.
 - Late, sequential V-model testing.
 - Same-author “independent” certification for A3/A4 work.
+- “Run everything to be safe” without a convergence, risk, boundary, or policy reason.
+- “Only test the files that changed” without tracing direct and transitive impact.
+- Evidence reuse based only on hash equality, freshness, or an unchanged file.
 - A latest green run or executor summary treated as the complete evidence record.
 - Historical failures, cancellations, skips, timeouts, or reruns erased by a later pass.
 - GitHub live-state acceptance without an authenticated connector and material Actions evidence.
@@ -173,11 +195,12 @@ This requirement follows the evidence surfaces and semantics documented by GitHu
 | [SKILL.md](SKILL.md) | Authoritative core workflow and non-negotiable rules |
 | [references/v-model.md](references/v-model.md) | Continuous V-model trace and route overlays |
 | [references/task-routes.md](references/task-routes.md) | Idea, feature, bug, migration, incident, release, and review routes |
-| [references/testing-strategy.md](references/testing-strategy.md) | Test levels, execution pipeline, scenario design, environment differences, and acceptance |
+| [references/delta-first.md](references/delta-first.md) | Exact-delta analysis, transitive impact, evidence states, targeted selection, convergence triggers, and cost controls |
+| [references/testing-strategy.md](references/testing-strategy.md) | Delta-driven test selection, test levels, execution pipeline, scenario design, environment differences, and acceptance |
 | [references/ai-complexity-strategy.md](references/ai-complexity-strategy.md) | Baseline, Experiment, and Complexity-Promotion gates |
 | [references/evidence-and-gates.md](references/evidence-and-gates.md) | Evidence contracts, mandatory forge connection, failure reconciliation, Result-Acceptance, risk, production, and review gates |
 | [references/operating-model.md](references/operating-model.md) | Authority, precedence, lifecycle states, continuity, and concurrency |
-| [references/templates.md](references/templates.md) | Reusable trace, gate, evidence-lineage, risk, state, and decision records |
+| [references/templates.md](references/templates.md) | Reusable Delta Evidence Plan, trace, gate, evidence-lineage, risk, state, and decision records |
 | [references/source-synthesis.md](references/source-synthesis.md) | Source-by-source adoption, adaptation, rejection, and provenance ledger |
 
 ## Limits

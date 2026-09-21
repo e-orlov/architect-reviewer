@@ -15,13 +15,14 @@
 11. Risk Assessment Templates
 12. Hack23 risk-assessment skill
 13. AI/ML anti-overengineering sources
-14. Cross-source synthesis
-15. Practices intentionally not imported
-16. Verified source snapshots
+14. Delta-first evidence sources
+15. Cross-source synthesis
+16. Practices intentionally not imported
+17. Verified source snapshots
 
 ## 1. Scope and method
 
-All nine sources requested by the user are represented in the active method. The review used each repository's canonical README plus the high-signal workflow, review, verification, planning, or risk files relevant to this skill. Four additional primary AI/ML sources support the Baseline, Experiment, and Complexity-Promotion gates: Google Rules of ML, the NIST AI RMF Generative AI Profile, OpenAI's eval guidance, and the FrugalGPT paper. This is a concept and control synthesis, not a claim that every historical file, issue, release, or empirical assertion in each source was exhaustively adopted.
+All nine sources requested by the user are represented in the active method. The review used each repository's canonical README plus the high-signal workflow, review, verification, planning, or risk files relevant to this skill. Four additional primary AI/ML sources support the Baseline, Experiment, and Complexity-Promotion gates: Google Rules of ML, the NIST AI RMF Generative AI Profile, OpenAI's eval guidance, and the FrugalGPT paper. Four primary engineering sources support delta-first impact analysis and test selection: Microsoft Test Impact Analysis, the Bazel Query Guide, the GitHub Compare Commits API, and Develocity Predictive Test Selection. This is a concept and control synthesis, not a claim that every historical file, issue, release, or empirical assertion in each source was exhaustively adopted.
 
 For each source:
 
@@ -415,25 +416,53 @@ Not imported:
 
 Active locations: SKILL.md non-negotiable rules and smallest-change section; references/ai-complexity-strategy.md; the AI/ML overlay in references/task-routes.md; the AI Complexity Decision Record in references/templates.md.
 
-## 14. Cross-source synthesis
+## 14. Delta-first evidence sources
+
+Reviewed scope: [Microsoft Test Impact Analysis](https://learn.microsoft.com/en-us/azure/devops/pipelines/test/test-impact-analysis?view=azure-devops), [Bazel Query Guide](https://bazel.build/query/guide), [GitHub Compare Commits API](https://docs.github.com/en/rest/commits/commits#compare-two-commits), and [Develocity Predictive Test Selection](https://docs.develocity.ai/2026.2/guides/predictive-test-selection/).
+
+Adopted:
+
+- compare an immutable baseline with the exact target before selecting evidence;
+- select proof from direct, implicit, transitive, and reverse dependency impact rather than file proximity;
+- reuse evidence only when target, dependencies, oracle, environment, and freshness assumptions remain valid;
+- fall back to broader execution when impact cannot be established safely;
+- preserve an explicit lifecycle or policy convergence gate even when targeted proof is sufficient earlier;
+- expose selection reasons, expected scope, omissions, and unknowns rather than treating a larger `PASS` count as assurance.
+
+Adapted:
+
+- the mechanics are vendor-neutral and include schemas, configuration, workflows, generated artifacts, persistent data, runtime topology, external interfaces, rollback, and recovery;
+- impact states and the Delta Evidence Plan make selection reviewable before execution;
+- context and evidence cost are budgeted without weakening proofs required by risk or trust boundaries.
+
+Not imported:
+
+- any required build system, CI product, repository host, or commercial test-selection service;
+- the claim that static dependency maps alone prove runtime impact completeness;
+- selective testing as a substitute for release, migration, deployment, A3/A4, or project-required convergence.
+
+Active locations: SKILL.md delta-first rule and workflow; references/delta-first.md; references/testing-strategy.md; references/v-model.md; Delta Evidence Plan in references/templates.md.
+
+## 15. Cross-source synthesis
 
 The combined method is:
 
 1. **Establish truth and authority.** Recover exact live state and identify who may decide or mutate.
 2. **Route the work.** Choose idea, feature, bug, migration, incident, release, or review instead of a universal lifecycle.
-3. **Build the V trace.** Pair each definition with boundary-matched proof and connect requirement, risk, design owner, implementation, criterion, evidence, and state.
-4. **Define completeness.** Add reliability, security, privacy, data integrity, accessibility, compatibility, observability, recovery, and residual-risk requirements.
-5. **Minimize safely.** Trace the actual path, use the narrow owning boundary, reuse existing/native mechanisms, and add minimum new code.
-6. **Gate AI/ML complexity.** Establish the simplest credible baseline, test a named hypothesis on controlled evidence, and promote added complexity only when it closes a measured gap after lifecycle cost and risk are counted.
-7. **Execute incrementally.** Use dependency-ordered vertical slices, checkpoints, and evidence reuse only when dependencies are unchanged.
-8. **Prove the proof.** Inventory surfaces, assert applicable nonzero expected counts, exercise the real path, record oracle independence, and demonstrate negative controls when assurance requires and safety permits.
-9. **Challenge independently.** Separate author and reviewer at A3/A4, bound the doubt cycle, and reconcile findings technically.
-10. **Release as an operational experiment.** Bind identity, expose gradually, monitor user-facing thresholds, abort or roll back on breach, and validate in the real environment.
-11. **Preserve state and learning.** Use typed lifecycle states, durable handoffs, risk review, errors/corrections, and blameless corrective action.
+3. **Map the delta.** Bind baseline and target, trace direct and transitive impact, classify existing evidence, and select the smallest sufficient proof plus justified convergence gates.
+4. **Build the V trace.** Pair each definition with boundary-matched proof and connect requirement, risk, design owner, implementation, criterion, evidence, and state.
+5. **Define completeness.** Add reliability, security, privacy, data integrity, accessibility, compatibility, observability, recovery, and residual-risk requirements.
+6. **Minimize safely.** Trace the actual path, use the narrow owning boundary, reuse existing/native mechanisms, and add minimum new code.
+7. **Gate AI/ML complexity.** Establish the simplest credible baseline, test a named hypothesis on controlled evidence, and promote added complexity only when it closes a measured gap after lifecycle cost and risk are counted.
+8. **Execute incrementally.** Use dependency-ordered vertical slices, checkpoints, and evidence reuse only when dependencies are unchanged.
+9. **Prove the proof.** Inventory surfaces, assert applicable nonzero expected counts, exercise the real path, record oracle independence, and demonstrate negative controls when assurance requires and safety permits.
+10. **Challenge independently.** Separate author and reviewer at A3/A4, bound the doubt cycle, and reconcile findings technically.
+11. **Release as an operational experiment.** Bind identity, expose gradually, monitor user-facing thresholds, abort or roll back on breach, and validate in the real environment.
+12. **Preserve state and learning.** Use typed lifecycle states, durable handoffs, risk review, errors/corrections, and blameless corrective action.
 
 The single canonical precedence ladder is [operating-model.md §1](operating-model.md#1-precedence). This synthesis does not maintain a second ladder; source-specific advice must be reconciled through that canonical order.
 
-## 15. Practices intentionally not imported
+## 16. Practices intentionally not imported
 
 | Rejected universal prescription | Reason |
 |---|---|
@@ -454,8 +483,10 @@ The single canonical precedence ladder is [operating-model.md §1](operating-mod
 | Fewer lines as the primary objective | Completeness and safety precede minimization. |
 | Risk score as probability or decision | Scores prioritize; accountable owners decide with rationale and uncertainty. |
 | Blind retries | Ambiguous external effects require intent identity and reconciliation. |
+| Full-suite execution without an impact, convergence, or policy reason | PASS volume does not prove that affected claims were selected. |
+| Changed-file proximity as test impact | Contracts, schemas, configuration, generated artifacts, data, and runtime dependencies can affect unchanged consumers. |
 
-## 16. Verified source snapshots
+## 17. Verified source snapshots
 
 The identifiers below are Git blob SHAs observed through authenticated repository reads on 2026-09-21. They identify file content, not a repository commit or release. Branch links remain convenient; the SHA allows a later reader to detect content drift.
 
@@ -513,3 +544,7 @@ Authoritative web and publication sources do not expose comparable reviewed Git 
 | NIST AI RMF Generative AI Profile, NIST AI 600-1 | https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf | 2026-09-21 |
 | OpenAI Working with evals | https://developers.openai.com/api/docs/guides/evals | 2026-09-21 |
 | FrugalGPT, arXiv:2305.05176 | https://arxiv.org/abs/2305.05176 | 2026-09-21 |
+| Microsoft Test Impact Analysis | https://learn.microsoft.com/en-us/azure/devops/pipelines/test/test-impact-analysis?view=azure-devops | 2026-09-21 |
+| Bazel Query Guide | https://bazel.build/query/guide | 2026-09-21 |
+| GitHub Compare Commits API | https://docs.github.com/en/rest/commits/commits#compare-two-commits | 2026-09-21 |
+| Develocity Predictive Test Selection | https://docs.develocity.ai/2026.2/guides/predictive-test-selection/ | 2026-09-21 |

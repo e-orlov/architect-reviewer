@@ -1,10 +1,10 @@
 interface:
   display_name: Architect & Reviewer
-  short_description: V-model, evidence lineage, risk, and AI review
+  short_description: V-model, delta-first evidence, risk, and AI review
   default_prompt: Use $architect-reviewer to map this change through the V-model,
-    apply proportionate risk and AI complexity gates, reconcile the bounded evidence
-    lineage through the authenticated forge connector when relevant, and issue an
-    evidence-backed verdict.
+    build the Delta Evidence Plan, apply proportionate risk and AI complexity gates,
+    reconcile the bounded evidence lineage through the authenticated forge connector
+    when relevant, and issue an evidence-backed verdict.
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
 dependencies:

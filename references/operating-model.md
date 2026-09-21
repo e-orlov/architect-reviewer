@@ -85,6 +85,10 @@ A lower level cannot silently override a higher level. Record conflicts. For mut
 | 41 | A latest green result is a state fact, not an evidence lineage | Inventory and reconcile every relevant attempt from the last accepted immutable baseline to the exact target. |
 | 42 | A later pass does not erase an earlier failure | Preserve the failure, prove or bound its cause, identify invalidated evidence, and show the corrected exact target passes. |
 | 43 | Result acceptance belongs to the architect or reviewer | Executor feedback supplies evidence; it never supplies the Result-Acceptance verdict or downstream authority. |
+| 44 | Delta-first is dependency-based, not file-based | Trace contracts, direct and transitive consumers, data, configuration, workflows, generated artifacts, and runtime state before selecting proof. |
+| 45 | Evidence reuse is a claim that needs proof | Reuse only after identity, dependencies, TTL, environment, oracle, and target assumptions remain valid. |
+| 46 | Targeted testing and convergence serve different purposes | Prove invalidated claims narrowly first; run broad gates only for explicit uncertainty, shared impact, risk, lifecycle boundary, or policy. |
+| 47 | Context and test cost are governed resources | Preserve raw evidence externally, load decision-relevant slices first, estimate expensive work, and checkpoint before material expansion. |
 
 ## 4. Status model
 
@@ -94,7 +98,7 @@ Use lifecycle states instead of overloaded words:
 |---|---|
 | `DISCOVERED` | Candidate issue or need identified; not yet assessed. |
 | `PROPOSED` | A possible solution exists; requirements or tradeoffs may remain open. |
-| `PLANNED` | Scope, owner, acceptance, and safety contract are defined. |
+| `PLANNED` | Scope, owner, acceptance, safety contract, and required A2+ Delta Evidence Plan are defined. |
 | `IMPLEMENTED_UNVERIFIED` | Code or configuration exists; required verification is incomplete. |
 | `VERIFIED_LOCAL` | Named local gates passed on an exact artifact. |
 | `VERIFIED_INTEGRATION` | Integration gates passed in the named environment. |
@@ -120,9 +124,9 @@ Never emit unqualified `READY`; use the exact scoped state such as `READY_FOR_ME
 
 Separate four authorities:
 
-- **Architect:** frame objective, constraints, design, failure modes, verification, and tradeoffs; own Result Acceptance before issuing the next implementation mandate.
+- **Architect:** frame objective, constraints, design, failure modes, verification, and tradeoffs; own the Delta Evidence Plan before A2+ implementation and Result Acceptance before issuing the next implementation mandate.
 - **Executor:** change the authorized target and collect raw evidence.
-- **Reviewer:** challenge claims and evidence, reconcile the bounded evidence lineage, own Result Acceptance for review/acceptance decisions, and report findings and a bounded review verdict.
+- **Reviewer:** challenge claims, transitive impact, evidence selection/reuse, and raw evidence; reconcile the bounded evidence lineage, own Result Acceptance for review/acceptance decisions, and report findings and a bounded review verdict.
 - **Risk owner:** accept residual business or operational risk.
 
 One person or agent may occupy several roles for low-risk work, but label the transitions. For A3/A4, keep author and independent reviewer distinct. A reviewer recommends; the accountable human or policy grants merge, release, production, or risk-acceptance authority.
@@ -134,6 +138,7 @@ Keep the State Capsule short enough to read before acting. Store:
 - objective and current lifecycle state;
 - scoped route, AI, and review decisions where applicable;
 - exact artifact/repository/branch/commit/build/runtime identity;
+- Delta Evidence Plan identity/revision, evidence budget, expansion triggers, and unresolved impact for A2+ work;
 - last accepted immutable baseline, bounded evidence window, connector state, and open attempt/anomaly identities when Result Acceptance applies;
 - completed gates and their freshness;
 - current executor/process state;
@@ -145,6 +150,7 @@ At every phase boundary, pass a structured contract:
 
 - inputs and immutable identities;
 - assumptions and preconditions;
+- exact delta, impact graph, evidence-state decisions, and expansion triggers when Delta-First applies;
 - outputs and acceptance criteria;
 - evidence locations;
 - complete attempt inventory and errors/corrections when Result Acceptance applies;
@@ -186,4 +192,4 @@ For incidents, stabilize before diagnosing deeply. Preserve a blameless record o
 
 Keep a small registry for durable operational documents. Record document ID, scope, owner, status (`ACTIVE`, `SUPERSEDED`, or `RETIRED`), effective date, successor, and last verification time. A newer-looking file does not silently supersede an active contract. Resolve conflicts before acting.
 
-Measure whether the control system helps rather than merely grows. Useful signals include time to recover context, repeated fact-finding or test reruns, conflicting instructions discovered late, user corrections, review findings that escape to later phases, stale evidence reused, and time spent on controls by assurance level. Use the signals to remove ceremony that adds no assurance while preserving controls that catch material defects.
+Measure whether the control system helps rather than merely grows. Useful signals include time to recover context, repeated fact-finding or unaffected test reruns, full-suite duplication across stages, context loaded per decision, conflicting instructions discovered late, user corrections, review findings that escape to later phases, stale evidence reused, and time spent on controls by assurance level. Use the signals to remove ceremony that adds no assurance while preserving controls that catch material defects.

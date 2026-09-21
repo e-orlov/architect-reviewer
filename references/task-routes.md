@@ -40,7 +40,8 @@ The route chooses the sequence; the V-model checks completeness inside it. For e
 3. trace the row through design owner, implementation slice, criterion, evidence, and lifecycle state;
 4. keep verification of the specified contract distinct from validation of the real need;
 5. reject a terminal claim while any blocking row is orphaned, uses the wrong proof level, or has stale evidence;
-6. before using an executor result to authorize the next implementation task or any merge/release/deployment/certification decision, complete the Result-Acceptance Gate across the bounded evidence lineage in [evidence-and-gates.md](evidence-and-gates.md); only `PASS` permits progression, while a completed non-pass verdict permits only the bounded response defined by that contract.
+6. use [delta-first.md](delta-first.md) to map the exact delta through direct and transitive impact, classify existing evidence, and select the smallest sufficient proof; record the Delta Evidence Plan before A2+ implementation or review;
+7. before using an executor result to authorize the next implementation task or any merge/release/deployment/certification decision, complete the Result-Acceptance Gate across the bounded evidence lineage in [evidence-and-gates.md](evidence-and-gates.md); only `PASS` permits progression, while a completed non-pass verdict permits only the bounded response defined by that contract.
 
 Use [v-model.md](v-model.md) for the full traceability contract.
 
@@ -74,8 +75,9 @@ The base path normally fits A0/A1 work. Use the enhanced path for A3/A4 and for 
 6. On the enhanced path, have a reviewer-owned requirements checklist test clarity, completeness, consistency, measurability, and boundary coverage after the plan exposes the relevant design context. It reviews requirements, not implementation completion.
 7. Split the dependency graph into small vertical tasks with one primary invariant each; give every task acceptance and verification.
 8. On the enhanced path, analyze consistency across requirements, plan, checklist, tasks, risks, and trace rows before implementation.
-9. Implement incrementally, collecting evidence at the matching boundary and checkpointing reviewable batches.
-10. Converge code, docs, tests, configuration, contracts, release controls, and operational artifacts.
+9. For A2+ work, complete the Delta Evidence Plan: exact delta, transitive impact, evidence states, targeted proof, convergence reasons, expansion triggers, and evidence/context budget.
+10. Implement incrementally, collecting evidence at the matching boundary and checkpointing reviewable batches. Update the Delta Evidence Plan when actual changes or discoveries expand impact.
+11. Converge code, docs, tests, configuration, contracts, release controls, and operational artifacts only where the final delta or policy invalidates them.
 
 Do not call the feature complete when required verification is absent.
 
@@ -86,10 +88,11 @@ Use: `reproduce → assess → localize → repair → verify → guard`.
 1. Capture the original symptom and exact environment.
 2. Reproduce it or state why reproduction is unavailable.
 3. Trace the real path and classify the narrowest owning cause.
-4. Make the criterion logically falsifiable. Execute a negative control when the assurance level requires it and doing so is safe; otherwise record the limitation and alternative evidence.
-5. Repair the cause, not only the visible symptom.
-6. Verify the original symptom and nearby regression surface.
-7. Add the smallest durable guard against recurrence.
+4. Trace direct and transitive consumers of the violated invariant; classify which prior proof is invalidated, reusable, or newly required.
+5. Make the criterion logically falsifiable. Execute a negative control when the assurance level requires it and doing so is safe; otherwise record the limitation and alternative evidence.
+6. Repair the cause, not only the visible symptom.
+7. Verify the original symptom, corrected behavior, affected consumers, and nearby regression surface; broaden only when impact is unknown or a convergence trigger applies.
+8. Add the smallest durable guard against recurrence.
 
 Classify red evidence before editing production code: implementation defect, stale fixture, invalid expectation, oracle defect, or environment mismatch.
 
@@ -99,11 +102,12 @@ Use: `baseline → contract lock → stage → reconcile → cut over → retire
 
 1. Record existing behavior and consumers.
 2. Define compatibility, data-integrity, and rollback invariants.
-3. Establish a baseline that can detect unintended change.
-4. Stage reversible steps and preserve mixed-version compatibility when needed.
-5. Reconcile data and configuration before cutover.
-6. Cut over with exact identity, monitoring, and a tested rollback.
-7. Remove old paths only after consumers and recovery obligations are closed.
+3. Establish the exact baseline-to-target delta and a baseline that can detect unintended change.
+4. Map direct/transitive consumers, migrations, mixed versions, build/release paths, and recovery dependencies in the Delta Evidence Plan.
+5. Stage reversible steps and preserve mixed-version compatibility when needed.
+6. Reconcile data and configuration before cutover.
+7. Cut over with exact identity, monitoring, and a tested rollback.
+8. Remove old paths only after consumers and recovery obligations are closed.
 
 For destructive migrations, require backup/restore proof and accountable risk acceptance.
 
@@ -120,6 +124,8 @@ Use: `detect → stabilize → contain → recover → verify → learn`.
 
 Do not let deep root-cause exploration delay necessary containment.
 
+For urgent A2+ containment, record a minimal provisional Delta Evidence Plan before mutation: observed delta/state, suspected impact, protected boundaries, immediate proof, rollback, and expansion triggers. Complete the full plan after stabilization and before making the containment permanent, expanding it, or issuing release/acceptance authority.
+
 If containment temporarily adds AI/ML lifecycle complexity before normal gates can run, record a break-glass exception with incident/owner, exact identity, narrow scope, start/expiry, monitoring and abort thresholds, fallback/rollback, and post-stabilization gate owner. The exception cannot justify permanent adoption, expansion, reuse, or operation past expiry; remove it or complete the normal gates first.
 
 ## 8. Release route
@@ -127,7 +133,7 @@ If containment temporarily adds AI/ML lifecycle complexity before normal gates c
 Use: `identify → preflight → expose gradually → observe → accept or roll back`.
 
 1. Bind source, build, config, schema, and target-environment identities.
-2. Confirm required checks, ownership, change window, backup, rollback, and a `PASS` Result-Acceptance Gate for the exact release candidate. For GitHub-backed work, use the mandatory authenticated GitHub connector defined in [evidence-and-gates.md](evidence-and-gates.md).
+2. Confirm the final Delta Evidence Plan covers the actual release-candidate delta, every invalidated/new claim, reused evidence, and justified convergence gate; then confirm required checks, ownership, change window, backup, rollback, and a `PASS` Result-Acceptance Gate. For GitHub-backed work, use the mandatory authenticated GitHub connector defined in [evidence-and-gates.md](evidence-and-gates.md).
 3. Start with the smallest meaningful exposure: dry run, canary, shadow, or cohort.
 4. Monitor user-facing invariants and failure signals at every stage.
 5. Hold or roll back automatically or manually on a predefined breach.
@@ -136,18 +142,19 @@ Use: `identify → preflight → expose gradually → observe → accept or roll
 
 ## 9. Review and audit route
 
-Use: `inventory → define evidence window → extract claims → inspect lineage → attack assumptions → reconcile → result acceptance → verdict`.
+Use: `inventory → define evidence window → map delta and impact → select required proof → inspect lineage → attack assumptions → reconcile → result acceptance → verdict`.
 
 1. Inventory changed files, interfaces, surfaces, consumers, data, configuration, and operational dependencies.
 2. Define the bounded evidence window from the last independently accepted immutable baseline to the exact target.
-3. Extract explicit claims and map each to required evidence.
-4. Inspect the exact artifact, current mutable state, and every relevant execution attempt in the window. When the target or material evidence is forge-hosted, use the mandatory authenticated GitHub connector, or the equivalent native connector for another forge.
-5. Challenge correctness, safety, recovery, compatibility, observability, simplicity, test adequacy, and evidence-lineage completeness.
-6. For A2+ blocking test claims, run or inspect a safe negative control; when that is unsafe or unavailable, inspect the logical counterexample, alternative failure-detection evidence, and stated certification limit.
-7. Reconcile every failure, cancellation, skip, timeout, retry, rerun, superseded execution, expected RED, and mutation result; preserve corrections and invalidated evidence.
-8. Run the Result-Acceptance Gate. Executor feedback is input, never its verdict.
-9. Report findings by severity; distinguish defects from evidence gaps.
-10. Issue a typed, scoped verdict and name the next authority only when the Result-Acceptance consequence permits it.
+3. Inspect or construct the Delta Evidence Plan; independently verify the exact delta, direct/transitive impact, evidence states, targeted proof, convergence reasons, expansion triggers, and budget.
+4. Extract explicit claims and map each to required evidence.
+5. Inspect the exact artifact, current mutable state, and every relevant execution attempt in the window. When the target or material evidence is forge-hosted, use the mandatory authenticated GitHub connector, or the equivalent native connector for another forge.
+6. Challenge correctness, safety, recovery, compatibility, observability, simplicity, test adequacy, delta coverage, and evidence-lineage completeness.
+7. For A2+ blocking test claims, run or inspect a safe negative control; when that is unsafe or unavailable, inspect the logical counterexample, alternative failure-detection evidence, and stated certification limit.
+8. Reconcile every failure, cancellation, skip, timeout, retry, rerun, superseded execution, expected RED, and mutation result; preserve corrections and invalidated evidence.
+9. Run the Result-Acceptance Gate. Executor feedback is input, never its verdict.
+10. Report findings by severity; distinguish defects from evidence gaps.
+11. Issue a typed, scoped verdict and name the next authority only when both Delta-First and Result-Acceptance consequences permit it.
 
 For code review, prioritize behavioral and operational consequences over formatting preferences.
 
@@ -172,6 +179,7 @@ Use [ai-complexity-strategy.md](ai-complexity-strategy.md) for the complete gate
 |---|:---:|:---:|:---:|:---:|:---:|
 | Explicit objective and non-goals | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Current target identity | if mutable | ✓ | ✓ | ✓ | ✓ |
+| Delta Evidence Plan | optional | concise when impact is material | required | full + budget/expansion controls | full + strongest independent impact challenge |
 | Acceptance criteria | concise | ✓ | ✓ | ✓ | ✓ |
 | Automated verification | optional | targeted | targeted + integration | required | required + adversarial |
 | Negative control/falsifiability | logical counterexample; execution optional | execute when useful and safe | blocking test criteria; execute when safe | execute when safe, otherwise alternative proof + certification limit | strongest safe independent challenge; otherwise alternative proof, accountable exception, and no `CERTIFIED` if material capability remains unproven |

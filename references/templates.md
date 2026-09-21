@@ -15,6 +15,7 @@
 11. V-model Trace Matrix
 12. AI Complexity Decision Record
 13. Result-Acceptance / Evidence-Lineage Record
+14. Delta Evidence Plan
 
 Use only fields justified by the task. Preserve exact identities and raw evidence references. Delete instructional placeholders before delivery.
 
@@ -31,6 +32,7 @@ Use only fields justified by the task. Preserve exact identities and raw evidenc
 - Canonical instructions/decision:
 - Target identity: <repo/branch/SHA/build/config/schema/runtime as applicable>
 - Evidence window: <last independently accepted immutable baseline or NO_PRIOR_ACCEPTED_BASELINE → exact target>
+- Delta Evidence Plan: <identity, revision, COMPLETE | BLOCKED | UNKNOWN | NOT_REQUIRED>
 - Forge connector: GITHUB_AUTHENTICATED | NATIVE_AUTHENTICATED | NOT_APPLICABLE | UNAVAILABLE
 - Open attempt/anomaly IDs:
 - Result-Acceptance Gate: PASS | FAIL | BLOCKED | UNKNOWN | NOT_YET_REQUIRED
@@ -57,6 +59,8 @@ Use only fields justified by the task. Preserve exact identities and raw evidenc
 ## Non-goals
 
 ## Current state and evidence
+
+## Delta Evidence Plan or reference
 
 ## Actors, data, trust boundaries, and real execution path
 
@@ -120,6 +124,7 @@ Use only fields justified by the task. Preserve exact identities and raw evidenc
 - Task type / assurance:
 - Last independently accepted immutable baseline, or `NO_PRIOR_ACCEPTED_BASELINE` plus justified start boundary:
 - Evidence window and exact final target:
+- Delta Evidence Plan identity/revision and status:
 - Forge connector and observed repository/account identity:
 - Result-Acceptance Record / gate verdict:
 - Evidence reviewed:
@@ -275,6 +280,7 @@ Evidence and UTC time:
 - Review verdict, if any: CERTIFIED | NOT CERTIFIED | UNKNOWN
 - Exact target and artifact identities:
 - Evidence window and last accepted immutable baseline:
+- Delta Evidence Plan identity/revision, reuse decisions, and expansion triggers:
 - Forge connector state and observed identity:
 - Result-Acceptance Record / gate verdict:
 - What changed / what did not change:
@@ -386,6 +392,7 @@ Evidence and UTC time:
 - Last independently accepted immutable baseline, or `NO_PRIOR_ACCEPTED_BASELINE` plus justified start boundary:
 - Exact final target identity:
 - Evidence window: <baseline → target>
+- Delta Evidence Plan identity / final revision:
 - Relevant source/configuration/schema/workflow/environment revisions:
 - Forge connector: GITHUB_AUTHENTICATED | NATIVE_AUTHENTICATED | NOT_APPLICABLE | UNAVAILABLE
 - Observed host/repository/account state without credentials:
@@ -443,4 +450,76 @@ Evidence and UTC time:
 - Evidence item the bounded response directly addresses, if applicable:
 - Downstream authority still forbidden:
 - Errors encountered and corrections section updated: YES | NO
+```
+
+## 14. Delta Evidence Plan
+
+```markdown
+# Delta Evidence Plan
+
+- Task / decision:
+- Assurance: A0 | A1 | A2 | A3 | A4
+- Architect/reviewer and UTC:
+- Plan identity / revision:
+- Plan status: COMPLETE | BLOCKED | UNKNOWN
+- Last accepted immutable baseline, or `NO_PRIOR_ACCEPTED_BASELINE` plus justified start boundary:
+- Exact target identity:
+- Decision boundary: IMPLEMENTATION | REVIEW | MERGE | RELEASE | DEPLOYMENT | ACCEPTANCE
+
+## Exact delta
+
+| Category | Baseline identity | Target identity | Exact change | Primary evidence |
+|---|---|---|---|---|
+| Source / schema / configuration / workflow / dependency / environment / generated artifact / external interface |  |  |  |  |
+
+## Direct and transitive impact
+
+| Changed artifact | Owned contract/invariant | Direct consumers | Transitive consumers | Data/migration | Build/CI/release | User/operator behavior | Rollback/recovery | Unknowns |
+|---|---|---|---|---|---|---|---|---|
+|  |  |  |  |  |  |  |  |  |
+
+## Evidence classification
+
+| Claim/gate | State | Dependency rationale | Existing evidence/identity | Required proof | V-model level | Invalidation/TTL |
+|---|---|---|---|---|---|---|
+|  | INVALIDATED / PARTIALLY_INVALIDATED / REUSABLE / NEWLY_REQUIRED / N/A / UNKNOWN |  |  |  | UNIT / COMPONENT / CONTRACT / INTEGRATION / SYSTEM / ACCEPTANCE |  |
+
+## Targeted execution plan
+
+| Order | Claim/gate | Test/read/probe | Oracle and expected count/result | Prerequisite | Estimated cost/context | Stop condition |
+|---|---|---|---|---|---|---|
+|  |  |  |  |  |  |  |
+
+## Broad convergence gates
+
+| Gate | Exact final target | Justification: dependency / uncertainty / risk / boundary / policy | Expected cost | Invalidation trigger |
+|---|---|---|---|---|
+|  |  |  |  |  |
+
+## Expansion triggers
+
+- Unknown dependency boundary:
+- Unexpected coupling or failure:
+- New/unplanned change:
+- Evidence contradiction or stale oracle:
+- Budget threshold requiring checkpoint:
+
+## Evidence and context budget
+
+- Expensive artifact reads:
+- Targeted executions:
+- Broad executions:
+- Raw-log retention location:
+- Initial context to load:
+- Expansion authority/checkpoint:
+
+## Completeness decision
+
+- Every changed artifact has an impact path or explicit uncertainty: YES | NO
+- Every relevant claim has exactly one evidence state: YES | NO
+- Every invalidated/new claim has matching proof: YES | NO
+- Every reuse claim has dependency/identity/TTL/oracle rationale: YES | NO
+- Every broad gate has a stated justification: YES | NO
+- A2+ implementation/review/downstream authority allowed by this plan: YES | NO
+- Remaining unknowns:
 ```

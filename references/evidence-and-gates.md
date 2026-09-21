@@ -35,6 +35,7 @@ Every blocking gate must answer:
 | Result | Raw counts, values, checksums, status, and relevant output |
 | Time | UTC observation time and TTL if mutable |
 | Dependencies | Changes that invalidate this evidence |
+| Delta selection | Delta Evidence Plan identity, evidence state, impact rationale, and why this gate is run, reused, or `N/A` |
 | Owner | Person/system responsible for the gate |
 | Verdict | `PASS`, `FAIL`, `BLOCKED`, or `UNKNOWN` for this gate only |
 | Next authority | Action now allowed, still forbidden, or requiring approval |
@@ -97,6 +98,8 @@ Store evidence against the narrowest proved boundary:
 - timestamp and TTL.
 
 Invalidate evidence when any dependency changes. A change elsewhere in the same file need not invalidate symbol-bound evidence, but policy may still require a full suite. Record why a rerun was or was not necessary. Never reuse evidence merely because a report looks recent.
+
+Use the dependency graph and evidence states in [delta-first.md](delta-first.md) before reusing or rerunning evidence. Hash equality proves identity, not continued relevance. Missing impact analysis makes a reuse claim `UNKNOWN`; an invalidated gate that was not rerun remains `IMPLEMENTED_UNVERIFIED`.
 
 ## 6. Repository, CI, and mandatory forge connection
 
@@ -178,6 +181,8 @@ This obligation belongs to the architect or reviewer. It cannot be delegated to,
    A rerun on the same SHA can provide evidence about nondeterminism or environment, but it cannot prove that a source correction fixed the defect. A pass on a new SHA requires inspection of the intervening diff and rerunning every invalidated gate.
 
 6. **Verify final-head completeness.** Before acceptance, prove on the exact target:
+   - the final Delta Evidence Plan matches the actual delta and includes every unplanned change or discovered coupling;
+   - every invalidated, partially invalidated, or newly required claim received its matching proof, and every reused or `N/A` claim retains a valid rationale;
    - all required gates ran;
    - expected discovery counts are nonzero and exact where known;
    - no required step was skipped or silently tolerated;
@@ -198,6 +203,8 @@ This obligation belongs to the architect or reviewer. It cannot be delegated to,
 - The architect or reviewer must not reconstruct missing evidence optimistically or defer reconciliation to a later task.
 
 Gate completion and a `PASS` verdict are distinct. A completed `FAIL` or `BLOCKED` gate may authorize only a bounded diagnostic or corrective task that names and directly addresses the reconciled evidence item; it cannot authorize normal progression or acceptance. `UNKNOWN` permits evidence recovery or an access request, not implementation based on the unknown claim. An incomplete gate authorizes neither.
+
+The Delta Evidence Plan is prospective and the Result-Acceptance Gate is retrospective. The plan selects the necessary reads and proof; Result Acceptance reconciles the complete actual attempt history. Neither substitutes for the other. A broad passing suite cannot compensate for an omitted affected gate, and targeted execution cannot waive an explicitly justified convergence or policy gate.
 
 ### Anti-rationalization rule
 
@@ -309,6 +316,8 @@ Stop or return `UNKNOWN/BLOCKED` when:
 - the required GitHub or native-forge connector is unauthenticated, points to the wrong identity, or cannot expose material repository/CI evidence for a live verdict;
 - the bounded evidence window is undefined, a relevant attempt is missing, or a historical failure, cancellation, skip, timeout, rerun, or anomaly remains unreconciled;
 - a material log or artifact is inaccessible or expired and no independent primary evidence can establish the affected claim;
+- A2+ implementation or review lacks a complete Delta Evidence Plan, or the plan does not cover the actual final delta;
+- transitive impact is unknown but inspection/testing was not broadened, or an invalidated/newly required claim has no matching proof;
 - the Result-Acceptance Gate is incomplete for a requested downstream implementation mandate, merge/release/deployment `GO`, or certification;
 - canonical and superseded instructions cannot be distinguished.
 
@@ -322,10 +331,11 @@ Review in this order:
 4. **Data/recovery:** Can data be lost, duplicated, corrupted, or made irreconcilable? Is recovery proven?
 5. **Compatibility:** Are APIs, schemas, clients, mixed versions, and migrations handled?
 6. **Operability:** Are identity, logs, metrics, alerts, rollout, rollback, and automation behavior adequate?
-7. **Evidence lineage:** Is every relevant attempt from the last accepted baseline to the exact target present, independently reconciled, and causally closed where proportionate?
-8. **Test adequacy:** Do tests exercise the real path, have a trustworthy oracle, and prove they can fail?
-9. **AI/ML complexity:** When applicable, is there a credible baseline, attributable experiment, and justified promotion after lifecycle cost and risk?
-10. **Simplicity:** Is every abstraction, dependency, layer, and line needed now?
+7. **Delta and impact:** Is the exact delta complete, are direct and transitive consumers traced, are evidence reuse/invalidation states justified, and are convergence triggers explicit?
+8. **Evidence lineage:** Is every relevant attempt from the last accepted baseline to the exact target present, independently reconciled, and causally closed where proportionate?
+9. **Test adequacy:** Do tests exercise every invalidated/new claim at the matching boundary, avoid unrelated execution without reason, have a trustworthy oracle, and prove they can fail?
+10. **AI/ML complexity:** When applicable, is there a credible baseline, attributable experiment, and justified promotion after lifecycle cost and risk?
+11. **Simplicity:** Is every abstraction, dependency, layer, and line needed now?
 
 Report defects separately from optional improvements. Avoid drowning a blocking finding in style commentary.
 
