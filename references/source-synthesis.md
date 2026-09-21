@@ -491,7 +491,7 @@ The identifiers below are Git blob SHAs observed through authenticated repositor
 | DarrenBenson/sdlc-studio | reference philosophy | e2c3edba816de7ea454ac741b595d51ca99250a6 |
 | DarrenBenson/sdlc-studio | review guidance | 096edfeb068c7483fdb26a27c718b51b87dd9216 |
 | DarrenBenson/sdlc-studio | audit guidance | 8df00aca3e310e784bdd19ba1bf2e1bc3e4a9eac |
-| DarrenBenson/sdlc-studio | reconciliation guidance | d1eba1d6da0077e392678bd2182de56acf15656c |
+| DarrenBenson/sdlc-studio | reconciliation guidance | d1eba1d6da0077e392678bd2182de56acf15656e |
 | DarrenBenson/sdlc-studio | test validation | 48a3e031b7a220095ce86347f27b51cf9435fa83 |
 | vp-k/flutter-craft | README.md | 7efa9488632495e6e8c9f99faea09e3d2e58c606 |
 | vp-k/flutter-craft | planning | 09dd9749067062e465e2ab3dc09d4bcea1f4c477 |
