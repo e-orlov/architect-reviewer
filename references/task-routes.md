@@ -58,16 +58,21 @@ A stopped idea with a documented reason is a valid result.
 
 ## 4. Feature route
 
-Use: `principles/constraints → specify → clarify → checklist → plan → tasks → analyze → implement → converge`.
+Use one of two proportional paths:
+
+- **Base:** `constraints → specify → clarify as needed → plan → tasks → implement → converge`.
+- **Enhanced:** `constraints → specify → clarify → plan → checklist → tasks → analyze → implement → converge`.
+
+The base path normally fits A0/A1 work. Use the enhanced path for A3/A4 and for A2 when material ambiguity, multiple components, compatibility, persistent data, or consequential boundaries make checklist and cross-artifact analysis decision-relevant. If A2 omits either quality gate, record why the base path is sufficient. Project policy may always require the enhanced path.
 
 1. Confirm governing principles and quality constraints; define them once if missing.
 2. Specify WHAT and WHY: observable behavior, non-goals, users, interfaces, data, and failure semantics; defer HOW until planning.
-3. Mark and resolve material ambiguity; preserve unresolved points as `UNKNOWN`, not invented detail.
-4. Have a reviewer-owned requirements checklist test clarity, completeness, consistency, measurability, and boundary coverage. It reviews the requirements, not the implementation.
-5. Map requirements to acceptance criteria and paired V-model verification.
-6. Plan architecture, compatibility, observability, rollout, rollback, and risk.
+3. Clarify material ambiguity before planning; on the base path, clarify only what is decision-relevant. Preserve unresolved points as `UNKNOWN`, not invented detail.
+4. Map requirements to acceptance criteria and paired V-model verification before choosing implementation structure.
+5. Plan architecture, compatibility, observability, rollout, rollback, and risk.
+6. On the enhanced path, have a reviewer-owned requirements checklist test clarity, completeness, consistency, measurability, and boundary coverage after the plan exposes the relevant design context. It reviews requirements, not implementation completion.
 7. Split the dependency graph into small vertical tasks with one primary invariant each; give every task acceptance and verification.
-8. Analyze consistency across requirements, plan, tasks, risks, and trace rows before implementation.
+8. On the enhanced path, analyze consistency across requirements, plan, checklist, tasks, risks, and trace rows before implementation.
 9. Implement incrementally, collecting evidence at the matching boundary and checkpointing reviewable batches.
 10. Converge code, docs, tests, configuration, contracts, release controls, and operational artifacts.
 
@@ -80,7 +85,7 @@ Use: `reproduce → assess → localize → repair → verify → guard`.
 1. Capture the original symptom and exact environment.
 2. Reproduce it or state why reproduction is unavailable.
 3. Trace the real path and classify the narrowest owning cause.
-4. Add a failing criterion or negative control where safe and useful.
+4. Make the criterion logically falsifiable. Execute a negative control when the assurance level requires it and doing so is safe; otherwise record the limitation and alternative evidence.
 5. Repair the cause, not only the visible symptom.
 6. Verify the original symptom and nearby regression surface.
 7. Add the smallest durable guard against recurrence.
@@ -114,6 +119,8 @@ Use: `detect → stabilize → contain → recover → verify → learn`.
 
 Do not let deep root-cause exploration delay necessary containment.
 
+If containment temporarily adds AI/ML lifecycle complexity before normal gates can run, record a break-glass exception with incident/owner, exact identity, narrow scope, start/expiry, monitoring and abort thresholds, fallback/rollback, and post-stabilization gate owner. The exception cannot justify permanent adoption, expansion, reuse, or operation past expiry; remove it or complete the normal gates first.
+
 ## 8. Release route
 
 Use: `identify → preflight → expose gradually → observe → accept or roll back`.
@@ -134,7 +141,7 @@ Use: `inventory → extract claims → inspect evidence → attack assumptions �
 2. Extract explicit claims and map each to required evidence.
 3. Inspect the exact artifact and current mutable state.
 4. Challenge correctness, safety, recovery, compatibility, observability, simplicity, and test adequacy.
-5. Run or inspect negative controls for blocking claims.
+5. For A2+ blocking test claims, run or inspect a safe negative control; when that is unsafe or unavailable, inspect the logical counterexample, alternative failure-detection evidence, and stated certification limit.
 6. Report findings by severity; distinguish defects from evidence gaps.
 7. Issue a typed, scoped verdict and name the next authority.
 
@@ -144,13 +151,14 @@ When review scope is budgeted, list inspected candidates and carry all remaining
 
 ## 10. AI/ML complexity overlay
 
-Apply this overlay to the idea, feature, refactor/migration, release, and review routes when work introduces AI/ML or materially changes models, prompts, evaluation, data, retrieval, tools, agents, routing, cascades, fine-tuning, or model-call topology.
+Apply this overlay to every primary route, including bug and incident work, according to the trigger matrix in [ai-complexity-strategy.md](ai-complexity-strategy.md):
 
-1. Run the Baseline Gate before selecting or approving increased complexity. Use the simplest credible comparator and name its measured acceptance gap.
-2. Run the Experiment Gate before claiming improvement. Bind code, model, prompt, data, evaluator, retrieval/tool configuration, environment, and relevant randomness; control or disclose material differences.
-3. Run the Complexity-Promotion Gate before operational adoption. Compare lower-complexity alternatives, practical significance, lifecycle cost, failure modes, ownership, observability, fallback, rollback, and retirement.
-4. Stop when the baseline already meets the validated need. Treat equivalent results within the predeclared margin and uncertainty as a reason to prefer lower lifecycle complexity.
-5. Do not treat RAG, an agent, multi-agent coordination, a cascade, fine-tuning, a larger model, or a data-only change as self-justifying. Each is a candidate mechanism that must close a named gap.
+1. When AI/ML is introduced or lifecycle complexity materially increases, run `Baseline → Experiment → Complexity-Promotion` before durable operational adoption.
+2. For a material AI behavior, configuration, or data change without a complexity increase, run the Baseline comparison and Experiment needed to support the claimed improvement, equivalence, or preserved behavior; do not invent a promotion gate.
+3. For removal or simplification, use ordinary V-model regression, safety, compatibility, and acceptance proof; a promotion gate is not required merely to reduce complexity.
+4. A bug fix follows the trigger matching its actual change. During an incident, containment may use only the bounded, expiring break-glass exception defined above; normal gates are required before permanence, expansion, reuse, or expiry.
+5. Stop when the baseline already meets the validated need. Treat equivalent results within the predeclared margin and uncertainty as a reason to prefer lower lifecycle complexity.
+6. Do not treat RAG, an agent, multi-agent coordination, a cascade, fine-tuning, a larger model, or a data-only change as self-justifying. Each is a candidate mechanism whose claims need evidence.
 
 Use [ai-complexity-strategy.md](ai-complexity-strategy.md) for the complete gate contracts and [templates.md](templates.md) for the decision record.
 
@@ -162,7 +170,7 @@ Use [ai-complexity-strategy.md](ai-complexity-strategy.md) for the complete gate
 | Current target identity | if mutable | ✓ | ✓ | ✓ | ✓ |
 | Acceptance criteria | concise | ✓ | ✓ | ✓ | ✓ |
 | Automated verification | optional | targeted | targeted + integration | required | required + adversarial |
-| Negative control/falsifiability | optional | when cheap | blocking criteria | required | required + independent witness |
+| Negative control/falsifiability | logical counterexample; execution optional | execute when useful and safe | blocking test criteria; execute when safe | execute when safe, otherwise alternative proof + certification limit | strongest safe independent challenge; otherwise alternative proof, accountable exception, and no `CERTIFIED` if material capability remains unproven |
 | Risk record | optional | concise | concise | full | full + accountable acceptance |
 | Rollback/recovery | n/a | simple | defined | tested | rehearsed or formally justified |
 | Observability | n/a | result evidence | relevant signals | rollout + user signals | continuous + escalation |

@@ -36,8 +36,8 @@ For every blocking requirement or risk-control row, define:
 4. any higher-level stage needed to prove wiring, topology, deployment, or real use;
 5. the production symbol, route, contract, build, configuration, or runtime exercised;
 6. the oracle and expected values;
-7. the expected discovered test count or enumerated scenarios;
-8. a safe negative control or other falsifiability demonstration;
+7. the expected discovered test count or enumerated scenarios, or `N/A` with reason when no executable test applies;
+8. the logical counterexample and, when assurance requires and safety permits, a negative-control execution; otherwise the limitation and alternative evidence;
 9. the environment identity and known differences from the target environment;
 10. the evidence artifact, invalidation dependencies, owner, and next authority.
 
@@ -50,7 +50,7 @@ Use this as the default pipeline, then tailor it to the repository and assurance
 | Stage | Primary purpose | Typical checks | Exit evidence |
 |---|---|---|---|
 | Specification and planning | Define proof before implementation | Executable acceptance criteria, V-model trace, risk and affected-surface inventory, oracle and negative-control design | Every blocking requirement has a matching verification level and planned stage |
-| Local inner loop | Find narrow defects quickly | Formatting, linting, compilation/type checks, configured SAST and secret checks, focused unit tests, component tests, lightweight contract tests | Named commands, target identity, nonzero expected counts, raw failures or passes |
+| Local inner loop | Find narrow defects quickly | Formatting, linting, compilation/type checks, configured SAST and secret checks, focused unit tests, component tests, lightweight contract tests | Named commands, target identity, applicable nonzero expected counts or justified `N/A`, raw failures or passes |
 | Pull request / CI | Reproduce the change in a clean, reviewable context | Deterministic local checks, affected and policy-required suites, component/API/contract/integration tests, migration checks, build/package checks, configured security and dependency scans | Exact repository and head SHA, check identity, expected counts, results, artifacts |
 | Shared integration environment | Prove composition across real boundaries | Service/database/queue integration, provider-consumer compatibility, auth and serialization, jobs, failure injection, restart and recovery | Deployed identities, dependency/config identity, reconciled data and side effects |
 | Staging / preproduction | Prove the release candidate in a target-like topology | Critical-path system/E2E, impacted regression, accessibility/performance/recovery checks when required, rollback rehearsal where safe | Release identity, environment-difference register, scenario results, residual gaps |
@@ -84,7 +84,7 @@ Use E2E and system tests for paths whose cross-boundary behavior materially affe
 - the original production symptom for a defect;
 - rollback or safe-degradation behavior for A3/A4 changes.
 
-Do not attempt to enumerate every input through E2E. Push combinatorial input coverage down to unit, component, or contract levels and retain only representative boundary-spanning scenarios at system level. Cover at least one decisive negative or failure path for every blocking critical journey; a happy path alone is insufficient evidence.
+Do not attempt to enumerate every input through E2E. Push combinatorial input coverage down to unit, component, or contract levels and retain only representative boundary-spanning scenarios at system level. For A2+ blocking critical journeys, cover at least one decisive negative or failure path when safe. If execution is unsafe or unavailable, preserve the logical counterexample, alternative evidence, and verdict limitation; a happy path alone is not sufficient for a material blocking claim.
 
 ## 6. Structure test scenarios
 
@@ -94,7 +94,7 @@ Use Arrange–Act–Assert when it makes the test's intent clearer:
 
 - **Arrange:** create the minimum state, fixtures, dependencies, and inputs needed for the criterion;
 - **Act:** perform one primary behavior or transition;
-- **Assert:** compare observable output and required side effects with an independent expected result.
+- **Assert:** compare observable output and required side effects with a trustworthy expected result; record any shared assumption that limits oracle independence.
 
 Name the behavior, scenario, and expected result. Keep the Act singular where practical, avoid reproducing production logic in the expected-value calculation, and assert meaningful outcomes rather than incidental implementation details. Use another structure when property-based, state-machine, concurrency, or lifecycle testing communicates the contract more accurately; AAA is a clarity convention, not a reason to distort the test.
 
@@ -140,11 +140,11 @@ Do not import a universal 70–80% or any other percentage. Let project policy a
 Apply these controls:
 
 1. Inventory changed and affected behaviors before reading a coverage number.
-2. Confirm expected tests were discovered and the count is nonzero.
+2. For each applicable test gate, confirm expected tests were discovered and the count is nonzero; record `N/A` with reason for a non-executable claim.
 3. Inspect changed-code and critical-branch coverage where the project supports it.
 4. Explain uncovered blocking behavior or add the missing criterion.
 5. Document justified exclusions such as generated code or unreachable defensive branches.
-6. Pair coverage with behavior assertions, negative controls, mutation testing, or known-bad fixtures where proportionate.
+6. Pair coverage with behavior assertions and, where assurance and safety require it, negative controls, mutation testing, or known-bad fixtures.
 7. Reject percentage-only completion claims; execution without a trustworthy oracle is not proof.
 
 A high percentage can coexist with incorrect expectations, mocked-away wiring, missing consumers, or untested failure semantics. A lower percentage can be adequate only when the omitted behavior is inventoried and justified against the actual risk.
@@ -189,7 +189,7 @@ Do not rerun every expensive test by reflex when dependency analysis proves it u
 | A3 | Required automated proof, failure/recovery paths, target-topology evidence, independent review, staged rollout, and real-world acceptance |
 | A4 | A3 plus strongest available adversarial verification, rehearsed recovery or formal justification, explicit residual-risk acceptance, and retained evidence |
 
-Close each blocking gate with the Gate Record from [templates.md](templates.md). Report the exact artifact and environment, expected and actual counts, oracle, negative-control result, raw outcome, UTC time, invalidation dependencies, residual gaps, verdict, and next authority. A green local or CI suite leaves deployment and real-world acceptance open.
+Close each blocking gate with the Gate Record from [templates.md](templates.md). Report the exact artifact and environment, applicable expected and actual counts or justified `N/A`, oracle and independence limits, logical counterexample, negative-control status, raw outcome, UTC time, invalidation dependencies, residual gaps, verdict, and next authority. A green local or CI suite leaves deployment and real-world acceptance open.
 
 ## 12. Primary references
 

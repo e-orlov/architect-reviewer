@@ -16,11 +16,12 @@
 
 Apply controls in this order:
 
-1. explicit user decisions, product requirements, and legal or operational constraints;
-2. reliability and V-model completeness: invariants, bounded risk, observability, rollout, rollback, and evidence;
-3. security, privacy, data integrity, accessibility, accounting, and trust-boundary controls;
-4. KISS, YAGNI, reuse, native capabilities, and minimum new code;
-5. optional frameworks and templates as sources of selected practices.
+1. governing system/project instructions, law, regulation, contracts, and actor authority; accountable user or operator decisions apply within those bounds;
+2. safety, security, privacy, data integrity, accessibility, accounting, and trust-boundary controls;
+3. V-model completeness and reliability: traceability, bounded risk, observability, recovery, rollout, rollback, and decision-capable evidence;
+4. Baseline, Experiment, and Complexity-Promotion evidence when the AI/ML trigger applies;
+5. KISS, YAGNI, reuse, native capabilities, and minimum new code after completeness is defined;
+6. optional frameworks and templates as sources of selected practices.
 
 Safety wins over minimalism when they conflict. Minimalism wins over ceremony that adds no assurance. Never import an entire framework merely because one control is useful.
 
@@ -44,7 +45,7 @@ A lower level cannot silently override a higher level. Record conflicts. For mut
 | 1 | State cannot be recovered from eloquence | Maintain a compact, inspectable State Capsule. |
 | 2 | There is no universal PASS | Name the gate, scope, artifact, environment, and lifecycle state. |
 | 3 | Exit 0 is a transport signal | Inspect what ran and what evidence it produced. |
-| 4 | A negative control is stronger than another happy path | Prove the check turns red when the target invariant is broken. |
+| 4 | A negative control is stronger than another happy path | Name the counterexample; demonstrate failure detection when assurance requires it and doing so is safe. |
 | 5 | Inventory precedes coverage | Enumerate routes, consumers, surfaces, or records before claiming completeness. |
 | 6 | A phase boundary is an API | Define inputs, outputs, owner, preconditions, evidence, and handoff state. |
 | 7 | File isolation is not world isolation | Worktrees do not isolate ports, databases, networks, schedulers, budgets, or release lanes. |
@@ -60,7 +61,7 @@ A lower level cannot silently override a higher level. Record conflicts. For mut
 | 17 | Safety completeness precedes minimization | Define the full contract, then remove everything not required to satisfy it. |
 | 18 | Different work needs different workflows | Route ideas, features, bugs, incidents, releases, and audits separately. |
 | 19 | Process beats prose | Prefer steps, checkpoints, exit criteria, and red flags over a large passive document. |
-| 20 | Acceptance criteria must be falsifiable | A blocking check must be demonstrably capable of failing. |
+| 20 | Acceptance criteria must be falsifiable | A blocking check names the target defect or counterexample; execution depth follows assurance and safety. |
 | 21 | Invalidate evidence at the proved boundary | Tie evidence to criterion, production symbol/path, data boundary, and environment. |
 | 22 | Mutable repository state needs authenticated evidence | Public web failure is not proof that current state is unknowable. Use an authenticated source or say "I don't know." |
 | 23 | Risk scores prioritize; they do not measure truth | Keep assumptions visible and require accountable residual-risk acceptance. |
@@ -79,7 +80,7 @@ A lower level cannot silently override a higher level. Record conflicts. For mut
 | 36 | Partial review leaves candidates unjudged | Record budgeted scope and carry forward uninspected surfaces instead of treating silence as approval. |
 | 37 | Reviewer feedback is evidence, not an instruction | Test each finding against the contract and stronger evidence; correct, decline with reason, or mark unknown. |
 | 38 | Brownfield requirements need executable validation | Run generated or recovered acceptance criteria against the live implementation before treating them as canonical. |
-| 39 | A control must be capable of detecting its target failure | Demonstrate a safe negative control or disclose that the criterion is unproven. |
+| 39 | A control must be capable of detecting its target failure | Demonstrate a safe negative control when required; otherwise disclose the limitation, alternative evidence, and verdict impact. |
 | 40 | Risk acceptance is not delegated by analysis | Tools and reviewers surface residual risk; the accountable owner decides whether to accept it. |
 
 ## 4. Status model
@@ -101,7 +102,16 @@ Use lifecycle states instead of overloaded words:
 | `BLOCKED` | A known unmet condition prevents progress. |
 | `UNKNOWN` | Evidence is unavailable, ambiguous, stale, or contradictory. |
 
-Treat `PASS` as the result of one named gate, not a lifecycle state. Never infer a later state from an earlier one.
+Keep four typed namespaces distinct:
+
+| Namespace | Allowed examples | Meaning |
+|---|---|---|
+| Gate verdict | `PASS`, `FAIL`, `BLOCKED`, `UNKNOWN` | Result of one named gate only |
+| Lifecycle state | one exact state in the table above | Progress of the artifact through implementation, verification, merge, release, and acceptance |
+| Route/decision state | `GO`, `CLARIFY`, `STOP`, or the AI decisions defined in [ai-complexity-strategy.md](ai-complexity-strategy.md) | A scoped next-step or adoption decision |
+| Review verdict | `CERTIFIED`, `NOT CERTIFIED`, `UNKNOWN` | Independent or self-review judgment for named claims and identity |
+
+Never emit unqualified `READY`; use the exact scoped state such as `READY_FOR_MERGE`, `READY_FOR_EXPERIMENT`, or `READY_FOR_PROMOTION_REVIEW`. `BLOCKED` and `UNKNOWN` may appear in more than one namespace, so always label the namespace. Never infer a later lifecycle state from a gate or decision state.
 
 ## 5. Role and authority boundaries
 
@@ -118,7 +128,8 @@ One person or agent may occupy several roles for low-risk work, but label the tr
 
 Keep the State Capsule short enough to read before acting. Store:
 
-- objective and current typed state;
+- objective and current lifecycle state;
+- scoped route, AI, and review decisions where applicable;
 - exact artifact/repository/branch/commit/build/runtime identity;
 - completed gates and their freshness;
 - current executor/process state;

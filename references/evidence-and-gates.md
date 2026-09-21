@@ -26,9 +26,9 @@ Every blocking gate must answer:
 | Claim | One precise statement being proved |
 | Invariant | Property that must remain true |
 | Artifact | Exact file/symbol/commit/build/config/schema/runtime identity |
-| Scope | Enumerated targets and expected count |
-| Oracle | Source that decides truth independently of the implementation where possible |
-| Falsifiability | How the check is known to fail for the target defect |
+| Scope | Enumerated targets and expected count, or `N/A` with reason when no executable count applies |
+| Oracle | Source that decides truth, including independence and shared-assumption limits |
+| Falsifiability | Target defect or counterexample, negative-control status, and alternative evidence if execution is unsafe or unavailable |
 | Environment | Relevant OS/runtime/services/data/configuration |
 | Action | Exact test, query, probe, or inspection |
 | Result | Raw counts, values, checksums, status, and relevant output |
@@ -62,11 +62,13 @@ For each blocking criterion:
 
 1. Name the defect it should detect.
 2. Show that the check observes the affected boundary.
-3. Safely inject or identify a known-bad condition when practical.
-4. Confirm the check fails for the expected reason.
-5. Restore the target and confirm it passes.
+3. Decide whether an executed negative control is required by project policy, assurance, or materiality.
+4. When required and safe, inject or identify a known-bad condition, confirm failure for the expected reason, restore the target, and confirm the good case passes.
+5. When execution is unsafe or unavailable, record why, the strongest alternative failure-detection evidence, and the limitation on the verdict.
 
-Use mutation testing, a deliberately invalid fixture, a known-bad request, a missing dependency, or a controlled configuration mismatch. Never mutate production merely to prove a check can fail. If a surface cannot be safely falsified, label the limitation.
+Use mutation testing, a deliberately invalid fixture, a known-bad request, a missing dependency, or a controlled configuration mismatch. Never mutate production merely to prove a check can fail. A0/A1 may rely on logical falsifiability or proportionate review. For A2+ blocking test criteria, demonstrate failure detection when safe; A3/A4 use the strongest practical independent challenge.
+
+An unexecuted negative control does not automatically block every low-risk decision. It does prevent that gate from being the sole basis for `CERTIFIED` when failure-detection capability is material to the reviewed claim. Return a gate-level `BLOCKED` or `UNKNOWN` when the missing demonstration is required by assurance or project policy, or when alternative evidence cannot establish the claim.
 
 Before accepting a generated, recovered, or brownfield criterion, run it against the current implementation where safe. If it passes both known-good and known-bad behavior, or cannot distinguish the behavior it describes, the criterion itself is defective. Classify that separately from an implementation failure.
 
@@ -76,7 +78,7 @@ Before claiming complete coverage:
 
 - enumerate all routes, entry points, consumers, schemas, jobs, configuration writers, UI surfaces, and release paths in scope;
 - bind every inventory item to a check or an explicit exclusion;
-- verify expected discovered count is nonzero and matches the inventory;
+- for each applicable executable test gate, verify the expected discovered count is nonzero and matches the inventory; otherwise record `N/A` and why no test count applies;
 - import or invoke the exact production symbol when drift from a structural copy is possible;
 - exercise the real call path when mocks could hide wiring, serialization, auth, routing, or persistence defects.
 
@@ -152,6 +154,7 @@ For A3/A4, require:
 - explicit review scope and severity model;
 - findings with evidence and consequence;
 - one of `CERTIFIED`, `NOT CERTIFIED`, or `UNKNOWN`, scoped to the reviewed claims;
+- a separate exact lifecycle state for the reviewed artifact;
 - residual risks and evidence gaps;
 - dialogue/re-review after corrections when findings invalidate the original evidence.
 
@@ -163,7 +166,7 @@ Use a bounded doubt cycle:
 4. **Reconcile:** classify findings, repair or reject invalid evidence, and rerun only invalidated gates.
 5. **Stop:** end at the defined exit condition or return `UNKNOWN/BLOCKED`; do not loop until fatigue produces agreement.
 
-Pass the artifact against its contract, not the author's reasoning. Reviewer findings are evidence to reconcile, not an automatic verdict; technically challenge them when contradicted by stronger evidence.
+Pass the artifact against its contract, not the author's reasoning. Reviewer findings are evidence to reconcile, not an automatic verdict; technically challenge them when contradicted by stronger evidence. Do not issue `CERTIFIED` when a failure-detection limitation is material to a blocking claim and no decision-capable alternative evidence exists.
 
 A different model is useful for reducing correlated blind spots but is still an advisory reviewer. The accountable human or organization retains risk acceptance.
 
@@ -194,7 +197,7 @@ Stop or return `UNKNOWN/BLOCKED` when:
 
 - current target, branch, commit, build, environment, or executor state is ambiguous;
 - destructive, paid, external, merge, migration, release, or production authority is absent;
-- expected test count is zero or unknown;
+- an applicable required test gate has an expected count of zero or unknown;
 - the oracle shares the same unverified assumption as the implementation;
 - the criterion cannot observe the claimed boundary;
 - evidence belongs to a different artifact or has expired;
@@ -240,7 +243,7 @@ For every diagnostic action that can affect the target, keep a side-effect ledge
 
 ## 14. AI/ML complexity evidence
 
-For AI/ML introduction or material complexity growth, the generic Gate Record is necessary but not sufficient. Add the Baseline, Experiment, and Complexity-Promotion contracts from [ai-complexity-strategy.md](ai-complexity-strategy.md).
+For AI/ML introduction or material lifecycle-complexity growth, the generic Gate Record is necessary but not sufficient. Add the Baseline, Experiment, and Complexity-Promotion contracts from [ai-complexity-strategy.md](ai-complexity-strategy.md). For other AI changes, use that reference's trigger matrix rather than forcing an inapplicable promotion gate.
 
 Treat the following as first-class artifact and dependency identities when applicable: model/provider/version/settings, prompt and schema, tool and routing policy, training/fine-tuning/retrieval/evaluation data, labels and split logic, embedding/index/knowledge snapshot, evaluator or human-review rubric, randomness treatment, runtime configuration, and observation time.
 

@@ -24,7 +24,9 @@ Use only fields justified by the task. Preserve exact identities and raw evidenc
 
 - Objective:
 - Task type / assurance: <type> / A0–A4
-- Current typed state:
+- Lifecycle state: <exact state from operating-model.md>
+- Scoped route/AI decision state(s):
+- Review verdict, if any: CERTIFIED | NOT CERTIFIED | UNKNOWN
 - Canonical instructions/decision:
 - Target identity: <repo/branch/SHA/build/config/schema/runtime as applicable>
 - Current executor/process state:
@@ -86,17 +88,20 @@ Use only fields justified by the task. Preserve exact identities and raw evidenc
 - Artifact identity:
 - Production symbol/path:
 - Scope/inventory:
-- Expected count:
-- Oracle:
-- Falsifiability/negative control:
+- Expected count / `N/A` reason:
+- Oracle and independence/shared-assumption limits:
+- Logical counterexample / target defect:
+- Negative-control status: NOT_REQUIRED | REQUIRED | EXECUTED | UNSAFE | UNAVAILABLE
+- Negative-control or alternative evidence / limitation:
 - Environment/config identity:
 - Command/probe:
 - Collected result:
 - UTC timestamp / TTL:
 - Evidence dependencies:
 - Owner:
-- Verdict: PASS | FAIL | BLOCKED | UNKNOWN
-- Impact on lifecycle state:
+- Gate verdict: PASS | FAIL | BLOCKED | UNKNOWN
+- Lifecycle-state impact: <exact lifecycle state or no change>
+- Scoped decision impact, if applicable:
 - Next authorized action:
 ```
 
@@ -128,7 +133,8 @@ Use only fields justified by the task. Preserve exact identities and raw evidenc
 
 ## Verdict
 
-<TYPED STATE or CERTIFIED | NOT CERTIFIED | UNKNOWN>
+- Lifecycle state: DISCOVERED | PROPOSED | PLANNED | IMPLEMENTED_UNVERIFIED | VERIFIED_LOCAL | VERIFIED_INTEGRATION | READY_FOR_MERGE | MERGED_UNRELEASED | RELEASED_UNACCEPTED | ACCEPTED | BLOCKED | UNKNOWN
+- Review verdict: CERTIFIED | NOT CERTIFIED | UNKNOWN
 
 ## Next authority/action
 
@@ -161,6 +167,11 @@ If findings are absent, write `No findings within the reviewed scope` and still 
 - Owner:
 - Review date/status:
 - Residual-risk acceptance authority:
+
+## Review history
+
+| UTC date | Trigger / scope | Evidence or control change | Reviewer / owner | Residual-risk decision | Next review |
+|---|---|---|---|---|---|
 ```
 
 ## 6. Release Identity Manifest
@@ -182,7 +193,7 @@ If findings are absent, write `No findings within the reviewed scope` and still 
 - Rollback target and procedure:
 - Deployment record and UTC:
 - Real-world acceptance record and UTC:
-- Terminal state:
+- Terminal lifecycle state: DISCOVERED | PROPOSED | PLANNED | IMPLEMENTED_UNVERIFIED | VERIFIED_LOCAL | VERIFIED_INTEGRATION | READY_FOR_MERGE | MERGED_UNRELEASED | RELEASED_UNACCEPTED | ACCEPTED | BLOCKED | UNKNOWN
 ```
 
 ## 7. Errors encountered and corrections
@@ -243,7 +254,10 @@ Evidence and UTC time:
 ```markdown
 # Handoff
 
-- Objective and current typed state:
+- Objective:
+- Lifecycle state: <exact state from operating-model.md>
+- Scoped route/AI decision state(s):
+- Review verdict, if any: CERTIFIED | NOT CERTIFIED | UNKNOWN
 - Exact target and artifact identities:
 - What changed / what did not change:
 - Completed gates with evidence locations and UTC:
@@ -264,7 +278,7 @@ Evidence and UTC time:
 
 | ID | Need / rationale | Requirement or control | Risk / prohibited outcome | Design owner | Implementation slice | Verification level | Falsifiable criterion / oracle | Scope / expected count | Environment identity | Evidence / UTC | Invalidation dependencies | Owner | State |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| REQ-001 |  |  |  |  |  | UNIT / COMPONENT / CONTRACT / INTEGRATION / SYSTEM / ACCEPTANCE |  |  |  |  |  |  | PROPOSED / IMPLEMENTED_UNVERIFIED / VERIFIED_* / BLOCKED / UNKNOWN |
+| REQ-001 |  |  |  |  |  | UNIT / COMPONENT / CONTRACT / INTEGRATION / SYSTEM / ACCEPTANCE |  |  |  |  |  |  | DISCOVERED / PROPOSED / PLANNED / IMPLEMENTED_UNVERIFIED / VERIFIED_LOCAL / VERIFIED_INTEGRATION / READY_FOR_MERGE / MERGED_UNRELEASED / RELEASED_UNACCEPTED / ACCEPTED / BLOCKED / UNKNOWN |
 
 ## Orphan check
 
@@ -297,7 +311,7 @@ Evidence and UTC time:
 - Raw result and uncertainty:
 - Named unmet gap:
 - Gate verdict: PASS | FAIL | BLOCKED | UNKNOWN
-- Decision: STOP | READY_FOR_EXPERIMENT
+- Decision: STOP | READY_FOR_EXPERIMENT | BLOCKED | UNKNOWN
 
 ## Experiment Gate
 
@@ -315,6 +329,7 @@ Evidence and UTC time:
 - Raw result, slices, regressions, and guardrails:
 - Attribution limits:
 - Gate verdict: PASS | FAIL | BLOCKED | UNKNOWN
+- Decision: STOP | EXPERIMENT_ONLY | VALIDATED_NO_PROMOTION | READY_FOR_PROMOTION_REVIEW | BLOCKED | UNKNOWN
 
 ## Complexity-Promotion Gate
 
@@ -330,4 +345,14 @@ Evidence and UTC time:
 - Gate verdict: PASS | FAIL | BLOCKED | UNKNOWN
 - Decision: STOP | EXPERIMENT_ONLY | APPROVED_LIMITED | PROMOTED | BLOCKED | UNKNOWN
 - Scope and expiry/invalidation dependencies:
+
+## Incident break-glass exception, if used
+
+- Incident / accountable owner:
+- Exact artifact/configuration identity:
+- Narrow scope and prohibited expansion:
+- Start / expiry UTC:
+- Monitoring / abort thresholds:
+- Fallback / rollback:
+- Post-stabilization gate owner and due action:
 ```

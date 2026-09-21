@@ -14,7 +14,7 @@
 
 ## 1. Scope and invariant
 
-Apply this strategy when work introduces AI/ML or materially changes any of the following:
+Use this strategy to classify work that introduces AI/ML or materially changes any of the following:
 
 - model, provider, learned feature, training, fine-tuning, or inference path;
 - prompt, evaluator, retrieval, embedding, index, grounding, or context assembly;
@@ -30,15 +30,44 @@ Do not translate this invariant into a universal technology ladder. A simple heu
 
 Define project-specific metrics, thresholds, uncertainty treatment, data requirements, and risk tolerance. Use quantitative measures when they validly represent the decision; otherwise predeclare an observable qualitative rubric and adjudication method rather than inventing precision. Never import a fixed accuracy, coverage, sample-size, significance, latency, cost, or uplift threshold from another system.
 
+Apply this trigger matrix:
+
+| Change class | Required path | Boundary |
+|---|---|---|
+| Introduces AI/ML or materially increases lifecycle complexity | `Baseline → Experiment → Complexity-Promotion` | Complete all three before durable operational adoption. |
+| Material AI behavior, configuration, threshold, prompt, model, retrieval, or data change without a material complexity increase | Baseline comparison plus Experiment when claiming improvement, equivalence, or preserved behavior | Do not run a promotion gate unless lifecycle complexity also increases. Ordinary release and risk gates still apply. |
+| Removes AI/ML or materially simplifies the lifecycle | V-model regression, safety, compatibility, and acceptance proof | No complexity-promotion gate is needed merely to approve less complexity. |
+| Repairs a bug | Apply the row matching what the repair actually changes | A bug label never exempts added complexity from the full three-gate path. |
+| Contains an active incident | Stabilize and contain first; use the break-glass contract below if the temporary repair adds ungated complexity | The exception is temporary and cannot establish durable promotion. |
+
+For incident containment, an ungated complexity increase must name the incident and owner, exact artifact/configuration, narrow scope, start and expiry time, monitoring and abort thresholds, fallback/rollback, and post-stabilization gate owner. It must be removed or pass the normal gates before its expiry, permanent adoption, scope expansion, or reuse in another context.
+
 ## 2. Three-gate protocol
 
-Run the gates in order whenever AI/ML complexity is introduced or materially increased:
+Run the gates in order whenever AI/ML is introduced or lifecycle complexity is materially increased:
 
 1. **Baseline Gate:** establish the simplest credible comparator and name the gap it leaves.
 2. **Experiment Gate:** test a named hypothesis on versioned evidence under controlled or explicitly disclosed differences.
 3. **Complexity-Promotion Gate:** permit added complexity only when it closes the measured gap better than acceptable lower-complexity alternatives after lifecycle cost and risk are included.
 
-Record each gate using the generic Gate Record plus the AI Complexity Decision Record in [templates.md](templates.md). A gate verdict remains `PASS`, `FAIL`, `BLOCKED`, or `UNKNOWN`; the resulting decision may be `STOP`, `READY_FOR_EXPERIMENT`, `EXPERIMENT_ONLY`, `APPROVED_LIMITED`, or `PROMOTED`.
+Record each gate using the generic Gate Record plus the AI Complexity Decision Record in [templates.md](templates.md). Keep the gate verdict separate from the resulting decision:
+
+| Gate verdict | Meaning |
+|---|---|
+| `PASS` | Evidence satisfies this gate's declared criterion for the stated scope; only the mapped next decisions are allowed. |
+| `FAIL` | Decision-capable evidence shows that the declared criterion is not met. |
+| `BLOCKED` | A known unmet prerequisite prevents evaluation or authorized progression. |
+| `UNKNOWN` | Evidence is missing, stale, ambiguous, contradictory, or too weak to distinguish the result. |
+
+The total transition contract is:
+
+| Gate | `PASS` decisions | `FAIL` decisions | `BLOCKED` decision | `UNKNOWN` decision |
+|---|---|---|---|---|
+| Baseline | `STOP` or `READY_FOR_EXPERIMENT` | `STOP` | `BLOCKED` | `UNKNOWN` |
+| Experiment | `VALIDATED_NO_PROMOTION` or `READY_FOR_PROMOTION_REVIEW` | `STOP` or `EXPERIMENT_ONLY` | `BLOCKED` | `UNKNOWN` |
+| Complexity-Promotion | `APPROVED_LIMITED` or `PROMOTED` | `STOP` or `EXPERIMENT_ONLY` | `BLOCKED` | `UNKNOWN` |
+
+`EXPERIMENT_ONLY` permits only bounded evaluation; it does not permit operational adoption. A later gate may run only from a mapped predecessor decision. Do not encode progression in a bare `PASS` or `READY`.
 
 Do not use these gates to simplify away security, privacy, accessibility, data integrity, human oversight, observability, fallback, rollback, or an explicit requirement.
 
@@ -57,7 +86,7 @@ Select the simplest credible comparator; do not implement every possible rung. D
 - a simple statistical or ML model;
 - a single existing model call without additional retrieval, routing, tools, agents, or training.
 
-Record:
+The Baseline Gate criterion is: the comparator and evidence are decision-capable for the scoped need, and the selected decision follows the observed result. Record:
 
 - user or business need, non-goals, and prohibited outcomes;
 - baseline design and why it is credible;
@@ -67,9 +96,7 @@ Record:
 - raw baseline result and uncertainty;
 - the named acceptance gap, if one remains.
 
-Pass only when the baseline is reproducible enough for the decision and a material unmet gap is evidenced. Then return `READY_FOR_EXPERIMENT`.
-
-Return `STOP` when the baseline already meets the validated need and guardrails. Return `BLOCKED` or `UNKNOWN` when the comparator, evaluation set, metric, or evidence is not decision-capable. Do not invent a universal target such as “the baseline must solve 70%.”
+Return `PASS + STOP` when the decision-capable baseline already meets the validated need and guardrails. Return `PASS + READY_FOR_EXPERIMENT` when the same quality of evidence establishes a material unmet gap. Return `FAIL + STOP` when valid evidence disproves the claimed comparator or the proposed next step violates a non-negotiable constraint. Return `BLOCKED + BLOCKED` for a known unmet prerequisite and `UNKNOWN + UNKNOWN` for missing, stale, ambiguous, contradictory, or non-decision-capable evidence. Do not invent a universal target such as “the baseline must solve 70%.”
 
 ## 4. Experiment Gate
 
@@ -100,13 +127,13 @@ Before running or accepting the comparison:
 2. Verify that the evaluation set represents the intended task and important slices.
 3. Keep tuning data separate from final decision evidence where feasible; disclose reuse and contamination risk.
 4. Address nondeterminism with repeated trials, paired comparison, uncertainty intervals, or another justified method.
-5. Use an independent oracle where possible and show that the evaluation can reject a known-bad candidate.
+5. Record the oracle and its independence limits. For A2+ blocking criteria, show that the evaluation rejects a known-bad candidate when safe; if not, record why, use the strongest alternative evidence, and carry the limitation into the verdict.
 6. Inspect regressions and prohibited outcomes, not only the average score.
 7. Preserve raw per-case results or an auditable equivalent, subject to privacy and retention constraints.
 
 A data-centric experiment is one valid route when error analysis points to coverage, labels, duplication, freshness, leakage, or representativeness. Do not turn “data-centric” into a rule that code and model must always remain fixed; change the axis supported by evidence.
 
-Pass only when the evidence supports the hypothesis strongly enough for the project-defined decision and no blocking guardrail is breached. Otherwise return `FAIL`, `BLOCKED`, or `UNKNOWN` without promoting complexity.
+The Experiment Gate criterion is: the evidence supports the predeclared hypothesis strongly enough for the project-defined decision, and no blocking guardrail is breached. When the trigger matrix says no promotion gate applies, return `PASS + VALIDATED_NO_PROMOTION`; this supports only the scoped comparison claim and leaves ordinary lifecycle gates open. When complexity promotion is required, return `PASS + READY_FOR_PROMOTION_REVIEW`. Return `FAIL + STOP` when the candidate is disproved or no further evaluation is justified, or `FAIL + EXPERIMENT_ONLY` when a bounded follow-up experiment remains justified but operational adoption is forbidden. Map known missing prerequisites to `BLOCKED + BLOCKED` and indeterminate evidence to `UNKNOWN + UNKNOWN`.
 
 ## 5. Complexity-Promotion Gate
 
@@ -114,7 +141,7 @@ Answer:
 
 > Is the measured benefit worth the additional lifecycle complexity, and is there no acceptable lower-complexity candidate?
 
-Require a passed Baseline Gate and Experiment Gate. Then record:
+Require `PASS + READY_FOR_EXPERIMENT` from the Baseline Gate and `PASS + READY_FOR_PROMOTION_REVIEW` from the Experiment Gate. Then record:
 
 - the baseline gap being closed;
 - the proposed mechanism and every new component or dependency it introduces;
@@ -128,15 +155,21 @@ Require a passed Baseline Gate and Experiment Gate. Then record:
 
 Choose the least-complex candidate on the admissible quality/cost/risk frontier. When candidates are practically equivalent within the predeclared margin or qualitative decision boundary and uncertainty, choose the one with lower lifecycle complexity. Do not equate simplicity only with parameter count, feature count, lines of code, or number of services.
 
-Use these decision states:
+The Complexity-Promotion Gate criterion is: the measured benefit justifies the added lifecycle complexity for the stated scope, no acceptable lower-complexity candidate closes the gap, and required lifecycle controls are complete. Use these decision states:
 
 | State | Meaning |
 |---|---|
 | `STOP` | The baseline is sufficient or the added mechanism has no evidenced need. |
 | `EXPERIMENT_ONLY` | Evidence is promising but insufficient for operational adoption. |
+| `READY_FOR_EXPERIMENT` | The Baseline Gate established a material gap and permits a bounded experiment. |
+| `VALIDATED_NO_PROMOTION` | The scoped comparison claim passed and no lifecycle-complexity promotion gate applies. |
+| `READY_FOR_PROMOTION_REVIEW` | The Experiment Gate supported the hypothesis and permits complexity-promotion review, not adoption. |
 | `APPROVED_LIMITED` | Promotion is justified only for a bounded cohort, traffic slice, task class, or canary. |
 | `PROMOTED` | Benefit, lifecycle completeness, and risk controls are evidenced for the stated scope. |
-| `BLOCKED` / `UNKNOWN` | A required comparator, oracle, identity, control, or owner is missing. |
+| `BLOCKED` | A known unmet prerequisite prevents the scoped decision. |
+| `UNKNOWN` | Evidence is missing, stale, ambiguous, contradictory, or insufficient to distinguish the decision. |
+
+Return `PASS + APPROVED_LIMITED` or `PASS + PROMOTED` only when the promotion criterion is met for the corresponding scope. Return `FAIL + STOP` or `FAIL + EXPERIMENT_ONLY` when decision-capable evidence does not justify adoption. Map known missing prerequisites to `BLOCKED + BLOCKED` and indeterminate evidence to `UNKNOWN + UNKNOWN`.
 
 These are scoped AI-complexity decisions, not artifact lifecycle states. Continue to use the lifecycle model in [operating-model.md](operating-model.md) for implementation, verification, merge, release, and acceptance progress.
 
@@ -210,7 +243,7 @@ Pair AI/ML definitions with matching proof:
 
 Apply assurance proportionately:
 
-- A0/A1 may use a concise record when no runtime or consequential decision is affected.
+- A0/A1 may use a concise record when no runtime or consequential decision is affected; omit an inapplicable gate with a reason rather than fabricating evidence.
 - A2 requires a durable decision record, versioned evidence, integration checks, and owned limitations.
 - A3/A4 requires target-like evaluation, independent review, staged exposure, monitoring, fallback/rollback, and accountable residual-risk acceptance.
 
@@ -218,7 +251,7 @@ Promotion evidence expires when a material identity or assumption changes. Inval
 
 ## 9. STOP conditions and anti-rationalization
 
-Stop promotion or return `BLOCKED/UNKNOWN` when:
+Stop promotion or return the mapped `BLOCKED` or `UNKNOWN` gate verdict and decision when:
 
 - no credible baseline or named gap exists;
 - metrics or thresholds were chosen after seeing results without disclosure and revalidation;

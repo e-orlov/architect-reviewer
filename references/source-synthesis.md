@@ -82,7 +82,7 @@ Reviewed scope: [README](https://github.com/github/spec-kit), [spec-driven devel
 Adopted:
 
 - independent entry routes instead of forcing every task through a feature process;
-- feature flow: governing principles, specify, clarify, requirement checklist, plan, tasks, consistency analysis, implement, converge;
+- proportional feature flow: the base path is specify, plan, tasks, implement, converge; the enhanced path establishes governing constraints once and adds clarify, then plan, reviewer-owned requirements checklist, tasks, consistency analysis, implement, and converge;
 - bug flow centered on assessment, repair, and verification, with the original symptom as essential evidence;
 - idea/assessment flow that can terminate in GO, CLARIFY, or STOP;
 - specification states WHAT and WHY before implementation HOW;
@@ -333,12 +333,13 @@ Adopted:
 - test infrastructure independently from learned behavior;
 - prefer directly observed, understandable inputs early and preserve useful domain heuristics;
 - consider whether new complexity will slow future iteration;
-- choose the simpler system when it performs at least as well on the decision-relevant metrics.
+- choose the simple heuristic when it performs better on all decision-relevant launch metrics.
 
 Adapted:
 
 - compare total lifecycle complexity rather than imposing a fixed order from heuristic to ML to deep learning;
 - use project-defined outcome, guardrail, and practical-equivalence thresholds;
+- when candidates are practically equivalent within a predeclared boundary and uncertainty, prefer the one with lower total lifecycle complexity;
 - extend the baseline principle to LLM prompts, retrieval, tools, agents, cascades, fine-tuning, and custom models.
 
 Not imported:
@@ -425,20 +426,12 @@ The combined method is:
 5. **Minimize safely.** Trace the actual path, use the narrow owning boundary, reuse existing/native mechanisms, and add minimum new code.
 6. **Gate AI/ML complexity.** Establish the simplest credible baseline, test a named hypothesis on controlled evidence, and promote added complexity only when it closes a measured gap after lifecycle cost and risk are counted.
 7. **Execute incrementally.** Use dependency-ordered vertical slices, checkpoints, and evidence reuse only when dependencies are unchanged.
-8. **Prove the proof.** Inventory surfaces, assert nonzero expected counts, exercise the real path, use independent oracles, and demonstrate negative controls.
+8. **Prove the proof.** Inventory surfaces, assert applicable nonzero expected counts, exercise the real path, record oracle independence, and demonstrate negative controls when assurance requires and safety permits.
 9. **Challenge independently.** Separate author and reviewer at A3/A4, bound the doubt cycle, and reconcile findings technically.
 10. **Release as an operational experiment.** Bind identity, expose gradually, monitor user-facing thresholds, abort or roll back on breach, and validate in the real environment.
 11. **Preserve state and learning.** Use typed lifecycle states, durable handoffs, risk review, errors/corrections, and blameless corrective action.
 
-Precedence when concepts conflict:
-
-1. explicit user decisions, product requirements, law, and accountable operational constraints;
-2. V-model completeness and bounded risk;
-3. security, privacy, data integrity, accessibility, accounting, and trust boundaries;
-4. reliability, observability, rollout, rollback, and recovery;
-5. decision-capable baseline, experiment, and complexity-promotion evidence for AI/ML;
-6. KISS/YAGNI/reuse/minimum code;
-7. optional source-framework conventions.
+The single canonical precedence ladder is [operating-model.md §1](operating-model.md#1-precedence). This synthesis does not maintain a second ladder; source-specific advice must be reconciled through that canonical order.
 
 ## 15. Practices intentionally not imported
 

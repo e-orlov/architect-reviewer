@@ -1,6 +1,6 @@
 ---
 name: architect-reviewer
-description: V-model architecture and independent-review workflow for software, AI/ML, and operational decisions. Use when Codex must design or challenge requirements, architecture, implementation plans, acceptance or test strategies; assess model, prompt, retrieval, tool, agent, cascade, evaluation, or other AI complexity; review code, a pull request, release, migration, incident correction, or production-readiness claim; recover project state or hand off work; define proportionate reliability and risk controls; or issue an evidence-backed GO, STOP, READY, BLOCKED, UNKNOWN, CERTIFIED, or NOT CERTIFIED verdict.
+description: V-model architecture and independent-review workflow for software, AI/ML, and operational decisions. Use when Codex must design or challenge requirements, architecture, implementation plans, acceptance or test strategies; assess model, prompt, retrieval, tool, agent, cascade, evaluation, or other AI complexity; review code, a pull request, release, migration, incident correction, or production-readiness claim; recover project state or hand off work; define proportionate reliability and risk controls; or issue evidence-backed lifecycle, route, gate, and review verdicts such as READY_FOR_MERGE, BLOCKED, UNKNOWN, CERTIFIED, or NOT CERTIFIED.
 ---
 
 # Architect & Reviewer
@@ -48,7 +48,7 @@ Read [source-synthesis.md](references/source-synthesis.md) for the exact adoptio
 
 1. Treat current state as a verified artifact, not memory or narrative.
 2. Define the matching right-side proof while defining each left-side requirement or design decision.
-3. Make every blocking gate prove one named invariant and demonstrate that it can fail.
+3. Make every blocking gate prove one named invariant with a logically falsifiable criterion. Demonstrate failure detection when required by assurance and safe to do; otherwise record the limitation and alternative evidence.
 4. Distinguish implementation, local verification, integration verification, merge, release, deployment, and real-world acceptance.
 5. Convert material uncertainty into `UNKNOWN` or `BLOCKED`, never an optimistic assumption.
 6. Define reliability, safety, and recovery completeness before applying KISS or YAGNI.
@@ -57,7 +57,7 @@ Read [source-synthesis.md](references/source-synthesis.md) for the exact adoptio
 9. Treat probes, hooks, plugins, generators, extensions, and automation as executable actors with authority, side effects, persistent state, cleanup, and rollback.
 10. Reserve product tradeoffs and residual-risk acceptance for the accountable user or operator.
 11. For every executable behavior change, define where each required check runs from local work through real-world acceptance, and record environment differences instead of assuming staging equals production. Use [testing-strategy.md](references/testing-strategy.md).
-12. For AI/ML introduction or material complexity growth, require Baseline, Experiment, and Complexity-Promotion gates; do not promote a practically equivalent candidate over a lower-lifecycle-complexity alternative.
+12. Require all three AI gates when work introduces AI/ML or materially increases its lifecycle complexity. Apply the reduced comparison or simplification path defined in [ai-complexity-strategy.md](references/ai-complexity-strategy.md) to other AI changes; incident containment may bypass promotion only as a bounded, expiring exception.
 
 ## Execute the workflow
 
@@ -85,7 +85,7 @@ Choose one primary route:
 | Work | Route |
 |---|---|
 | Investment or product question | `intake → research → define → shape → decide` |
-| New or materially changed behavior | `constraints → specify → clarify → plan → tasks → implement → converge` |
+| New or materially changed behavior | Base: `constraints → specify → clarify as needed → plan → tasks → implement → converge`; add checklist and analysis gates as assurance requires |
 | Broken behavior | `reproduce → assess → localize → repair → verify → guard` |
 | Refactor or migration | `baseline → contract lock → stage → reconcile → cut over → retire` |
 | Incident | `detect → stabilize → contain → recover → verify → learn` |
@@ -161,7 +161,7 @@ Do not simplify away security, privacy, accessibility, accounting, data-loss pro
 
 Before adopting a package, plugin, hook, skill, generator, or custom harness, inspect provenance, installation, invocation, context injection, files, secrets, network, shared state, update path, disable/uninstall path, and recovery. Require present evidence that custom machinery beats the native or existing option. Obtain authorization before persistent installation or environment change.
 
-For work that introduces AI/ML or materially changes a model, prompt, evaluator, retrieval path, tool, agent, router, cascade, fine-tune, training/evaluation data, or number of model calls, apply the three gates in [ai-complexity-strategy.md](references/ai-complexity-strategy.md): establish the simplest credible baseline and its measured gap; test one named hypothesis on versioned, controlled or explicitly disclosed evidence; then promote added complexity only when no acceptable lower-complexity candidate closes the gap after lifecycle cost and risk are counted. If the baseline already meets the need, stop. Let project evidence define metrics, equivalence margins, and thresholds; never impose universal percentages, sample sizes, technology ladders, or model choices.
+Use the applicability matrix in [ai-complexity-strategy.md](references/ai-complexity-strategy.md). Introduction of AI/ML or a material increase in lifecycle complexity requires Baseline, Experiment, and Complexity-Promotion gates before durable operational adoption. A material AI behavior, configuration, or data change that does not increase lifecycle complexity uses the Baseline and Experiment comparison needed for its claim; removal or simplification uses ordinary V-model regression and safety proof and does not need a promotion gate. A bug fix follows the same trigger rules. During an incident, containment comes first, but any ungated AI complexity must be a narrow, monitored, reversible, owner-approved exception with an expiry; it cannot become permanent, expand, or outlive its expiry without the normal gates. Let project evidence define metrics, equivalence margins, and thresholds; never impose universal percentages, sample sizes, technology ladders, or model choices.
 
 ### 7. Plan vertical slices and evidence gates
 
@@ -172,17 +172,17 @@ For work that introduces AI/ML or materially changes a model, prompt, evaluator,
 - Do not rerun unchanged expensive or mutating work merely to feel certain; reuse still-valid evidence by explicit dependency analysis.
 - Serialize shared integration, migration, release, and production lanes unless isolation is proven for every shared resource.
 
-Every blocking gate records claim, invariant, exact artifact, scope and expected count, independent oracle, negative control, environment/config identity, action, raw result, UTC time/TTL, invalidation dependencies, owner, verdict, and next authority. Use the Gate Record in [templates.md](references/templates.md).
+Every blocking gate records claim, invariant, exact artifact, scope and applicable expected count, oracle and its independence limits, logical counterexample, negative-control status, environment/config identity, action, raw result, UTC time/TTL, invalidation dependencies, owner, gate verdict, lifecycle impact, and next authority. Use the Gate Record in [templates.md](references/templates.md).
 
 ### 8. Review adversarially and independently
 
 - Review requirements and trace completeness before code style.
 - Inventory changed and affected surfaces before claiming coverage.
 - Verify the exact production symbol/path and real call path; structural copies and happy-path mocks are weaker evidence.
-- Confirm discovered test count is nonzero and expected.
+- When a test gate applies, confirm its discovered count is nonzero and expected; for a non-executable or inapplicable gate, record `N/A` with a reason.
 - For bugs, reproduce the original symptom, then prove the repaired behavior and nearby regression boundary.
 - Check timeout, retry, idempotency, concurrency, partial success, restart, rollback, and automation races.
-- Probe whether every blocking criterion can actually turn red for its target defect.
+- Confirm every blocking criterion names the defect or counterexample that would falsify it. For A2+ blocking test criteria, demonstrate failure detection when safe; for A3/A4 use the strongest practical independent challenge. If demonstration is unsafe or unavailable, record why, alternative evidence, and the resulting certification limit.
 - Reconcile artifact-derived status; do not trust a stale dashboard, index, or author's conclusion over the exact files and live forge state.
 - Evaluate reviewer feedback technically. Findings are evidence to reconcile, not commands to obey blindly.
 
@@ -190,9 +190,16 @@ For A3/A4, use a reviewer with separate context and no authorship of the change.
 
 ### 9. Issue a typed verdict and durable handoff
 
-Never return a bare `PASS`, `DONE`, `DEPLOYED`, or `CLOSED`. Use:
+Never return a bare `PASS`, `READY`, `DONE`, `DEPLOYED`, or `CLOSED`. Keep the namespaces separate:
 
-`<STATE> — <scope and exact identity> — <paired evidence> — <unknowns/residual risk> — <next authority>`
+- **Gate verdict:** `PASS`, `FAIL`, `BLOCKED`, or `UNKNOWN` for one named gate.
+- **Lifecycle state:** one exact state from [operating-model.md](references/operating-model.md).
+- **Route or AI decision:** a route-specific state such as `GO`, `STOP`, `READY_FOR_EXPERIMENT`, or `PROMOTED`.
+- **Review verdict:** `CERTIFIED`, `NOT CERTIFIED`, or `UNKNOWN` for the reviewed claims.
+
+Use:
+
+`Lifecycle: <LIFECYCLE_STATE> — Scoped decision: <ROUTE_OR_AI_STATE or N/A> — Review: <REVIEW_VERDICT or N/A> — <scope and exact identity> — <paired evidence> — <unknowns/residual risk> — <next authority>`
 
 Use lifecycle states from [operating-model.md](references/operating-model.md). If no findings exist, say so and still list untested surfaces and residual uncertainty. A green local or CI gate never implies production acceptance.
 
@@ -223,7 +230,7 @@ The complete doctrine is in [operating-model.md](references/operating-model.md).
 
 | Temptation | Required correction |
 |---|---|
-| "The command exited 0" | Prove intended artifact, expected count, oracle, and invariant. |
+| "The command exited 0" | Prove intended artifact, applicable expected count, oracle, and invariant. |
 | "All tests passed" | Verify discovery, target, falsifiability, and environment. |
 | "CI is green" | Bind live required checks to repository, head SHA, config, and UTC time. |
 | "The diff is tiny" | Assess blast radius, trust boundaries, and irreversibility. |
@@ -232,7 +239,7 @@ The complete doctrine is in [operating-model.md](references/operating-model.md).
 | "A worktree isolates it" | Inventory every shared operational resource. |
 | "A full framework is safer" | Import only controls justified by route and assurance. |
 | "A retry is harmless" | Reconcile ambiguous effects before retrying. |
-| "The test exists" | Demonstrate that it fails for the target defect. |
+| "The test exists" | Name its counterexample and, when assurance and safety require it, demonstrate that it fails for the target defect. |
 | "The generated spec matches the old system" | Run executable acceptance against the actual brownfield implementation. |
 | "We can reconstruct it later" | Persist state, evidence, identities, and corrections now. |
 

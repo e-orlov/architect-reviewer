@@ -51,13 +51,13 @@ Create one row per blocking requirement, risk control, or operational invariant:
 | Implementation slice | Exact files, symbols, schema, config, or operational change |
 | Verification level | Unit, component, contract, integration, system, or acceptance |
 | Criterion | Falsifiable expected behavior and boundary conditions |
-| Oracle | Independent source of truth where practical |
-| Scope / expected count | Enumerated surfaces and expected discovered cases |
+| Oracle | Source of truth plus independence and shared-assumption limits |
+| Scope / expected count | Enumerated surfaces and expected discovered cases, or `N/A` with reason |
 | Environment identity | Runtime, services, data, configuration, and topology |
 | Evidence | Exact artifact/result identity, raw output location, UTC time |
 | Invalidation dependencies | Changes that require this evidence to be refreshed |
 | Owner | Person/system responsible for closure |
-| State | Proposed, implemented-unverified, verified level, blocked, or unknown |
+| State | One exact lifecycle state from [operating-model.md](operating-model.md) |
 
 Trace in both directions:
 
@@ -73,7 +73,7 @@ For each safe vertical slice:
 1. Select one user-visible behavior, boundary contract, or risk reduction.
 2. Write or refine its left-side trace rows.
 3. Design right-side criteria before changing implementation.
-4. Confirm the criteria observe the real boundary and can fail.
+4. Confirm the criteria observe the real boundary and name a falsifying defect; execute a safe negative control when required by assurance.
 5. Implement the minimum complete slice.
 6. Run the earliest matching checks immediately: local, component, contract, then higher-level when available.
 7. Preserve exact evidence and update lifecycle state.
@@ -118,9 +118,9 @@ A right-side activity is credible only when it answers all of these:
 1. **Claim:** What exact statement is being proved?
 2. **Boundary:** At what V level does the claim live?
 3. **Target:** Which production symbol, route, contract, build, config, or runtime is exercised?
-4. **Oracle:** What decides correctness independently of the code under test where possible?
-5. **Falsifiability:** Which target defect makes the check fail, and has that capability been demonstrated safely?
-6. **Inventory:** What surfaces exist, and what count should discovery produce?
+4. **Oracle:** What decides correctness, and which assumptions are or are not independent of the code under test?
+5. **Falsifiability:** Which target defect makes the check fail, is an executed demonstration required, and what limitation remains if it is unsafe or unavailable?
+6. **Inventory:** What surfaces exist, and what count should discovery produce, or why is an executable count `N/A`?
 7. **Environment:** Which topology, services, data, and configuration are part of the claim?
 8. **Result:** What raw values, counts, checksums, statuses, or observations were collected?
 9. **Freshness:** When was evidence observed, and what changes invalidate it?
@@ -148,8 +148,8 @@ Do not rerun unrelated expensive gates solely because a file changed elsewhere. 
 | Tests are designed after implementation with no trace | They may prove the code's assumptions rather than the requirement | Define paired criteria with the left-side artifact |
 | Many unit tests, no system acceptance | Lower-level correctness cannot establish user outcome or routing | Add the missing higher-level proof |
 | End-to-end happy path only | Broad execution can miss local invariants and failure semantics | Add boundary-appropriate component/contract checks |
-| Test cannot turn red | Its existence is not evidence that it detects the defect | Add a safe negative control or label the limitation |
-| Zero tests discovered with exit 0 | The harness ran, but the intended scope did not | Assert nonzero expected count and target identity |
+| Test cannot turn red | Its existence is not evidence that it detects the defect | Name the logical counterexample; add a safe negative control when required or label the limitation and alternative evidence |
+| Applicable test gate discovers zero tests with exit 0 | The harness ran, but the intended scope did not | Assert nonzero expected count and target identity; use justified `N/A` only when no executable test applies |
 | Brownfield spec generated from prose | It may contradict live behavior and consumers | Validate executable criteria against the actual system |
 | Same author declares independent success | Correlated assumptions remain unchallenged | Use separate context/reviewer or label self-review |
 | CI result belongs to another SHA | Evidence and artifact identities do not match | Read live forge state for the exact head and required checks |
