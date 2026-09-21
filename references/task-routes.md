@@ -11,8 +11,9 @@
 7. Incident route
 8. Release route
 9. Review and audit route
-10. Assurance controls
-11. Proportionality and parallelism
+10. AI/ML complexity overlay
+11. Assurance controls
+12. Proportionality and parallelism
 
 ## 1. Route selection
 
@@ -141,7 +142,19 @@ For code review, prioritize behavioral and operational consequences over formatt
 
 When review scope is budgeted, list inspected candidates and carry all remaining candidates as `UNJUDGED`. For every material finding, either write it to the durable review artifact or explicitly decline it with a reason; do not leave decisive findings only in transient chat.
 
-## 10. Assurance controls
+## 10. AI/ML complexity overlay
+
+Apply this overlay to the idea, feature, refactor/migration, release, and review routes when work introduces AI/ML or materially changes models, prompts, evaluation, data, retrieval, tools, agents, routing, cascades, fine-tuning, or model-call topology.
+
+1. Run the Baseline Gate before selecting or approving increased complexity. Use the simplest credible comparator and name its measured acceptance gap.
+2. Run the Experiment Gate before claiming improvement. Bind code, model, prompt, data, evaluator, retrieval/tool configuration, environment, and relevant randomness; control or disclose material differences.
+3. Run the Complexity-Promotion Gate before operational adoption. Compare lower-complexity alternatives, practical significance, lifecycle cost, failure modes, ownership, observability, fallback, rollback, and retirement.
+4. Stop when the baseline already meets the validated need. Treat equivalent results within the predeclared margin and uncertainty as a reason to prefer lower lifecycle complexity.
+5. Do not treat RAG, an agent, multi-agent coordination, a cascade, fine-tuning, a larger model, or a data-only change as self-justifying. Each is a candidate mechanism that must close a named gap.
+
+Use [ai-complexity-strategy.md](ai-complexity-strategy.md) for the complete gate contracts and [templates.md](templates.md) for the decision record.
+
+## 11. Assurance controls
 
 | Control | A0 | A1 | A2 | A3 | A4 |
 |---|:---:|:---:|:---:|:---:|:---:|
@@ -159,7 +172,7 @@ When review scope is budgeted, list inspected candidates and carry all remaining
 
 These are minimums, not a substitute for domain controls. Promote a task when it touches security, privacy, money, persistent data, external side effects, shared systems, production, or irreversible state.
 
-## 11. Proportionality and parallelism
+## 12. Proportionality and parallelism
 
 Scale depth, not truthfulness:
 

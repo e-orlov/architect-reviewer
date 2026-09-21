@@ -1,6 +1,6 @@
 ---
 name: architect-reviewer
-description: V-model architecture and independent-review workflow for software changes and operational decisions. Use when Codex must design or challenge requirements, architecture, implementation plans, acceptance or test strategies; review code, a pull request, release, migration, incident correction, or production-readiness claim; recover project state or hand off work; define proportionate reliability and risk controls; or issue an evidence-backed GO, STOP, READY, BLOCKED, UNKNOWN, CERTIFIED, or NOT CERTIFIED verdict.
+description: V-model architecture and independent-review workflow for software, AI/ML, and operational decisions. Use when Codex must design or challenge requirements, architecture, implementation plans, acceptance or test strategies; assess model, prompt, retrieval, tool, agent, cascade, evaluation, or other AI complexity; review code, a pull request, release, migration, incident correction, or production-readiness claim; recover project state or hand off work; define proportionate reliability and risk controls; or issue an evidence-backed GO, STOP, READY, BLOCKED, UNKNOWN, CERTIFIED, or NOT CERTIFIED verdict.
 ---
 
 # Architect & Reviewer
@@ -37,6 +37,10 @@ These are operational inputs, not decorative citations:
 | Flutter-Craft | Separate planning, execution, verification, and finishing; work in reviewable batches; require evidence before claims; assess review feedback technically; parallelize only independent work. |
 | Risk Assessment Templates | Maintain a living risk register with scenario, trigger, owner, warning signals, mitigation, contingency, treatment, status, and review history. |
 | Hack23 risk-assessment skill | Separate inherent from residual risk; distinguish preventive, detective, and corrective controls; record control effectiveness and accountable residual-risk acceptance. |
+| Google Rules of ML | Define metrics first, establish a simple baseline, isolate infrastructure from learned behavior, and add complexity only after a measured gap remains. |
+| NIST AI RMF Generative AI Profile | Scale controls to context and risk tolerance; preserve provenance; evaluate against baselines in deployment-relevant conditions; document limits and lifecycle evidence. |
+| OpenAI Evals guidance | Specify the task, run versioned test inputs, analyze results, and iterate from evidence rather than anecdote. |
+| FrugalGPT | Treat cascades as measurable quality/cost candidates, not as universally simpler architecture. |
 
 Read [source-synthesis.md](references/source-synthesis.md) for the exact adoption, adaptation, rejection, source scope, and immutable repository snapshots. Do not copy source-specific tools, numeric thresholds, architecture styles, or organization policies without project evidence.
 
@@ -53,6 +57,7 @@ Read [source-synthesis.md](references/source-synthesis.md) for the exact adoptio
 9. Treat probes, hooks, plugins, generators, extensions, and automation as executable actors with authority, side effects, persistent state, cleanup, and rollback.
 10. Reserve product tradeoffs and residual-risk acceptance for the accountable user or operator.
 11. For every executable behavior change, define where each required check runs from local work through real-world acceptance, and record environment differences instead of assuming staging equals production. Use [testing-strategy.md](references/testing-strategy.md).
+12. For AI/ML introduction or material complexity growth, require Baseline, Experiment, and Complexity-Promotion gates; do not promote a practically equivalent candidate over a lower-lifecycle-complexity alternative.
 
 ## Execute the workflow
 
@@ -156,6 +161,8 @@ Do not simplify away security, privacy, accessibility, accounting, data-loss pro
 
 Before adopting a package, plugin, hook, skill, generator, or custom harness, inspect provenance, installation, invocation, context injection, files, secrets, network, shared state, update path, disable/uninstall path, and recovery. Require present evidence that custom machinery beats the native or existing option. Obtain authorization before persistent installation or environment change.
 
+For work that introduces AI/ML or materially changes a model, prompt, evaluator, retrieval path, tool, agent, router, cascade, fine-tune, training/evaluation data, or number of model calls, apply the three gates in [ai-complexity-strategy.md](references/ai-complexity-strategy.md): establish the simplest credible baseline and its measured gap; test one named hypothesis on versioned, controlled or explicitly disclosed evidence; then promote added complexity only when no acceptable lower-complexity candidate closes the gap after lifecycle cost and risk are counted. If the baseline already meets the need, stop. Let project evidence define metrics, equivalence margins, and thresholds; never impose universal percentages, sample sizes, technology ladders, or model choices.
+
 ### 7. Plan vertical slices and evidence gates
 
 - Split work by user-visible or contract-visible behavior, not horizontal technical layers alone.
@@ -238,5 +245,6 @@ All files are inside this skill directory; paths below are relative to `SKILL.md
 - [task-routes.md](references/task-routes.md): idea, feature, bug, migration, incident, release, and review routes with A0–A4 controls.
 - [evidence-and-gates.md](references/evidence-and-gates.md): falsifiable gates, real-path proof, CI, production, retry, independent review, risk, and STOP conditions.
 - [testing-strategy.md](references/testing-strategy.md): stage-by-stage test pipeline, test levels, AAA and Given/When/Then conventions, coverage, regression, API checks, and environment-difference rules.
-- [templates.md](references/templates.md): State Capsule, V trace matrix, architecture packet, gate, verdict, risk, release, error, registry, side-effect, and handoff templates.
+- [ai-complexity-strategy.md](references/ai-complexity-strategy.md): project-agnostic Baseline, Experiment, and Complexity-Promotion gates for models, data, prompts, retrieval, tools, agents, cascades, and fine-tuning.
+- [templates.md](references/templates.md): State Capsule, V trace matrix, architecture packet, gate, AI complexity decision, verdict, risk, release, error, registry, side-effect, and handoff templates.
 - [source-synthesis.md](references/source-synthesis.md): requested-source ledger, adoption/adaptation/rejection decisions, immutable source snapshots, and documented limits.

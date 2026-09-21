@@ -14,13 +14,14 @@
 10. Flutter-Craft
 11. Risk Assessment Templates
 12. Hack23 risk-assessment skill
-13. Cross-source synthesis
-14. Practices intentionally not imported
-15. Verified source snapshots
+13. AI/ML anti-overengineering sources
+14. Cross-source synthesis
+15. Practices intentionally not imported
+16. Verified source snapshots
 
 ## 1. Scope and method
 
-All nine sources requested by the user are represented in the active method. The review used each repository's canonical README plus the high-signal workflow, review, verification, planning, or risk files relevant to this skill. It is a concept and control synthesis, not a claim that every historical file, issue, release, or empirical assertion in each repository was exhaustively adopted.
+All nine sources requested by the user are represented in the active method. The review used each repository's canonical README plus the high-signal workflow, review, verification, planning, or risk files relevant to this skill. Four additional primary AI/ML sources support the Baseline, Experiment, and Complexity-Promotion gates: Google Rules of ML, the NIST AI RMF Generative AI Profile, OpenAI's eval guidance, and the FrugalGPT paper. This is a concept and control synthesis, not a claim that every historical file, issue, release, or empirical assertion in each source was exhaustively adopted.
 
 For each source:
 
@@ -318,7 +319,102 @@ Not imported:
 - EUR thresholds, regulatory mappings, or review cadence from another organization;
 - cost-benefit conclusions without the current project's costs and consequences.
 
-## 13. Cross-source synthesis
+## 13. AI/ML anti-overengineering sources
+
+### Google Rules of Machine Learning
+
+Reviewed scope: the official [Rules of Machine Learning](https://developers.google.com/machine-learning/guides/rules-of-ml), especially rules on metrics, non-ML launch, simple first models, infrastructure isolation, interpretable models, iteration, directly observed features, and launch decisions.
+
+Adopted:
+
+- define metrics before choosing a more complex AI/ML mechanism;
+- accept no-AI, manual, heuristic, or simple-model behavior as a legitimate baseline;
+- use a simple first model to create baseline behavior and metrics;
+- test infrastructure independently from learned behavior;
+- prefer directly observed, understandable inputs early and preserve useful domain heuristics;
+- consider whether new complexity will slow future iteration;
+- choose the simpler system when it performs at least as well on the decision-relevant metrics.
+
+Adapted:
+
+- compare total lifecycle complexity rather than imposing a fixed order from heuristic to ML to deep learning;
+- use project-defined outcome, guardrail, and practical-equivalence thresholds;
+- extend the baseline principle to LLM prompts, retrieval, tools, agents, cascades, fine-tuning, and custom models.
+
+Not imported:
+
+- illustrative uplift numbers as acceptance targets;
+- Google-specific product, data-scale, feature-count, or infrastructure assumptions;
+- a claim that heuristics are always simpler than ML or that an interpretable model always meets the need.
+
+### NIST AI RMF Generative AI Profile
+
+Reviewed scope: the official [NIST AI 600-1 Generative Artificial Intelligence Profile](https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf), especially context/risk mapping, organizational risk tolerance, provenance, baseline comparison, deployment-relevant measurement, TEVV, system limitations, and lifecycle monitoring.
+
+Adopted:
+
+- scale control depth to context, intended use, exposure, and accountable risk tolerance;
+- document data, model, evaluation, and system provenance;
+- measure performance and assurance in conditions similar to deployment;
+- compare candidate performance against appropriate baselines and document limitations;
+- retain test, evaluation, validation, and verification evidence across the lifecycle;
+- account for system-level risks, human configuration, fallback, recovery, and monitoring.
+
+Adapted:
+
+- map NIST's broad governance and TEVV concepts into three compact decision gates and the existing A0–A4 assurance model;
+- keep only controls material to the task and risk rather than requiring the entire profile for every change.
+
+Not imported:
+
+- a claim of NIST conformance or certification;
+- every suggested action as a universal requirement;
+- organization-specific risk tolerance, legal interpretation, or domain threshold.
+
+### OpenAI eval guidance
+
+Reviewed scope: the official [Working with evals](https://developers.openai.com/api/docs/guides/evals) workflow for describing the task, running evaluations on test inputs, analyzing results, and iterating.
+
+Adopted:
+
+- specify expected behavior before using evaluation results to change the system;
+- bind evaluations to test inputs, configuration, results, and iteration evidence;
+- treat evals as decision infrastructure rather than anecdotal prompt demonstrations.
+
+Adapted:
+
+- generalize the workflow beyond OpenAI APIs and require model, prompt, tool, data, evaluator, retrieval, and runtime identities when applicable;
+- combine eval results with product, safety, operational, cost, and risk guardrails.
+
+Not imported:
+
+- OpenAI-specific API objects, SDKs, dashboard workflows, or product defaults;
+- the assumption that an automated grader is independent or sufficient for every task.
+
+### FrugalGPT
+
+Reviewed scope: [FrugalGPT: How to Use Large Language Models While Reducing Cost and Improving Performance](https://arxiv.org/abs/2305.05176), including prompt adaptation, LLM approximation, and LLM cascade as cost/performance strategies.
+
+Adopted:
+
+- treat routing and cascades as empirically testable candidate optimizations;
+- evaluate cost and quality together on the target workload;
+- allow different paths for different request classes when routing and end-to-end value are evidenced.
+
+Adapted:
+
+- require router quality, uncertainty, misrouting analysis, fallback, end-to-end guardrails, operational cost, and recovery before promotion;
+- treat a cascade as additional system complexity even when it lowers average inference cost.
+
+Not imported:
+
+- paper-specific cost or accuracy improvements as expected results elsewhere;
+- a universal preference for cascades;
+- a claim that component benchmarks alone establish production value.
+
+Active locations: SKILL.md non-negotiable rules and smallest-change section; references/ai-complexity-strategy.md; the AI/ML overlay in references/task-routes.md; the AI Complexity Decision Record in references/templates.md.
+
+## 14. Cross-source synthesis
 
 The combined method is:
 
@@ -327,11 +423,12 @@ The combined method is:
 3. **Build the V trace.** Pair each definition with boundary-matched proof and connect requirement, risk, design owner, implementation, criterion, evidence, and state.
 4. **Define completeness.** Add reliability, security, privacy, data integrity, accessibility, compatibility, observability, recovery, and residual-risk requirements.
 5. **Minimize safely.** Trace the actual path, use the narrow owning boundary, reuse existing/native mechanisms, and add minimum new code.
-6. **Execute incrementally.** Use dependency-ordered vertical slices, checkpoints, and evidence reuse only when dependencies are unchanged.
-7. **Prove the proof.** Inventory surfaces, assert nonzero expected counts, exercise the real path, use independent oracles, and demonstrate negative controls.
-8. **Challenge independently.** Separate author and reviewer at A3/A4, bound the doubt cycle, and reconcile findings technically.
-9. **Release as an operational experiment.** Bind identity, expose gradually, monitor user-facing thresholds, abort or roll back on breach, and validate in the real environment.
-10. **Preserve state and learning.** Use typed lifecycle states, durable handoffs, risk review, errors/corrections, and blameless corrective action.
+6. **Gate AI/ML complexity.** Establish the simplest credible baseline, test a named hypothesis on controlled evidence, and promote added complexity only when it closes a measured gap after lifecycle cost and risk are counted.
+7. **Execute incrementally.** Use dependency-ordered vertical slices, checkpoints, and evidence reuse only when dependencies are unchanged.
+8. **Prove the proof.** Inventory surfaces, assert nonzero expected counts, exercise the real path, use independent oracles, and demonstrate negative controls.
+9. **Challenge independently.** Separate author and reviewer at A3/A4, bound the doubt cycle, and reconcile findings technically.
+10. **Release as an operational experiment.** Bind identity, expose gradually, monitor user-facing thresholds, abort or roll back on breach, and validate in the real environment.
+11. **Preserve state and learning.** Use typed lifecycle states, durable handoffs, risk review, errors/corrections, and blameless corrective action.
 
 Precedence when concepts conflict:
 
@@ -339,18 +436,24 @@ Precedence when concepts conflict:
 2. V-model completeness and bounded risk;
 3. security, privacy, data integrity, accessibility, accounting, and trust boundaries;
 4. reliability, observability, rollout, rollback, and recovery;
-5. KISS/YAGNI/reuse/minimum code;
-6. optional source-framework conventions.
+5. decision-capable baseline, experiment, and complexity-promotion evidence for AI/ML;
+6. KISS/YAGNI/reuse/minimum code;
+7. optional source-framework conventions.
 
-## 14. Practices intentionally not imported
+## 15. Practices intentionally not imported
 
 | Rejected universal prescription | Reason |
 |---|---|
 | One workflow for every change | Ideas, bugs, incidents, releases, and features have different questions and terminal states. |
 | V-model as late, sequential testing | It hides learning and moves failure discovery to the end; this skill pairs and verifies continuously. |
 | Full framework adoption | It adds roles, files, commands, and ceremony without proving additional assurance. |
-| Fixed coverage, SLO, risk, or rollout percentages | Source numbers are examples or local policy, not facts about the target system. |
+| Fixed coverage, SLO, risk, rollout, AI-quality, sample-size, or uplift percentages | Source numbers are examples or local policy, not facts about the target system. |
 | Model/vendor-specific reviewer requirement | Independence and competence matter; named tools change and do not own risk. |
+| Mandatory technology ladder from rules to ML to LLM/agents | The simplest credible candidate depends on the task; compare lifecycle complexity rather than technology labels. |
+| One changed variable as an absolute rule | Prefer one primary explanatory variable, but treat necessary coupled changes as a composite candidate and limit causal claims. |
+| Data-only iteration as a universal law | Use a data-centric route when error evidence identifies a data gap; otherwise change the evidenced owning axis. |
+| Larger models, RAG, agents, multi-agent, fine-tuning, or cascades by default | Each mechanism adds costs and failure modes and must close a named measured gap. |
+| Parameter count, feature count, service count, or lines of code as the sole simplicity measure | Compare end-to-end lifecycle complexity, outcome, cost, risk, ownership, and recovery. |
 | Green local/CI result as release acceptance | Artifact, environment, and V-level identities differ. |
 | Same-author independent certification | Shared assumptions create correlated blind spots. |
 | Generated brownfield specification as truth | It must be validated against the actual implementation and consumers. |
@@ -359,7 +462,7 @@ Precedence when concepts conflict:
 | Risk score as probability or decision | Scores prioritize; accountable owners decide with rationale and uncertainty. |
 | Blind retries | Ambiguous external effects require intent identity and reconciliation. |
 
-## 15. Verified source snapshots
+## 16. Verified source snapshots
 
 The identifiers below are Git blob SHAs observed through authenticated repository reads on 2026-09-21. They identify file content, not a repository commit or release. Branch links remain convenient; the SHA allows a later reader to detect content drift.
 
@@ -407,4 +510,13 @@ The identifiers below are Git blob SHAs observed through authenticated repositor
 | henu-wang/risk-assessment-templates | README.md | 9125c01882726b042a995979edb93e980039dea6 |
 | Hack23/homepage | risk-assessment SKILL.md | 55b62d52dc1c312ab31e026a31a08828f1f12ec5 |
 
-The Google SRE and NASA handbook sources are authoritative web publications rather than reviewed GitHub blobs, so this ledger records their URLs and observation date instead of inventing a content SHA.
+Authoritative web and publication sources do not expose comparable reviewed Git blob identities here, so record their stable primary URL and observation date instead of inventing a content SHA.
+
+| Source | Primary reference | Observed |
+|---|---|---|
+| NASA Systems Engineering Handbook | https://ntrs.nasa.gov/citations/20170001761 | 2026-09-21 |
+| Google SRE Book introduction | https://sre.google/sre-book/introduction/ | 2026-09-21 |
+| Google Rules of Machine Learning | https://developers.google.com/machine-learning/guides/rules-of-ml | 2026-09-21 |
+| NIST AI RMF Generative AI Profile, NIST AI 600-1 | https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf | 2026-09-21 |
+| OpenAI Working with evals | https://developers.openai.com/api/docs/guides/evals | 2026-09-21 |
+| FrugalGPT, arXiv:2305.05176 | https://arxiv.org/abs/2305.05176 | 2026-09-21 |

@@ -13,6 +13,7 @@
 9. Diagnostic Side-Effect Ledger
 10. Handoff
 11. V-model Trace Matrix
+12. AI Complexity Decision Record
 
 Use only fields justified by the task. Preserve exact identities and raw evidence references. Delete instructional placeholders before delivery.
 
@@ -273,4 +274,60 @@ Evidence and UTC time:
 - Tests without a traced claim:
 - Evidence at the wrong V level:
 - Stale or identity-mismatched evidence:
+```
+
+## 12. AI Complexity Decision Record
+
+```markdown
+# AI Complexity Decision Record
+
+- Decision scope / assurance:
+- User or business need:
+- Non-goals and prohibited outcomes:
+- Accountable decision/risk owner:
+
+## Baseline Gate
+
+- Simplest credible comparator:
+- Why this comparator is credible:
+- Baseline artifact/config/environment identity:
+- Evaluation-set identity, provenance, scope, and limitations:
+- Primary metric and project-defined acceptance threshold:
+- Safety/quality/cost/latency/operational guardrails:
+- Raw result and uncertainty:
+- Named unmet gap:
+- Gate verdict: PASS | FAIL | BLOCKED | UNKNOWN
+- Decision: STOP | READY_FOR_EXPERIMENT
+
+## Experiment Gate
+
+- Predeclared hypothesis:
+- Baseline arm identity:
+- Candidate arm identity:
+- Primary changed mechanism:
+- Controlled factors:
+- Disclosed additional differences:
+- Model/prompt/tool/retrieval/data/evaluator/runtime identities:
+- Split, deduplication, leakage, and contamination controls:
+- Practical-equivalence margin or qualitative decision boundary, and decision rule:
+- Repetition/uncertainty treatment:
+- Falsifiability / known-bad control:
+- Raw result, slices, regressions, and guardrails:
+- Attribution limits:
+- Gate verdict: PASS | FAIL | BLOCKED | UNKNOWN
+
+## Complexity-Promotion Gate
+
+- Proposed added complexity:
+- Lower-complexity alternatives considered:
+- Measured benefit and practical significance:
+- Lifecycle complexity/cost inventory:
+- New failure, security, privacy, data, vendor, and compliance risks:
+- Observability and owner:
+- Fallback / rollback / decommission path:
+- Target-topology and staged-release evidence:
+- Residual risk and acceptance authority:
+- Gate verdict: PASS | FAIL | BLOCKED | UNKNOWN
+- Decision: STOP | EXPERIMENT_ONLY | APPROVED_LIMITED | PROMOTED | BLOCKED | UNKNOWN
+- Scope and expiry/invalidation dependencies:
 ```

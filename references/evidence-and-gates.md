@@ -15,6 +15,7 @@
 11. STOP conditions
 12. Review lenses
 13. Extensions, hooks, and diagnostic actions
+14. AI/ML complexity evidence
 
 ## 1. Gate record
 
@@ -216,7 +217,8 @@ Review in this order:
 5. **Compatibility:** Are APIs, schemas, clients, mixed versions, and migrations handled?
 6. **Operability:** Are identity, logs, metrics, alerts, rollout, rollback, and automation behavior adequate?
 7. **Test adequacy:** Do tests exercise the real path, have a trustworthy oracle, and prove they can fail?
-8. **Simplicity:** Is every abstraction, dependency, layer, and line needed now?
+8. **AI/ML complexity:** When applicable, is there a credible baseline, attributable experiment, and justified promotion after lifecycle cost and risk?
+9. **Simplicity:** Is every abstraction, dependency, layer, and line needed now?
 
 Report defects separately from optional improvements. Avoid drowning a blocking finding in style commentary.
 
@@ -235,3 +237,11 @@ Before installing or invoking an extension, plugin, hook, generator, benchmark h
 Do not persistently install or enable it without user authorization. Prefer a read-only or isolated evaluation when the control value is still unproven.
 
 For every diagnostic action that can affect the target, keep a side-effect ledger: target, expected reads/writes, load/cost budget, notifications or audit events, temporary artifacts, cleanup/reconciliation step, and observed residue. A probe is complete only when its residue is accepted or removed and that result is verified.
+
+## 14. AI/ML complexity evidence
+
+For AI/ML introduction or material complexity growth, the generic Gate Record is necessary but not sufficient. Add the Baseline, Experiment, and Complexity-Promotion contracts from [ai-complexity-strategy.md](ai-complexity-strategy.md).
+
+Treat the following as first-class artifact and dependency identities when applicable: model/provider/version/settings, prompt and schema, tool and routing policy, training/fine-tuning/retrieval/evaluation data, labels and split logic, embedding/index/knowledge snapshot, evaluator or human-review rubric, randomness treatment, runtime configuration, and observation time.
+
+Block promotion when there is no credible baseline, no named gap, no decision-capable evaluation, material undisclosed differences between experiment arms, evidence contamination, a breached guardrail, improvement that does not cross the practical-equivalence margin or qualitative decision boundary, uncertainty that prevents the claimed conclusion, or missing lifecycle ownership/fallback/rollback. Use the AI Complexity Decision Record in [templates.md](templates.md) to preserve the decision and invalidation dependencies.
