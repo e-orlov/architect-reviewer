@@ -14,6 +14,7 @@
 10. Handoff
 11. V-model Trace Matrix
 12. AI Complexity Decision Record
+13. Result-Acceptance / Evidence-Lineage Record
 
 Use only fields justified by the task. Preserve exact identities and raw evidence references. Delete instructional placeholders before delivery.
 
@@ -29,6 +30,10 @@ Use only fields justified by the task. Preserve exact identities and raw evidenc
 - Review verdict, if any: CERTIFIED | NOT CERTIFIED | UNKNOWN
 - Canonical instructions/decision:
 - Target identity: <repo/branch/SHA/build/config/schema/runtime as applicable>
+- Evidence window: <last independently accepted immutable baseline or NO_PRIOR_ACCEPTED_BASELINE → exact target>
+- Forge connector: GITHUB_AUTHENTICATED | NATIVE_AUTHENTICATED | NOT_APPLICABLE | UNAVAILABLE
+- Open attempt/anomaly IDs:
+- Result-Acceptance Gate: PASS | FAIL | BLOCKED | UNKNOWN | NOT_YET_REQUIRED
 - Current executor/process state:
 - Completed gates: <gate, artifact, UTC, verdict>
 - Freshness/invalidation notes:
@@ -113,6 +118,10 @@ Use only fields justified by the task. Preserve exact identities and raw evidenc
 - Review type: SELF-REVIEW | INDEPENDENT REVIEW
 - Scope and exact artifact identity:
 - Task type / assurance:
+- Last independently accepted immutable baseline, or `NO_PRIOR_ACCEPTED_BASELINE` plus justified start boundary:
+- Evidence window and exact final target:
+- Forge connector and observed repository/account identity:
+- Result-Acceptance Record / gate verdict:
 - Evidence reviewed:
 - Untested or unavailable surfaces:
 
@@ -189,6 +198,8 @@ If findings are absent, write `No findings within the reviewed scope` and still 
 - Target environment/topology:
 - Rollout/canary cohort:
 - Required checks and evaluated SHA:
+- Forge connector / observed account and UTC:
+- Result-Acceptance Record / gate verdict:
 - Monitoring window/signals:
 - Rollback target and procedure:
 - Deployment record and UTC:
@@ -203,13 +214,17 @@ If findings are absent, write `No findings within the reviewed scope` and still 
 
 ### <error title>
 
-- Command/step:
-- Symptom:
-- Classified cause:
-- Correction:
-- Rerun/result:
-- Impact on earlier evidence:
-- Residual risk:
+- Exact target / run / attempt / job / step identity:
+- UTC time / environment:
+- Observable symptom:
+- Expected versus actual scope/count:
+- Classification: PRODUCT | TEST | FIXTURE | HARNESS | CONFIGURATION | ENVIRONMENT | INFRASTRUCTURE | EXPECTED_NEGATIVE_CONTROL | UNKNOWN
+- Cause / confidence: PROVEN | PROVISIONAL | UNKNOWN
+- Correction, or justified reason none was needed:
+- Evidence invalidated by the correction:
+- Falsifiable causal proof:
+- Final result on the exact corrected target:
+- Remaining uncertainty / residual risk:
 ```
 
 If no errors occurred, use:
@@ -259,6 +274,9 @@ Evidence and UTC time:
 - Scoped route/AI decision state(s):
 - Review verdict, if any: CERTIFIED | NOT CERTIFIED | UNKNOWN
 - Exact target and artifact identities:
+- Evidence window and last accepted immutable baseline:
+- Forge connector state and observed identity:
+- Result-Acceptance Record / gate verdict:
 - What changed / what did not change:
 - Completed gates with evidence locations and UTC:
 - Known failures and corrections:
@@ -355,4 +373,74 @@ Evidence and UTC time:
 - Monitoring / abort thresholds:
 - Fallback / rollback:
 - Post-stabilization gate owner and due action:
+```
+
+## 13. Result-Acceptance / Evidence-Lineage Record
+
+```markdown
+# Result-Acceptance Gate
+
+- Decision being authorized: NEXT_IMPLEMENTATION_MANDATE | MERGE_GO | RELEASE_GO | DEPLOYMENT_GO | CERTIFICATION | OTHER
+- Architect/reviewer:
+- Independence status: INDEPENDENT | SELF_REVIEW_ONLY
+- Last independently accepted immutable baseline, or `NO_PRIOR_ACCEPTED_BASELINE` plus justified start boundary:
+- Exact final target identity:
+- Evidence window: <baseline → target>
+- Relevant source/configuration/schema/workflow/environment revisions:
+- Forge connector: GITHUB_AUTHENTICATED | NATIVE_AUTHENTICATED | NOT_APPLICABLE | UNAVAILABLE
+- Observed host/repository/account state without credentials:
+- GitHub PR/base/head and required-check identities, if applicable:
+- Material evidence surfaces available:
+- Missing, inaccessible, or expired evidence surfaces:
+
+## Attempt inventory
+
+| ID | Artifact/target | Run/attempt/job/step | UTC/environment | Status | Expected/actual scope or count | Primary evidence | Reconciliation state |
+|---|---|---|---|---|---|---|---|
+| ATT-001 |  |  |  | PASSED / FAILED / CANCELLED / TIMED_OUT / SKIPPED / RETRIED / RERUN / SUPERSEDED / EXPECTED_RED / MUTATION |  |  | OPEN / RECONCILED |
+
+## Open evidence-item reconciliation
+
+### <attempt or anomaly ID>
+
+- Exact artifact and target identity:
+- UTC time and environment:
+- Failing step and observable symptom:
+- Expected versus actual scope/count:
+- Classification: PRODUCT | TEST | FIXTURE | HARNESS | CONFIGURATION | ENVIRONMENT | INFRASTRUCTURE | EXPECTED_NEGATIVE_CONTROL | UNKNOWN
+- Cause / confidence: PROVEN | PROVISIONAL | UNKNOWN
+- Correction, or justified reason none was needed:
+- Evidence invalidated by the correction:
+- Falsifiable proof that the correction addresses the cause:
+- Final result on the exact corrected target:
+- Remaining uncertainty and residual risk:
+- Reconciliation state: OPEN | RECONCILED
+
+## Causal closure
+
+- Original target or controlled mutation reproduces failure:
+- Corrected target passes the same oracle:
+- Removal/reversal of correction fails the relevant gate, or reason unsafe/disproportionate:
+- Unrelated assertions, discovery counts, and safety boundaries preserved:
+- Intervening diff inspected:
+- Invalidated gates rerun:
+
+## Final-head completeness
+
+- All required gates ran:
+- Discovery counts nonzero and exact where known:
+- No required step skipped or silently tolerated:
+- Logs and artifacts match the exact target:
+- Retry/cache/continue-on-error/condition/order reviewed:
+- Working tree/generated artifacts/external state match claimed identity:
+
+## Gate outcome
+
+- Open evidence items:
+- Result-Acceptance Gate verdict: PASS | FAIL | BLOCKED | UNKNOWN
+- Lifecycle-state impact:
+- Downstream authority now allowed: PROGRESSION | BOUNDED_DIAGNOSIS | BOUNDED_CORRECTION | EVIDENCE_RECOVERY | ACCESS_REQUEST | NONE
+- Evidence item the bounded response directly addresses, if applicable:
+- Downstream authority still forbidden:
+- Errors encountered and corrections section updated: YES | NO
 ```

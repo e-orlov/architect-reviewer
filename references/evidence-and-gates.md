@@ -7,15 +7,16 @@
 3. Falsifiability and negative controls
 4. Coverage and real-path proof
 5. Evidence freshness and invalidation
-6. Repository and CI evidence
-7. Environment and production acceptance
-8. Retries and external effects
-9. Independent review
-10. Risk assessment
-11. STOP conditions
-12. Review lenses
-13. Extensions, hooks, and diagnostic actions
-14. AI/ML complexity evidence
+6. Repository, CI, and mandatory forge connection
+7. Evidence lineage and failure reconciliation
+8. Environment and production acceptance
+9. Retries and external effects
+10. Independent review
+11. Risk assessment
+12. STOP conditions
+13. Review lenses
+14. Extensions, hooks, and diagnostic actions
+15. AI/ML complexity evidence
 
 ## 1. Gate record
 
@@ -97,23 +98,120 @@ Store evidence against the narrowest proved boundary:
 
 Invalidate evidence when any dependency changes. A change elsewhere in the same file need not invalidate symbol-bound evidence, but policy may still require a full suite. Record why a rerun was or was not necessary. Never reuse evidence merely because a report looks recent.
 
-## 6. Repository and CI evidence
+## 6. Repository, CI, and mandatory forge connection
 
-For a live repository or pull-request claim, use an authenticated source and capture:
+For any GitHub-backed target or GitHub-hosted material evidence, establish an authenticated GitHub connector before making or accepting a live repository, pull-request, CI, merge, release, deployment, or certification claim. This is a mandatory evidence dependency, not an optional convenience. The connector must expose, as applicable:
 
-- host and exact repository;
-- active authenticated account state without exposing credentials;
-- default/target branch;
-- head and base SHA;
+- host, exact repository, and authenticated account state without exposing credentials;
+- default/target branch and exact head/base commits;
 - PR state, draft state, mergeability, review decision, and required checks;
-- check name, status, conclusion, and the SHA it evaluated;
-- UTC observation time.
+- source, configuration, schema, workflow, and relevant environment revisions in the bounded evidence window;
+- GitHub Actions workflow runs and every relevant run attempt, including unsuccessful, cancelled, skipped, timed-out, retried, rerun, superseded, and expected-negative executions;
+- jobs, steps, conclusions, discovered test counts, logs, and artifacts for those attempts;
+- check name, status, conclusion, evaluated SHA, run/attempt identity, and UTC observation time.
 
-Do not infer private or mutable state from public search, cached pages, screenshots, or an earlier report. If authenticated access is unavailable, state `UNKNOWN` and do not recommend merge or release.
+Confirm the connector can read every material surface needed by the claim. Access to a PR summary without Actions logs and artifacts is not sufficient when those logs or artifacts are material. Public search, cached pages, screenshots, local status files, generated indexes, the current check summary, or an executor's narrative cannot replace primary authenticated evidence. If the connector is unavailable, points at the wrong account/repository, or cannot expose a material surface, the affected claim is `UNKNOWN`; do not issue a downstream implementation mandate, merge/release/deployment `GO`, or `CERTIFIED` from that evidence.
+
+For a non-GitHub forge, require the equivalent authenticated native connector or API and the same evidence capabilities. A mandatory connection is read-only by default: it does not imply authority to rerun workflows, edit the repository, merge, release, deploy, or accept risk. Obtain those permissions separately.
+
+The GitHub connector is mandatory but not sufficient for material state held outside GitHub. Inspect external CI, deployment, cloud, runtime, data, or configuration evidence through its authenticated authoritative source and reconcile it into the same evidence window.
 
 Treat repository-local status files and generated indexes as derived views. Reconcile them against exact artifacts and the live forge. A locally recorded green status cannot establish that required remote checks ran on the current head SHA.
 
-## 7. Environment and production acceptance
+GitHub's primary platform documentation defines the relevant evidence surfaces: [workflow runs and attempts](https://docs.github.com/en/rest/actions/workflow-runs), [jobs and all executions](https://docs.github.com/en/rest/actions/workflow-jobs), [run logs and failed steps](https://docs.github.com/en/actions/how-tos/monitor-workflows/use-workflow-run-logs), [artifacts and expiry](https://docs.github.com/en/rest/actions/artifacts), [`continue-on-error` behavior](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idcontinue-on-error), and [required status checks](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches). Recheck current behavior before relying on mutable platform semantics.
+
+## 7. Evidence-Lineage and Failure-Reconciliation Rule
+
+A latest green result is a current-state fact, not sufficient review evidence.
+
+Before accepting an executor's result, issuing the next mandate or `GO`, or declaring an artifact ready, the architect or reviewer must independently reconcile the complete bounded evidence lineage from the last accepted immutable baseline to the exact target under review.
+
+This obligation belongs to the architect or reviewer. It cannot be delegated to, or satisfied solely by, the executor's summary.
+
+### Required procedure
+
+1. **Define the evidence window.** Bind the review to:
+   - the last independently accepted immutable baseline;
+   - the exact final target identity;
+   - every relevant source, configuration, schema, workflow, and environment revision between them.
+
+   If no independently accepted baseline exists, record `NO_PRIOR_ACCEPTED_BASELINE`, choose the earliest immutable boundary justified by the decision—such as the merge base, last release, or initial commit—and mark earlier or unavailable history `UNJUDGED`. If that unjudged history is material to the claim, the affected claim is `UNKNOWN`.
+
+2. **Inventory every attempt.** Inspect primary artifacts for all relevant executions in that window, including:
+   - passed;
+   - failed;
+   - cancelled;
+   - timed out;
+   - skipped;
+   - retried;
+   - rerun;
+   - superseded;
+   - expected RED or mutation runs.
+
+   For CI, inspect workflow runs, jobs, steps, logs, discovered test counts, and artifacts—not only the current check summary.
+
+3. **Preserve failure history.** A later `PASS` may supersede the gate result for an exact newer target, but it never deletes an earlier failure from the review record.
+
+   Every non-successful or anomalous attempt remains an open evidence item until it is explicitly reconciled.
+
+4. **Reconcile every open evidence item.** Record:
+   - exact artifact and target identity;
+   - UTC time and environment;
+   - failing step and observable symptom;
+   - expected versus actual scope and counts;
+   - classification: product, test, fixture, harness, configuration, environment, infrastructure, expected negative control, or unknown;
+   - proven or provisional cause;
+   - correction taken, or justified reason no correction was needed;
+   - evidence invalidated by the correction;
+   - falsifiable proof that the correction addresses the cause;
+   - final result on the exact corrected target;
+   - remaining uncertainty and residual risk.
+
+   `Flaky`, `transient`, `green after rerun`, and `works now` are not root-cause classifications.
+
+5. **Prove causal closure.** When safe and proportionate, demonstrate that:
+   - the original target or a controlled mutation reproduces the failure;
+   - the corrected target passes the same oracle;
+   - removing the correction makes the relevant gate fail again;
+   - unrelated assertions, counts, and safety boundaries were not weakened.
+
+   A rerun on the same SHA can provide evidence about nondeterminism or environment, but it cannot prove that a source correction fixed the defect. A pass on a new SHA requires inspection of the intervening diff and rerunning every invalidated gate.
+
+6. **Verify final-head completeness.** Before acceptance, prove on the exact target:
+   - all required gates ran;
+   - expected discovery counts are nonzero and exact where known;
+   - no required step was skipped or silently tolerated;
+   - logs and artifacts belong to that target;
+   - retry, caching, `continue-on-error`, conditional execution, or workflow ordering did not hide a failure;
+   - the working tree, generated artifacts, and external state match the claimed identity.
+
+7. **Run the Result-Acceptance Gate.** The architect or reviewer must complete this reconciliation before producing any downstream implementation task, merge `GO`, release `GO`, deployment `GO`, or certification.
+
+   Executor feedback is an input to this gate, never its verdict.
+
+### Verdict consequences
+
+- A historical failure that is fully explained, causally corrected, and re-proven on the exact target does not block acceptance, but must remain visible under `Errors encountered and corrections`.
+- An expected RED or mutation failure is acceptable only when its expected oracle and cleanup are proven.
+- Any unexplained failure, missing run, skipped required step, inaccessible material log, unexplained rerun, or mismatch between reported and primary evidence makes the affected claim `UNKNOWN`.
+- Any failure still reproducible on the exact target makes the affected gate `FAIL` and the lifecycle state `BLOCKED`.
+- The architect or reviewer must not reconstruct missing evidence optimistically or defer reconciliation to a later task.
+
+Gate completion and a `PASS` verdict are distinct. A completed `FAIL` or `BLOCKED` gate may authorize only a bounded diagnostic or corrective task that names and directly addresses the reconciled evidence item; it cannot authorize normal progression or acceptance. `UNKNOWN` permits evidence recovery or an access request, not implementation based on the unknown claim. An incomplete gate authorizes neither.
+
+### Anti-rationalization rule
+
+Never say `all checks are green` as a complete assurance claim when the bounded evidence window contains a failure or correction.
+
+Say instead:
+
+> The exact final target is green after the following reconciled failures and corrections: …
+
+If that sentence cannot yet be completed from primary evidence, the result is not ready for downstream authority.
+
+Use the Result-Acceptance / Evidence-Lineage Record in [templates.md](templates.md). Its gate verdict is `PASS`, `FAIL`, `BLOCKED`, or `UNKNOWN`; it is separate from lifecycle, route, and review verdict namespaces.
+
+## 8. Environment and production acceptance
 
 Name the environment and topology. Verify:
 
@@ -130,7 +228,7 @@ Keep `VERIFIED_INTEGRATION`, `RELEASED_UNACCEPTED`, and `ACCEPTED` distinct.
 
 For staged rollout, define the cohort, observation window, abort condition, rollback trigger, and accountable operator before exposure. A dashboard without a threshold and response is not an acceptance gate.
 
-## 8. Retries and external effects
+## 9. Retries and external effects
 
 Treat paid, mutating, or externally visible calls as business operations. Require:
 
@@ -144,7 +242,7 @@ Treat paid, mutating, or externally visible calls as business operations. Requir
 
 Never blindly retry an ambiguous mutation. Reconcile first or park it for explicit resolution.
 
-## 9. Independent review
+## 10. Independent review
 
 For A3/A4, require:
 
@@ -168,11 +266,13 @@ Use a bounded doubt cycle:
 
 Pass the artifact against its contract, not the author's reasoning. Reviewer findings are evidence to reconcile, not an automatic verdict; technically challenge them when contradicted by stronger evidence. Do not issue `CERTIFIED` when a failure-detection limitation is material to a blocking claim and no decision-capable alternative evidence exists.
 
+Before issuing `CERTIFIED` or accepting corrected work, complete the Result-Acceptance Gate in Section 7 against the exact reviewed target. Independent review does not waive evidence-lineage reconciliation; it owns that reconciliation for the reviewed claim.
+
 A different model is useful for reducing correlated blind spots but is still an advisory reviewer. The accountable human or organization retains risk acceptance.
 
 For a budgeted or interrupted review, record the inspected inventory and mark every remaining candidate `UNJUDGED`. Absence of a finding on an uninspected surface is not evidence. Persist each material finding in the review artifact or explicitly decline it with a technical reason.
 
-## 10. Risk assessment
+## 11. Risk assessment
 
 Use a compact living risk record:
 
@@ -191,7 +291,7 @@ Maintain a review log. Reassess on the scheduled date and when material changes 
 
 A 5×5 score can prioritize discussion, but it is not a measured probability. Define scales for the actual context; do not copy monetary or regulatory thresholds from another organization.
 
-## 11. STOP conditions
+## 12. STOP conditions
 
 Stop or return `UNKNOWN/BLOCKED` when:
 
@@ -206,10 +306,13 @@ Stop or return `UNKNOWN/BLOCKED` when:
 - automation has no owner or inhibit during a change window;
 - an integration/release/production lane is already owned;
 - A3/A4 lacks required independent review or residual-risk owner;
-- authenticated live repository evidence is unavailable for a live verdict;
+- the required GitHub or native-forge connector is unauthenticated, points to the wrong identity, or cannot expose material repository/CI evidence for a live verdict;
+- the bounded evidence window is undefined, a relevant attempt is missing, or a historical failure, cancellation, skip, timeout, rerun, or anomaly remains unreconciled;
+- a material log or artifact is inaccessible or expired and no independent primary evidence can establish the affected claim;
+- the Result-Acceptance Gate is incomplete for a requested downstream implementation mandate, merge/release/deployment `GO`, or certification;
 - canonical and superseded instructions cannot be distinguished.
 
-## 12. Review lenses
+## 13. Review lenses
 
 Review in this order:
 
@@ -219,13 +322,14 @@ Review in this order:
 4. **Data/recovery:** Can data be lost, duplicated, corrupted, or made irreconcilable? Is recovery proven?
 5. **Compatibility:** Are APIs, schemas, clients, mixed versions, and migrations handled?
 6. **Operability:** Are identity, logs, metrics, alerts, rollout, rollback, and automation behavior adequate?
-7. **Test adequacy:** Do tests exercise the real path, have a trustworthy oracle, and prove they can fail?
-8. **AI/ML complexity:** When applicable, is there a credible baseline, attributable experiment, and justified promotion after lifecycle cost and risk?
-9. **Simplicity:** Is every abstraction, dependency, layer, and line needed now?
+7. **Evidence lineage:** Is every relevant attempt from the last accepted baseline to the exact target present, independently reconciled, and causally closed where proportionate?
+8. **Test adequacy:** Do tests exercise the real path, have a trustworthy oracle, and prove they can fail?
+9. **AI/ML complexity:** When applicable, is there a credible baseline, attributable experiment, and justified promotion after lifecycle cost and risk?
+10. **Simplicity:** Is every abstraction, dependency, layer, and line needed now?
 
 Report defects separately from optional improvements. Avoid drowning a blocking finding in style commentary.
 
-## 13. Extensions, hooks, and diagnostic actions
+## 14. Extensions, hooks, and diagnostic actions
 
 Before installing or invoking an extension, plugin, hook, generator, benchmark harness, or third-party skill, inspect:
 
@@ -241,7 +345,7 @@ Do not persistently install or enable it without user authorization. Prefer a re
 
 For every diagnostic action that can affect the target, keep a side-effect ledger: target, expected reads/writes, load/cost budget, notifications or audit events, temporary artifacts, cleanup/reconciliation step, and observed residue. A probe is complete only when its residue is accepted or removed and that result is verified.
 
-## 14. AI/ML complexity evidence
+## 15. AI/ML complexity evidence
 
 For AI/ML introduction or material lifecycle-complexity growth, the generic Gate Record is necessary but not sufficient. Add the Baseline, Experiment, and Complexity-Promotion contracts from [ai-complexity-strategy.md](ai-complexity-strategy.md). For other AI changes, use that reference's trigger matrix rather than forcing an inapplicable promotion gate.
 

@@ -39,7 +39,8 @@ The route chooses the sequence; the V-model checks completeness inside it. For e
 2. define the matching right-side proof at the same time;
 3. trace the row through design owner, implementation slice, criterion, evidence, and lifecycle state;
 4. keep verification of the specified contract distinct from validation of the real need;
-5. reject a terminal claim while any blocking row is orphaned, uses the wrong proof level, or has stale evidence.
+5. reject a terminal claim while any blocking row is orphaned, uses the wrong proof level, or has stale evidence;
+6. before using an executor result to authorize the next implementation task or any merge/release/deployment/certification decision, complete the Result-Acceptance Gate across the bounded evidence lineage in [evidence-and-gates.md](evidence-and-gates.md); only `PASS` permits progression, while a completed non-pass verdict permits only the bounded response defined by that contract.
 
 Use [v-model.md](v-model.md) for the full traceability contract.
 
@@ -126,7 +127,7 @@ If containment temporarily adds AI/ML lifecycle complexity before normal gates c
 Use: `identify → preflight → expose gradually → observe → accept or roll back`.
 
 1. Bind source, build, config, schema, and target-environment identities.
-2. Confirm required checks, ownership, change window, backup, and rollback.
+2. Confirm required checks, ownership, change window, backup, rollback, and a `PASS` Result-Acceptance Gate for the exact release candidate. For GitHub-backed work, use the mandatory authenticated GitHub connector defined in [evidence-and-gates.md](evidence-and-gates.md).
 3. Start with the smallest meaningful exposure: dry run, canary, shadow, or cohort.
 4. Monitor user-facing invariants and failure signals at every stage.
 5. Hold or roll back automatically or manually on a predefined breach.
@@ -135,15 +136,18 @@ Use: `identify → preflight → expose gradually → observe → accept or roll
 
 ## 9. Review and audit route
 
-Use: `inventory → extract claims → inspect evidence → attack assumptions → verdict`.
+Use: `inventory → define evidence window → extract claims → inspect lineage → attack assumptions → reconcile → result acceptance → verdict`.
 
 1. Inventory changed files, interfaces, surfaces, consumers, data, configuration, and operational dependencies.
-2. Extract explicit claims and map each to required evidence.
-3. Inspect the exact artifact and current mutable state.
-4. Challenge correctness, safety, recovery, compatibility, observability, simplicity, and test adequacy.
-5. For A2+ blocking test claims, run or inspect a safe negative control; when that is unsafe or unavailable, inspect the logical counterexample, alternative failure-detection evidence, and stated certification limit.
-6. Report findings by severity; distinguish defects from evidence gaps.
-7. Issue a typed, scoped verdict and name the next authority.
+2. Define the bounded evidence window from the last independently accepted immutable baseline to the exact target.
+3. Extract explicit claims and map each to required evidence.
+4. Inspect the exact artifact, current mutable state, and every relevant execution attempt in the window. When the target or material evidence is forge-hosted, use the mandatory authenticated GitHub connector, or the equivalent native connector for another forge.
+5. Challenge correctness, safety, recovery, compatibility, observability, simplicity, test adequacy, and evidence-lineage completeness.
+6. For A2+ blocking test claims, run or inspect a safe negative control; when that is unsafe or unavailable, inspect the logical counterexample, alternative failure-detection evidence, and stated certification limit.
+7. Reconcile every failure, cancellation, skip, timeout, retry, rerun, superseded execution, expected RED, and mutation result; preserve corrections and invalidated evidence.
+8. Run the Result-Acceptance Gate. Executor feedback is input, never its verdict.
+9. Report findings by severity; distinguish defects from evidence gaps.
+10. Issue a typed, scoped verdict and name the next authority only when the Result-Acceptance consequence permits it.
 
 For code review, prioritize behavioral and operational consequences over formatting preferences.
 
@@ -176,6 +180,7 @@ Use [ai-complexity-strategy.md](ai-complexity-strategy.md) for the complete gate
 | Observability | n/a | result evidence | relevant signals | rollout + user signals | continuous + escalation |
 | Independent review | no | optional | recommended for material boundaries | required | required, strongest available independence |
 | Real-world acceptance | n/a | if user-facing | if environment-sensitive | required | required with explicit owner |
+| Completed Result-Acceptance Gate before triggered downstream authority | required | required | required | required | required + independent review |
 | Durable handoff/evidence | optional | concise | required | required | required + retention/integrity |
 
 These are minimums, not a substitute for domain controls. Promote a task when it touches security, privacy, money, persistent data, external side effects, shared systems, production, or irreversible state.

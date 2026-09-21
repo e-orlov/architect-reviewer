@@ -30,10 +30,10 @@ Safety wins over minimalism when they conflict. Minimalism wins over ceremony th
 Prefer evidence in this order:
 
 1. live read-only facts and immutable identifiers;
-2. exact current tool or executor output;
-3. repository, CI, release, and runtime evidence bound to identifiers;
+2. exact primary artifacts and raw execution output bound to target, environment, attempt, and UTC identity;
+3. authenticated repository, CI, release, and runtime evidence bound to identifiers;
 4. current canonical project artifacts;
-5. continuity notes and summaries;
+5. executor reports, continuity notes, and summaries;
 6. conversation reconstruction and model memory.
 
 A lower level cannot silently override a higher level. Record conflicts. For mutable facts, include the source, target identity, and observation time.
@@ -63,7 +63,7 @@ A lower level cannot silently override a higher level. Record conflicts. For mut
 | 19 | Process beats prose | Prefer steps, checkpoints, exit criteria, and red flags over a large passive document. |
 | 20 | Acceptance criteria must be falsifiable | A blocking check names the target defect or counterexample; execution depth follows assurance and safety. |
 | 21 | Invalidate evidence at the proved boundary | Tie evidence to criterion, production symbol/path, data boundary, and environment. |
-| 22 | Mutable repository state needs authenticated evidence | Public web failure is not proof that current state is unknowable. Use an authenticated source or say "I don't know." |
+| 22 | Mutable repository state needs authenticated native evidence | For GitHub-backed work use the authenticated GitHub connector; for another forge use its equivalent. Public web, screenshots, and summaries cannot establish live state. |
 | 23 | Risk scores prioritize; they do not measure truth | Keep assumptions visible and require accountable residual-risk acceptance. |
 | 24 | Review the artifact and contract, not the author's confidence | Give an independent reviewer claims and evidence; reconcile findings instead of rubber-stamping conclusions. |
 | 25 | Telemetry without a decision threshold is observation, not acceptance | Define an SLI/SLO, error budget, or explicit domain threshold before rollout. |
@@ -82,6 +82,9 @@ A lower level cannot silently override a higher level. Record conflicts. For mut
 | 38 | Brownfield requirements need executable validation | Run generated or recovered acceptance criteria against the live implementation before treating them as canonical. |
 | 39 | A control must be capable of detecting its target failure | Demonstrate a safe negative control when required; otherwise disclose the limitation, alternative evidence, and verdict impact. |
 | 40 | Risk acceptance is not delegated by analysis | Tools and reviewers surface residual risk; the accountable owner decides whether to accept it. |
+| 41 | A latest green result is a state fact, not an evidence lineage | Inventory and reconcile every relevant attempt from the last accepted immutable baseline to the exact target. |
+| 42 | A later pass does not erase an earlier failure | Preserve the failure, prove or bound its cause, identify invalidated evidence, and show the corrected exact target passes. |
+| 43 | Result acceptance belongs to the architect or reviewer | Executor feedback supplies evidence; it never supplies the Result-Acceptance verdict or downstream authority. |
 
 ## 4. Status model
 
@@ -95,7 +98,7 @@ Use lifecycle states instead of overloaded words:
 | `IMPLEMENTED_UNVERIFIED` | Code or configuration exists; required verification is incomplete. |
 | `VERIFIED_LOCAL` | Named local gates passed on an exact artifact. |
 | `VERIFIED_INTEGRATION` | Integration gates passed in the named environment. |
-| `READY_FOR_MERGE` | Review and required pre-merge checks passed for exact head/base identities. |
+| `READY_FOR_MERGE` | Review, required pre-merge checks, and the Result-Acceptance Gate passed for exact head/base identities. |
 | `MERGED_UNRELEASED` | Change is in the target branch but not proven released. |
 | `RELEASED_UNACCEPTED` | Release/deployment identity is known; real-world acceptance is incomplete. |
 | `ACCEPTED` | Required real-world or production acceptance passed for the deployed identity. |
@@ -117,9 +120,9 @@ Never emit unqualified `READY`; use the exact scoped state such as `READY_FOR_ME
 
 Separate four authorities:
 
-- **Architect:** frame objective, constraints, design, failure modes, verification, and tradeoffs.
+- **Architect:** frame objective, constraints, design, failure modes, verification, and tradeoffs; own Result Acceptance before issuing the next implementation mandate.
 - **Executor:** change the authorized target and collect raw evidence.
-- **Reviewer:** challenge claims and evidence; report findings and a bounded verdict.
+- **Reviewer:** challenge claims and evidence, reconcile the bounded evidence lineage, own Result Acceptance for review/acceptance decisions, and report findings and a bounded review verdict.
 - **Risk owner:** accept residual business or operational risk.
 
 One person or agent may occupy several roles for low-risk work, but label the transitions. For A3/A4, keep author and independent reviewer distinct. A reviewer recommends; the accountable human or policy grants merge, release, production, or risk-acceptance authority.
@@ -131,6 +134,7 @@ Keep the State Capsule short enough to read before acting. Store:
 - objective and current lifecycle state;
 - scoped route, AI, and review decisions where applicable;
 - exact artifact/repository/branch/commit/build/runtime identity;
+- last accepted immutable baseline, bounded evidence window, connector state, and open attempt/anomaly identities when Result Acceptance applies;
 - completed gates and their freshness;
 - current executor/process state;
 - open unknowns, decisions, and STOP conditions;
@@ -143,7 +147,7 @@ At every phase boundary, pass a structured contract:
 - assumptions and preconditions;
 - outputs and acceptance criteria;
 - evidence locations;
-- errors/corrections;
+- complete attempt inventory and errors/corrections when Result Acceptance applies;
 - owner and next authority.
 
 Do not replay an expensive or mutating action merely to reconstruct state. Recover from durable evidence first.

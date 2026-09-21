@@ -58,6 +58,7 @@ Read [source-synthesis.md](references/source-synthesis.md) for the exact adoptio
 10. Reserve product tradeoffs and residual-risk acceptance for the accountable user or operator.
 11. For every executable behavior change, define where each required check runs from local work through real-world acceptance, and record environment differences instead of assuming staging equals production. Use [testing-strategy.md](references/testing-strategy.md).
 12. Require all three AI gates when work introduces AI/ML or materially increases its lifecycle complexity. Apply the reduced comparison or simplification path defined in [ai-complexity-strategy.md](references/ai-complexity-strategy.md) to other AI changes; incident containment may bypass promotion only as a bounded, expiring exception.
+13. Before accepting an executor result as the basis for a downstream implementation mandate, merge/release/deployment `GO`, or `CERTIFIED`, independently complete the Result-Acceptance Gate over the complete bounded evidence lineage from the last accepted immutable baseline to the exact target. A latest green result or executor summary is insufficient. For a GitHub-backed target, an authenticated GitHub connector with material access to repository/PR state and Actions runs, attempts, jobs, steps, logs, and artifacts is mandatory; missing material access makes the affected claim `UNKNOWN` and forbids downstream authority. Use [evidence-and-gates.md](references/evidence-and-gates.md) and the Result-Acceptance Record in [templates.md](references/templates.md).
 
 ## Execute the workflow
 
@@ -75,6 +76,8 @@ Read [source-synthesis.md](references/source-synthesis.md) for the exact adoptio
 - Prefer immutable live identifiers over summaries, summaries over conversation reconstruction, and reconstruction over memory.
 - Label consequential statements `FACT`, `INFERENCE`, `DECISION`, or `UNKNOWN`.
 - Stop before consequential action when target identity, authority, canonical instruction, or current process state is ambiguous.
+
+For a GitHub-backed target or GitHub-hosted material evidence, establish the authenticated GitHub connector before making a live repository, pull-request, CI, merge, release, or certification claim. Confirm that it exposes the exact repository, PR/base/head identities, required checks, workflow definitions, every relevant run attempt, jobs, steps, logs, and artifacts. Public search, screenshots, a latest-check summary, or an executor's report cannot replace the connector. If a material evidence surface is unavailable, record the affected claim as `UNKNOWN`. For a non-GitHub forge, require the equivalent authenticated native connector or API rather than GitHub.
 
 For cross-session work, create or refresh the State Capsule in [templates.md](references/templates.md). Read [operating-model.md](references/operating-model.md) when continuity, authority, configuration, automation, parallel work, or handoff is material.
 
@@ -184,11 +187,16 @@ Every blocking gate records claim, invariant, exact artifact, scope and applicab
 - Check timeout, retry, idempotency, concurrency, partial success, restart, rollback, and automation races.
 - Confirm every blocking criterion names the defect or counterexample that would falsify it. For A2+ blocking test criteria, demonstrate failure detection when safe; for A3/A4 use the strongest practical independent challenge. If demonstration is unsafe or unavailable, record why, alternative evidence, and the resulting certification limit.
 - Reconcile artifact-derived status; do not trust a stale dashboard, index, or author's conclusion over the exact files and live forge state.
+- Define the evidence window from the last independently accepted immutable baseline through the exact target. Inventory every relevant pass, failure, cancellation, timeout, skip, retry, rerun, superseded run, and expected RED or mutation run; preserve and reconcile every anomalous item from primary evidence.
+- Inspect intervening source, configuration, schema, workflow, and environment revisions; classify causes, identify invalidated evidence, and require falsifiable causal closure where safe and proportionate.
+- Run the Result-Acceptance Gate before accepting an executor result as the premise for another implementation task or issuing merge, release, deployment, or certification authority. The executor's summary is input, never the gate verdict.
 - Evaluate reviewer feedback technically. Findings are evidence to reconcile, not commands to obey blindly.
 
 For A3/A4, use a reviewer with separate context and no authorship of the change. Give the reviewer the artifact, contract, trace matrix, and raw evidence. Run a bounded doubt cycle: `CLAIM → EXTRACT → DOUBT → RECONCILE → STOP`, with no more than three correction rounds unless policy explicitly requires more. If independence is unavailable, label `SELF-REVIEW ONLY` and do not certify independence.
 
 ### 9. Issue a typed verdict and durable handoff
+
+Do not issue a progression mandate, merge/release/deployment `GO`, or `CERTIFIED` until the Result-Acceptance Gate is `PASS`. A completed `FAIL` or `BLOCKED` gate may authorize only a bounded diagnostic or corrective task that names and directly addresses the reconciled evidence item; it cannot authorize progression. `UNKNOWN` permits evidence recovery or an access request, not implementation based on the unknown claim. An incomplete gate authorizes neither. A failure still reproducible on the exact target makes the affected gate `FAIL` and lifecycle state `BLOCKED`.
 
 Never return a bare `PASS`, `READY`, `DONE`, `DEPLOYED`, or `CLOSED`. Keep the namespaces separate:
 
@@ -203,7 +211,7 @@ Use:
 
 Use lifecycle states from [operating-model.md](references/operating-model.md). If no findings exist, say so and still list untested surfaces and residual uncertainty. A green local or CI gate never implies production acceptance.
 
-End execution and review deliverables with `Errors encountered and corrections` using [templates.md](references/templates.md). Record the failed step, symptom, cause, correction, rerun, evidence impact, and residual risk. If none occurred, write exactly `None`. Use blameless language and improve the control that allowed misleading or incomplete information.
+End execution and review deliverables with `Errors encountered and corrections` using [templates.md](references/templates.md). Preserve every reconciled historical failure or anomaly in the bounded evidence window even when the exact final target is green. Record the failed step, symptom, expected and actual scope, cause and confidence, correction, falsifiable causal proof, rerun, evidence impact, and residual risk. If none occurred, write exactly `None`. Use blameless language and improve the control that allowed misleading or incomplete information.
 
 ## Project-derived field rules
 
@@ -214,6 +222,7 @@ End execution and review deliverables with `Errors encountered and corrections` 
 | Exit 0 is only a transport signal | Inspect what ran, the count, target, and asserted values. |
 | Inventory precedes coverage | Enumerate consumers and surfaces before claiming completeness. |
 | Evidence has TTL and dependencies | Reuse only while exact dependencies remain unchanged. |
+| A latest green result is not a lineage | Reconcile every relevant attempt and correction from the last accepted immutable baseline to the exact target. |
 | Configuration is part of the release | Bind source, build, config, schema, flags, and runtime identity. |
 | File isolation is not world isolation | Worktrees do not isolate ports, databases, networks, schedulers, quotas, or release lanes. |
 | Retry is a business operation | Model intent identity, idempotency, durable attempts, cost, and ambiguous outcomes. |
@@ -232,7 +241,9 @@ The complete doctrine is in [operating-model.md](references/operating-model.md).
 |---|---|
 | "The command exited 0" | Prove intended artifact, applicable expected count, oracle, and invariant. |
 | "All tests passed" | Verify discovery, target, falsifiability, and environment. |
-| "CI is green" | Bind live required checks to repository, head SHA, config, and UTC time. |
+| "All checks are green" | Use the authenticated forge connector to bind required checks to the exact target and reconcile the complete bounded attempt history, including failures, cancellations, skips, retries, reruns, and superseded runs. |
+| "It passed after rerun" | Preserve the failure, classify and prove its cause, inspect any intervening diff, and rerun every invalidated gate on the exact corrected target. |
+| "The executor says it passed" | Inspect primary evidence independently; the executor supplies evidence, not the acceptance verdict. |
 | "The diff is tiny" | Assess blast radius, trust boundaries, and irreversibility. |
 | "The same agent reviewed it" | Label self-review; require independence for A3/A4. |
 | "It works locally" | Preserve separate deployment and real-world acceptance gates. |
@@ -250,8 +261,8 @@ All files are inside this skill directory; paths below are relative to `SKILL.md
 - [v-model.md](references/v-model.md): V-model spine, trace matrix, continuous use, and route overlays.
 - [operating-model.md](references/operating-model.md): precedence, truth hierarchy, status, authority, handoffs, concurrency, configuration, automation, and full wisdom set.
 - [task-routes.md](references/task-routes.md): idea, feature, bug, migration, incident, release, and review routes with A0–A4 controls.
-- [evidence-and-gates.md](references/evidence-and-gates.md): falsifiable gates, real-path proof, CI, production, retry, independent review, risk, and STOP conditions.
+- [evidence-and-gates.md](references/evidence-and-gates.md): falsifiable gates, authenticated forge evidence, evidence-lineage reconciliation, Result-Acceptance Gate, production, retry, independent review, risk, and STOP conditions.
 - [testing-strategy.md](references/testing-strategy.md): stage-by-stage test pipeline, test levels, AAA and Given/When/Then conventions, coverage, regression, API checks, and environment-difference rules.
 - [ai-complexity-strategy.md](references/ai-complexity-strategy.md): project-agnostic Baseline, Experiment, and Complexity-Promotion gates for models, data, prompts, retrieval, tools, agents, cascades, and fine-tuning.
-- [templates.md](references/templates.md): State Capsule, V trace matrix, architecture packet, gate, AI complexity decision, verdict, risk, release, error, registry, side-effect, and handoff templates.
+- [templates.md](references/templates.md): State Capsule, V trace matrix, architecture packet, gate, Result-Acceptance/evidence-lineage record, AI complexity decision, verdict, risk, release, error, registry, side-effect, and handoff templates.
 - [source-synthesis.md](references/source-synthesis.md): requested-source ledger, adoption/adaptation/rejection decisions, immutable source snapshots, and documented limits.

@@ -10,6 +10,7 @@
 - different routes for ideas, features, bugs, migrations, incidents, releases, and audits;
 - assurance levels that scale controls to uncertainty, blast radius, reversibility, and exposure;
 - exact artifact and environment identity instead of narrative “green” claims;
+- bounded evidence-lineage reconciliation from the last accepted immutable baseline to the exact target;
 - independent challenge for high-risk work;
 - explicit reliability, recovery, residual-risk, and real-world acceptance controls;
 - Baseline, Experiment, and Complexity-Promotion gates against AI overengineering;
@@ -142,11 +143,22 @@ The skill prevents ambiguous “PASS” or “DONE” claims by keeping four nam
 
 Evidence is bound to source/build/configuration/environment identity, observation time, expected scope, oracle, negative-control status, dependencies, and invalidation rules. A local or CI success cannot silently become a production-readiness claim.
 
+### Result-Acceptance Gate and mandatory GitHub connection
+
+A latest green result is a current-state fact, not sufficient review evidence. Before the architect or reviewer accepts an executor result, issues the next implementation mandate, authorizes merge/release/deployment, or declares `CERTIFIED`, the Result-Acceptance Gate traces the complete bounded evidence lineage from the last independently accepted immutable baseline to the exact final target. Every relevant pass, failure, cancellation, timeout, skip, retry, rerun, superseded run, expected RED run, and mutation run remains visible until independently reconciled from primary evidence.
+
+For a GitHub-backed target, an authenticated GitHub connector is mandatory. It must expose the exact repository, PR, base/head commits, required checks, workflow definitions, all relevant workflow attempts, jobs, steps, discovered counts, logs, and artifacts. An executor summary, screenshot, public search result, or latest-check view is not a substitute. If any material surface is unavailable or an anomaly remains unexplained, the affected claim is `UNKNOWN`; the skill forbids progression or `GO` and permits only evidence recovery or an access request. A failure still reproducible on the exact target makes the gate `FAIL` and the lifecycle state `BLOCKED`; only a bounded diagnostic or corrective task may then address the reconciled item.
+
+This requirement follows the evidence surfaces and semantics documented by GitHub for [workflow runs](https://docs.github.com/en/rest/actions/workflow-runs), [workflow jobs and all executions](https://docs.github.com/en/rest/actions/workflow-jobs), [run logs](https://docs.github.com/en/actions/how-tos/monitor-workflows/use-workflow-run-logs), [artifacts](https://docs.github.com/en/rest/actions/artifacts), [`continue-on-error`](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idcontinue-on-error), and [required status checks](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches). For a non-GitHub forge, the equivalent authenticated native connector or API is required. Connection is read-only evidence authority by default; it does not grant permission to rerun, edit, merge, release, or deploy.
+
 ## What the skill deliberately refuses
 
 - One heavyweight workflow for every task.
 - Late, sequential V-model testing.
 - Same-author “independent” certification for A3/A4 work.
+- A latest green run or executor summary treated as the complete evidence record.
+- Historical failures, cancellations, skips, timeouts, or reruns erased by a later pass.
+- GitHub live-state acceptance without an authenticated connector and material Actions evidence.
 - Universal coverage, SLO, rollout, risk, uplift, or sample-size thresholds.
 - Generated brownfield specifications treated as truth without live validation.
 - Staging described as production-identical without exact evidence.
@@ -163,9 +175,9 @@ Evidence is bound to source/build/configuration/environment identity, observatio
 | [references/task-routes.md](references/task-routes.md) | Idea, feature, bug, migration, incident, release, and review routes |
 | [references/testing-strategy.md](references/testing-strategy.md) | Test levels, execution pipeline, scenario design, environment differences, and acceptance |
 | [references/ai-complexity-strategy.md](references/ai-complexity-strategy.md) | Baseline, Experiment, and Complexity-Promotion gates |
-| [references/evidence-and-gates.md](references/evidence-and-gates.md) | Evidence contracts, risk, production, and review gates |
+| [references/evidence-and-gates.md](references/evidence-and-gates.md) | Evidence contracts, mandatory forge connection, failure reconciliation, Result-Acceptance, risk, production, and review gates |
 | [references/operating-model.md](references/operating-model.md) | Authority, precedence, lifecycle states, continuity, and concurrency |
-| [references/templates.md](references/templates.md) | Reusable trace, gate, risk, state, and decision records |
+| [references/templates.md](references/templates.md) | Reusable trace, gate, evidence-lineage, risk, state, and decision records |
 | [references/source-synthesis.md](references/source-synthesis.md) | Source-by-source adoption, adaptation, rejection, and provenance ledger |
 
 ## Limits
