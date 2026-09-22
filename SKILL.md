@@ -17,7 +17,7 @@ Apply all three axes:
 |---|---|---|
 | Task route | Is this an idea, feature, bug, migration, incident, release, or review? | The shortest workflow that fits the work |
 | V-model trace | What definition is being implemented, and what proof matches its boundary? | Requirement-to-evidence trace matrix |
-| Assurance | How much uncertainty, blast radius, irreversibility, and user exposure exist? | A0–A4 controls and review depth |
+| Assurance | How much residual uncertainty, blast radius, irreversibility, and user exposure does the next proposed transition create after current controls? | A0–A4 controls and review depth |
 
 Do not substitute one axis for another. A small diff can be A3. A large refactor can be A1. A unit test cannot establish user acceptance. A process checklist cannot compensate for a missing requirement.
 
@@ -31,7 +31,8 @@ These are operational inputs, not decorative citations:
 | GitHub Spec Kit | Route features, bugs, and ideas differently; keep WHAT/WHY separate from HOW; clarify uncertainty; use reviewer-owned requirement checklists; converge code, tests, docs, config, and operations. |
 | Addy Osmani Agent Skills | Encode a process with steps, gates, red flags, anti-rationalization, verification, bounded doubt, constraints, ratchets, staged rollout, and operator-oriented observability. |
 | Ponytail | Trace the actual flow before proposing a solution; then climb the simplicity ladder from no new behavior through reuse and native capability to minimum new code. Protect safety boundaries. |
-| Google SRE | Engineer away toil; set user-facing reliability targets and error-budget policy; make monitoring actionable; use progressive rollout, fast rollback, and blameless corrective learning. |
+| Google SRE | Engineer away toil; set user-facing reliability targets and error-budget policy; make monitoring actionable; bound canaries by cohort/time; use supervised progressive rollout, fast rollback, and blameless corrective learning. |
+| AWS Well-Architected and DORA | Prefer small, independently testable, reversible changes that limit impact and shorten feedback, diagnosis, recovery, and course correction. |
 | Claude SDLC Harness | Plan before code, escalate uncertainty, prefer independent review for high-risk work, and require custom mechanisms to outperform simpler native ones. |
 | SDLC Studio | Make acceptance executable; keep author and reviewer distinct; prove a test can fail; reconcile status from artifacts; validate brownfield specifications against the live implementation. |
 | Flutter-Craft | Separate planning, execution, verification, and finishing; work in reviewable batches; require evidence before claims; assess review feedback technically; parallelize only independent work. |
@@ -51,15 +52,16 @@ Read [source-synthesis.md](references/source-synthesis.md) for the exact adoptio
 3. Make every blocking gate prove one named invariant with a logically falsifiable criterion. Demonstrate failure detection when required by assurance and safe to do; otherwise record the limitation and alternative evidence.
 4. Distinguish implementation, local verification, integration verification, merge, release, deployment, and real-world acceptance.
 5. Convert material uncertainty into `UNKNOWN` or `BLOCKED`, never an optimistic assumption.
-6. Define reliability, safety, and recovery completeness before applying KISS or YAGNI.
+6. Define reliability, safety, and recovery completeness for the exact next transition before applying KISS or YAGNI; trace later hardening to its activation boundary rather than silently deleting it.
 7. Do not let an author self-certify an A3/A4 change as independently reviewed.
 8. Bind mutable repository, CI, release, configuration, and production claims to exact identity and UTC observation time.
 9. Treat probes, hooks, plugins, generators, extensions, and automation as executable actors with authority, side effects, persistent state, cleanup, and rollback.
 10. Reserve product tradeoffs and residual-risk acceptance for the accountable user or operator.
 11. For every executable behavior change, define where each required check runs from local work through real-world acceptance, and record environment differences instead of assuming staging equals production. Use [testing-strategy.md](references/testing-strategy.md).
-12. Require all three AI gates when work introduces AI/ML or materially increases its lifecycle complexity. Apply the reduced comparison or simplification path defined in [ai-complexity-strategy.md](references/ai-complexity-strategy.md) to other AI changes; incident containment may bypass promotion only as a bounded, expiring exception.
+12. When work introduces AI/ML or materially increases its lifecycle complexity, apply the ordered Baseline, Experiment, and Complexity-Promotion lifecycle: `PASS + READY_FOR_EXPERIMENT` at the Baseline Gate may authorize only a bounded experiment; all three gates are required before durable operational adoption. Apply the reduced comparison or simplification path defined in [ai-complexity-strategy.md](references/ai-complexity-strategy.md) to other AI changes; incident containment may bypass promotion only as a bounded, expiring exception.
 13. Before accepting an executor result as the basis for a downstream implementation mandate, merge/release/deployment `GO`, or `CERTIFIED`, independently complete the Result-Acceptance Gate over the complete bounded evidence lineage from the last accepted immutable baseline to the exact target. A latest green result or executor summary is insufficient. For a GitHub-backed target, an authenticated GitHub connector with material access to repository/PR state and Actions runs, attempts, jobs, steps, logs, and artifacts is mandatory; missing material access makes the affected claim `UNKNOWN` and forbids downstream authority. Use [evidence-and-gates.md](references/evidence-and-gates.md) and the Result-Acceptance Record in [templates.md](references/templates.md).
 14. Apply delta-first evidence selection before implementation or review: establish the exact baseline-to-target delta, trace direct and transitive impact, classify each relevant claim's evidence, and select the smallest sufficient proof at the matching V-model boundary. A2+ work requires a recorded Delta Evidence Plan before implementation, review certification, or downstream `GO`. Neither a file-only test selection nor an unjustified full-suite run is acceptable. Use [delta-first.md](references/delta-first.md) and the Delta Evidence Plan in [templates.md](references/templates.md).
+15. Scope critical-path controls to the next bounded lifecycle transition, not the desired unattended end state. Maintain separate `NEXT-STEP BLOCKERS` and `END-STATE HARDENING`; admit a proposed risk control as blocking only for a named risk reachable before the next checkpoint, after considering existing controls and proportionate bounded substitutes. A named law, contract, governing instruction, or project-policy gate applicable at that boundary is also a `NEXT-STEP BLOCKER` by precedence, with basis `GOVERNING_POLICY`. Recompute residual risk after every material control. Use [next-safe-step.md](references/next-safe-step.md) and the Next-Safe-Step Record in [templates.md](references/templates.md).
 
 ## Execute the workflow
 
@@ -81,6 +83,8 @@ Read [source-synthesis.md](references/source-synthesis.md) for the exact adoptio
 For a GitHub-backed target or GitHub-hosted material evidence, establish the authenticated GitHub connector before making a live repository, pull-request, CI, merge, release, or certification claim. Confirm that it exposes the exact repository, PR/base/head identities, required checks, workflow definitions, every relevant run attempt, jobs, steps, logs, and artifacts. Public search, screenshots, a latest-check summary, or an executor's report cannot replace the connector. If a material evidence surface is unavailable, record the affected claim as `UNKNOWN`. For a non-GitHub forge, require the equivalent authenticated native connector or API rather than GitHub.
 
 Before broad reading or testing, determine the exact delta from the last accepted immutable baseline, including source, schema, configuration, workflow, dependencies, generated artifacts, environment, and external interfaces. Build the direct and transitive impact graph; a working-tree or changed-file list alone is not sufficient. For A2+ work, create the Delta Evidence Plan before implementation or review.
+
+Define the next proposed lifecycle transition separately from the desired end state. Record its exact artifact and environment, exposure cap, observation checkpoint, stop/rollback boundary, reachable risks, `NEXT-STEP BLOCKERS`, and `END-STATE HARDENING`. A hardening item must have an activation boundary, owner, trigger, and review date; it does not block an earlier transition whose bounded exposure cannot reach the corresponding risk.
 
 For cross-session work, create or refresh the State Capsule in [templates.md](references/templates.md). Read [operating-model.md](references/operating-model.md) when continuity, authority, configuration, automation, parallel work, or handoff is material.
 
@@ -104,11 +108,11 @@ Assign the lowest defensible assurance level:
 |---|---|
 | A0 | Advice, explanation, or non-authoritative document |
 | A1 | Local, reversible, narrow change with no shared-state effect |
-| A2 | Multi-component behavior, persistent data, compatibility, or shared CI |
-| A3 | Production, security, privacy, migration, paid/external calls, or material user impact |
+| A2 | Multi-component behavior, persistent data, compatibility, shared CI, or a tightly bounded reversible supervised exposure that satisfies the full bounded-supervision contract in [next-safe-step.md](references/next-safe-step.md) |
+| A3 | Material production, security, privacy, migration, paid/external, unattended, or user exposure after current containment, including any supervised exposure that fails a bounded-supervision condition |
 | A4 | Irreversible, high-blast-radius, regulated, safety-critical, or existential change |
 
-Promote for uncertainty, not just diff size. Read [task-routes.md](references/task-routes.md) for route-specific controls and proportionality.
+Promote for residual uncertainty and the next reachable exposure, not just diff size or incident history. Reassess after accepted prevention, containment, and recovery controls; incident severity does not permanently fix process severity. Read [task-routes.md](references/task-routes.md) for route-specific controls and proportionality.
 
 ### 4. Build the V-model trace before the implementation plan
 
@@ -148,6 +152,9 @@ Before minimizing the design, state:
 - operator questions, actionable logs/metrics/traces, alerts, and response ownership;
 - inherent risk, preventive/detective/corrective controls, control evidence, residual risk, and treatment;
 - release/environment identity, progressive exposure, abort condition, and accountable risk owner.
+- the exact next transition, its reachable failure modes, which controls are `NEXT-STEP BLOCKERS`, and which are `END-STATE HARDENING` with activation boundary, owner, trigger, and review date.
+
+After each accepted prevention, detection, containment, or recovery change, recompute residual risk for the next transition. Demote controls that have become redundant or premature; promote deferred hardening only when the next exposure makes its risk reachable. Unknown material reachability broadens inspection or blocks authority; it is not a reason to defer optimistically.
 
 Use contextual scales. A matrix score prioritizes discussion; it does not measure probability or transfer acceptance authority. Read [evidence-and-gates.md](references/evidence-and-gates.md) for risk and production contracts.
 
@@ -163,7 +170,7 @@ Trace the real code and runtime path first. Place the change at the narrowest sh
 6. Use the smallest clear expression.
 7. Add only the minimum new code needed.
 
-Do not simplify away security, privacy, accessibility, accounting, data-loss protection, trust-boundary validation, observability, rollback, error handling, or an explicit requirement. Apply Chesterton's Fence before deletion: discover why the mechanism exists, prove the reason is obsolete or covered elsewhere, then remove it with evidence.
+Do not simplify away security, privacy, accessibility, accounting, data-loss protection, trust-boundary validation, observability, rollback, error handling, or an explicit requirement at the lifecycle boundary where it is active. Apply Chesterton's Fence before deletion: discover why the mechanism exists, prove the reason is obsolete or covered elsewhere, then remove it with evidence.
 
 Before adopting a package, plugin, hook, skill, generator, or custom harness, inspect provenance, installation, invocation, context injection, files, secrets, network, shared state, update path, disable/uninstall path, and recovery. Require present evidence that custom machinery beats the native or existing option. Obtain authorization before persistent installation or environment change.
 
@@ -171,7 +178,7 @@ Use the applicability matrix in [ai-complexity-strategy.md](references/ai-comple
 
 ### 7. Plan vertical slices and evidence gates
 
-- Use `delta → transitive impact → invalidated claims → required proof → targeted execution → final convergence if justified` to select evidence.
+- Use `delta → transitive impact → reachable risks → invalidated claims → minimum sufficient proof → transition → observe` to select evidence.
 - Classify every relevant gate as `INVALIDATED`, `PARTIALLY_INVALIDATED`, `REUSABLE`, `NEWLY_REQUIRED`, `N/A`, or `UNKNOWN`; cite dependency-based rationale for reuse and broaden inspection when impact is unknown.
 - Run the smallest sufficient test set at the matching V-model boundary. Do not omit unchanged transitive consumers, and do not run unrelated tests merely to increase the `PASS` count.
 - Require a broad convergence gate only for a named dependency, uncertainty, risk, release boundary, or project policy. Run an expensive broad gate once on the exact final target unless a later change invalidates it.
@@ -182,6 +189,9 @@ Use the applicability matrix in [ai-complexity-strategy.md](references/ai-comple
 - Execute in reviewable batches with checkpoints, preserving raw evidence and current state.
 - Do not rerun unchanged expensive or mutating work merely to feel certain; reuse still-valid evidence by explicit dependency analysis.
 - Serialize shared integration, migration, release, and production lanes unless isolation is proven for every shared resource.
+- Prefer the shortest safe vertical path: `accepted artifact → exact build → reversible bounded exposure → observation → expand or rollback`. Combine work that shares artifact, environment, authority, observation window, and rollback boundary; split only when a slice is independently useful/releasable or isolates a materially different risk.
+- Count milestones by durable lifecycle transitions, not by tests, reviews, corrections, reruns, evidence recovery, or decision clarification. Freeze the milestone denominator after scope acceptance unless the accountable owner changes the intended outcome. If evidence proves the accepted lifecycle topology materially wrong, allow only an owner-approved, non-retroactive rebaseline that preserves old/new denominators, reason, evidence, authority, and UTC date.
+- Treat automatically triggered post-transition checks as telemetry unless they prove a named blocker, including an applicable `GOVERNING_POLICY` blocker. Do not poll or inspect them merely because they exist.
 
 Every blocking gate records claim, invariant, exact artifact, scope and applicable expected count, oracle and its independence limits, logical counterexample, negative-control status, environment/config identity, action, raw result, UTC time/TTL, invalidation dependencies, owner, gate verdict, lifecycle impact, and next authority. Use the Gate Record in [templates.md](references/templates.md).
 
@@ -191,6 +201,8 @@ For A2+ work, record the Delta Evidence Plan before implementation or review. Pr
 
 - Review requirements and trace completeness before code style.
 - Challenge the Delta Evidence Plan before consuming its reuse or test-selection conclusions. Verify the exact delta, dependency graph, direct and transitive consumers, evidence states, expansion triggers, and any broad-gate rationale.
+- Challenge the Next-Safe-Step Record before accepting its critical path. For a `REACHABLE_RISK` blocker, verify all five admission conditions: named reachable risk, insufficient current controls, no safe bounded substitute, unacceptable harm before the checkpoint, and proportionate boundary-matched proof. For a `GOVERNING_POLICY` blocker, verify the exact controlling authority and its applicability at this boundary. Do not return `NOT CERTIFIED` solely for missing end-state hardening whose risk is not reachable in the reviewed transition.
+- Preserve the original requested decision and scope. A narrower transition-scoped verdict may coexist with it, but cannot replace it unless the accountable owner accepts the scope change; otherwise report the original claim's own verdict separately.
 - Inventory changed and affected surfaces before claiming coverage.
 - Verify the exact production symbol/path and real call path; structural copies and happy-path mocks are weaker evidence.
 - When a test gate applies, confirm its discovered count is nonzero and expected; for a non-executable or inapplicable gate, record `N/A` with a reason.
@@ -207,7 +219,7 @@ For A3/A4, use a reviewer with separate context and no authorship of the change.
 
 ### 9. Issue a typed verdict and durable handoff
 
-Do not issue a progression mandate, merge/release/deployment `GO`, or `CERTIFIED` until the Result-Acceptance Gate is `PASS`; for A2+ work, the current Delta Evidence Plan must also account for every `INVALIDATED`, `PARTIALLY_INVALIDATED`, `NEWLY_REQUIRED`, `REUSABLE`, `N/A`, and `UNKNOWN` claim. A completed `FAIL` or `BLOCKED` gate may authorize only a bounded diagnostic or corrective task that names and directly addresses the reconciled evidence item; it cannot authorize progression. `UNKNOWN` permits evidence recovery or an access request, not implementation based on the unknown claim. An incomplete gate authorizes neither. A failure still reproducible on the exact target makes the affected gate `FAIL` and lifecycle state `BLOCKED`.
+Do not issue a progression mandate, merge/release/deployment `GO`, or `CERTIFIED` until the Result-Acceptance Gate for the exact next transition is `PASS`; for A2+ work, the current Delta Evidence Plan must also account for every `INVALIDATED`, `PARTIALLY_INVALIDATED`, `NEWLY_REQUIRED`, `REUSABLE`, `N/A`, and `UNKNOWN` claim. Every `NEXT-STEP BLOCKER` must be closed before progression. It may leave that list only after new evidence or a material control changes residual risk, or after the accountable owner explicitly changes risk tolerance where governing law and policy permit and the risk does not violate an explicit non-substitutable safety boundary. Record the reclassification and rationale; a bare risk-acceptance statement never overrides STOP conditions. `END-STATE HARDENING` does not block an earlier bounded transition, but each item needs an activation boundary, owner, trigger, and review date. A completed `FAIL` or `BLOCKED` gate may authorize only a bounded diagnostic or corrective task that names and directly addresses the reconciled evidence item; it cannot authorize progression. `UNKNOWN` permits evidence recovery or an access request, not implementation based on the unknown claim. An incomplete gate authorizes neither. A failure still reproducible on the exact target makes the affected gate `FAIL` and lifecycle state `BLOCKED`.
 
 Never return a bare `PASS`, `READY`, `DONE`, `DEPLOYED`, or `CLOSED`. Keep the namespaces separate:
 
@@ -245,6 +257,10 @@ End execution and review deliverables with `Errors encountered and corrections` 
 | One corrective slice closes one invariant | Keep repairs independently understandable, testable, and reversible. |
 | Benchmark arms can contaminate each other | Isolate hooks, plugins, context, caches, services, and shared state. |
 | Governance must earn its cost | Track recovery time, redundant reruns, contradictions, escaped defects, and control overhead. |
+| Final-state safety is not the admission price for bounded learning | Separate next-step blockers from end-state hardening and activate each control at the earliest boundary where its risk becomes reachable. |
+| Controls change residual risk | Recompute after every material prevention, containment, detection, or recovery change; do not plan forever from the original uncontrolled incident. |
+| Proof activity is not lifecycle progress | Count milestones only when durable externally meaningful state changes. |
+| Supervision can be a bounded control, not a slogan | Require a cap, accountable operator, observable effects, proven stop/rollback, explicit expiry, and no uncontrolled high-consequence side effect. |
 
 The complete doctrine is in [operating-model.md](references/operating-model.md).
 
@@ -256,6 +272,9 @@ The complete doctrine is in [operating-model.md](references/operating-model.md).
 | "All tests passed" | Verify discovery, target, falsifiability, and environment. |
 | "Run everything to be safe" | Select tests from invalidated claims and transitive impact; name the convergence or policy reason for every broad gate. |
 | "Only test the files that changed" | Include every affected direct and transitive consumer, even when its files are unchanged. |
+| "We will eventually need it" | Put it on the critical path only if its named risk is reachable before the next checkpoint and existing bounded controls are insufficient. |
+| "The incident was severe, so every later step is A4" | Recompute residual risk after accepted controls and classify the next exposure. |
+| "Every review and rerun is another milestone" | Keep proof work inside the durable lifecycle transition whose claim it establishes. |
 | "All checks are green" | Use the authenticated forge connector to bind required checks to the exact target and reconcile the complete bounded attempt history, including failures, cancellations, skips, retries, reruns, and superseded runs. |
 | "It passed after rerun" | Preserve the failure, classify and prove its cause, inspect any intervening diff, and rerun every invalidated gate on the exact corrected target. |
 | "The executor says it passed" | Inspect primary evidence independently; the executor supplies evidence, not the acceptance verdict. |
@@ -277,8 +296,9 @@ All files are inside this skill directory; paths below are relative to `SKILL.md
 - [operating-model.md](references/operating-model.md): precedence, truth hierarchy, status, authority, handoffs, concurrency, configuration, automation, and full wisdom set.
 - [task-routes.md](references/task-routes.md): idea, feature, bug, migration, incident, release, and review routes with A0–A4 controls.
 - [delta-first.md](references/delta-first.md): exact-delta and transitive-impact analysis, evidence reuse/invalidation states, targeted test selection, convergence triggers, cost controls, and the mandatory A2+ Delta Evidence Plan.
+- [next-safe-step.md](references/next-safe-step.md): next-step blockers versus end-state hardening, blocker-admission criteria, residual-risk recomputation, bounded supervision, shortest safe vertical paths, milestone accounting, and gate-cost discipline.
 - [evidence-and-gates.md](references/evidence-and-gates.md): falsifiable gates, authenticated forge evidence, evidence-lineage reconciliation, Result-Acceptance Gate, production, retry, independent review, risk, and STOP conditions.
 - [testing-strategy.md](references/testing-strategy.md): stage-by-stage test pipeline, test levels, AAA and Given/When/Then conventions, coverage, regression, API checks, and environment-difference rules.
 - [ai-complexity-strategy.md](references/ai-complexity-strategy.md): project-agnostic Baseline, Experiment, and Complexity-Promotion gates for models, data, prompts, retrieval, tools, agents, cascades, and fine-tuning.
-- [templates.md](references/templates.md): State Capsule, V trace matrix, architecture packet, gate, Delta Evidence Plan, Result-Acceptance/evidence-lineage record, AI complexity decision, verdict, risk, release, error, registry, side-effect, and handoff templates.
+- [templates.md](references/templates.md): State Capsule, V trace matrix, architecture packet, gate, Delta Evidence Plan, Next-Safe-Step Record, Result-Acceptance/evidence-lineage record, AI complexity decision, verdict, risk, release, error, registry, side-effect, and handoff templates.
 - [source-synthesis.md](references/source-synthesis.md): requested-source ledger, adoption/adaptation/rejection decisions, immutable source snapshots, and documented limits.

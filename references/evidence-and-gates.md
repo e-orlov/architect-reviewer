@@ -36,6 +36,9 @@ Every blocking gate must answer:
 | Time | UTC observation time and TTL if mutable |
 | Dependencies | Changes that invalidate this evidence |
 | Delta selection | Delta Evidence Plan identity, evidence state, impact rationale, and why this gate is run, reused, or `N/A` |
+| Transition scope | Exact next lifecycle transition, checkpoint, exposure cap, and rollback boundary this gate protects |
+| Critical-path rationale | `NEXT-STEP BLOCKER` or `END-STATE HARDENING`; for a blocker, basis `REACHABLE_RISK` with five-condition rationale or `GOVERNING_POLICY` with exact authority and applicable boundary |
+| Governance cost | Expected time, execution, and context cost, plus the evidence that retires the uncertainty |
 | Owner | Person/system responsible for the gate |
 | Verdict | `PASS`, `FAIL`, `BLOCKED`, or `UNKNOWN` for this gate only |
 | Next authority | Action now allowed, still forbidden, or requiring approval |
@@ -183,7 +186,7 @@ This obligation belongs to the architect or reviewer. It cannot be delegated to,
 6. **Verify final-head completeness.** Before acceptance, prove on the exact target:
    - the final Delta Evidence Plan matches the actual delta and includes every unplanned change or discovered coupling;
    - every invalidated, partially invalidated, or newly required claim received its matching proof, and every reused or `N/A` claim retains a valid rationale;
-   - all required gates ran;
+   - every `NEXT-STEP BLOCKER`, including applicable governing-policy gates, ran;
    - expected discovery counts are nonzero and exact where known;
    - no required step was skipped or silently tolerated;
    - logs and artifacts belong to that target;
@@ -204,7 +207,7 @@ This obligation belongs to the architect or reviewer. It cannot be delegated to,
 
 Gate completion and a `PASS` verdict are distinct. A completed `FAIL` or `BLOCKED` gate may authorize only a bounded diagnostic or corrective task that names and directly addresses the reconciled evidence item; it cannot authorize normal progression or acceptance. `UNKNOWN` permits evidence recovery or an access request, not implementation based on the unknown claim. An incomplete gate authorizes neither.
 
-The Delta Evidence Plan is prospective and the Result-Acceptance Gate is retrospective. The plan selects the necessary reads and proof; Result Acceptance reconciles the complete actual attempt history. Neither substitutes for the other. A broad passing suite cannot compensate for an omitted affected gate, and targeted execution cannot waive an explicitly justified convergence or policy gate.
+The Delta Evidence Plan is prospective and the Result-Acceptance Gate is retrospective. The plan selects the necessary reads and proof; Result Acceptance reconciles the complete actual attempt history. Neither substitutes for the other. A broad passing suite cannot compensate for an omitted affected gate, and targeted execution cannot waive an explicitly justified convergence or governing-policy gate. The required-gate set is scoped by the exact next transition in [next-safe-step.md](next-safe-step.md): deferred hardening is not silently promoted into a blocker, while every reachable material risk and governing-policy gate applicable at that boundary is recorded in `NEXT-STEP BLOCKERS`.
 
 ### Anti-rationalization rule
 
@@ -234,6 +237,8 @@ Name the environment and topology. Verify:
 Keep `VERIFIED_INTEGRATION`, `RELEASED_UNACCEPTED`, and `ACCEPTED` distinct.
 
 For staged rollout, define the cohort, observation window, abort condition, rollback trigger, and accountable operator before exposure. A dashboard without a threshold and response is not an acceptance gate.
+
+Bounded human supervision may temporarily substitute for unfinished automation only when exposure is capped by time, population, calls, cost, or data volume; an accountable operator is present; effects are observable before expansion; stop and rollback are fast and proven; and the exception has an explicit expiry and next decision point. It cannot substitute for protection against unbounded paid effects, irreversible mutation, unrecoverable data loss, security/privacy breach, ambiguous external side effects, or absent rollback. Record the decision in the Next-Safe-Step Record.
 
 ## 9. Retries and external effects
 
@@ -273,7 +278,7 @@ Use a bounded doubt cycle:
 
 Pass the artifact against its contract, not the author's reasoning. Reviewer findings are evidence to reconcile, not an automatic verdict; technically challenge them when contradicted by stronger evidence. Do not issue `CERTIFIED` when a failure-detection limitation is material to a blocking claim and no decision-capable alternative evidence exists.
 
-Before issuing `CERTIFIED` or accepting corrected work, complete the Result-Acceptance Gate in Section 7 against the exact reviewed target. Independent review does not waive evidence-lineage reconciliation; it owns that reconciliation for the reviewed claim.
+Before issuing `CERTIFIED` or accepting corrected work, complete the Result-Acceptance Gate in Section 7 against the exact reviewed target and reviewed next transition. Independent review does not waive evidence-lineage reconciliation; it owns that reconciliation for the reviewed claim. Do not issue `NOT CERTIFIED` solely because an `END-STATE HARDENING` item is incomplete when its risk is not reachable in that transition; do challenge its activation boundary, owner, trigger, target, and review date. Preserve the originally requested decision and scope: a smaller transition-scoped verdict is separate and cannot replace the original verdict unless the accountable owner accepts the scope change.
 
 A different model is useful for reducing correlated blind spots but is still an advisory reviewer. The accountable human or organization retains risk acceptance.
 
@@ -294,7 +299,7 @@ Use a compact living risk record:
 - treatment: avoid, mitigate, transfer, or accept;
 - accountable acceptance for residual risk.
 
-Maintain a review log. Reassess on the scheduled date and when material changes occur: architecture or dependency change, new threat or incident evidence, control failure, scope expansion, data-classification change, or production exposure. Control existence is not control effectiveness; bind effectiveness to evidence and uncertainty.
+Maintain a review log. Reassess on the scheduled date and when material changes occur: architecture or dependency change, new threat or incident evidence, control failure, scope expansion, data-classification change, or production exposure. Also recompute residual risk after each material control is accepted; demote redundant or premature blockers and promote deferred hardening only when the next exposure activates its risk. Control existence is not control effectiveness; bind effectiveness to evidence and uncertainty.
 
 A 5×5 score can prioritize discussion, but it is not a measured probability. Define scales for the actual context; do not copy monetary or regulatory thresholds from another organization.
 
@@ -308,7 +313,7 @@ Stop or return `UNKNOWN/BLOCKED` when:
 - the oracle shares the same unverified assumption as the implementation;
 - the criterion cannot observe the claimed boundary;
 - evidence belongs to a different artifact or has expired;
-- rollback/recovery is required but absent or untested;
+- rollback/recovery required for the next transition is absent or untested;
 - retry can duplicate an irreversible or paid effect;
 - automation has no owner or inhibit during a change window;
 - an integration/release/production lane is already owned;
@@ -319,23 +324,26 @@ Stop or return `UNKNOWN/BLOCKED` when:
 - A2+ implementation or review lacks a complete Delta Evidence Plan, or the plan does not cover the actual final delta;
 - transitive impact is unknown but inspection/testing was not broadened, or an invalidated/newly required claim has no matching proof;
 - the Result-Acceptance Gate is incomplete for a requested downstream implementation mandate, merge/release/deployment `GO`, or certification;
+- the next transition, checkpoint, reachable risks, or blocker/hardening split is undefined; a proposed blocker lacks the admission rationale in [next-safe-step.md](next-safe-step.md); or a material reachability question remains `UNKNOWN`;
+- a blocker is marked accepted without evidence-based residual-risk recomputation or an accountable, policy-permitted reclassification, especially where an explicit non-substitutable safety boundary applies;
 - canonical and superseded instructions cannot be distinguished.
 
 ## 13. Review lenses
 
 Review in this order:
 
-1. **Requirements:** Does the change solve the stated problem without silently changing scope?
-2. **Correctness:** Are normal, boundary, concurrent, retry, and partial-failure paths sound?
-3. **Security/privacy:** Are trust boundaries, authorization, secrets, input/output, and dependencies safe?
-4. **Data/recovery:** Can data be lost, duplicated, corrupted, or made irreconcilable? Is recovery proven?
-5. **Compatibility:** Are APIs, schemas, clients, mixed versions, and migrations handled?
-6. **Operability:** Are identity, logs, metrics, alerts, rollout, rollback, and automation behavior adequate?
-7. **Delta and impact:** Is the exact delta complete, are direct and transitive consumers traced, are evidence reuse/invalidation states justified, and are convergence triggers explicit?
-8. **Evidence lineage:** Is every relevant attempt from the last accepted baseline to the exact target present, independently reconciled, and causally closed where proportionate?
-9. **Test adequacy:** Do tests exercise every invalidated/new claim at the matching boundary, avoid unrelated execution without reason, have a trustworthy oracle, and prove they can fail?
-10. **AI/ML complexity:** When applicable, is there a credible baseline, attributable experiment, and justified promotion after lifecycle cost and risk?
-11. **Simplicity:** Is every abstraction, dependency, layer, and line needed now?
+1. **Transition scope:** Is the exact next lifecycle transition bounded, and are blockers separated from later hardening using reachable residual risk rather than eventual usefulness?
+2. **Requirements:** Does the change solve the stated problem without silently changing scope?
+3. **Correctness:** Are normal, boundary, concurrent, retry, and partial-failure paths sound?
+4. **Security/privacy:** Are trust boundaries, authorization, secrets, input/output, and dependencies safe?
+5. **Data/recovery:** Can data be lost, duplicated, corrupted, or made irreconcilable? Is recovery proven?
+6. **Compatibility:** Are APIs, schemas, clients, mixed versions, and migrations handled?
+7. **Operability:** Are identity, logs, metrics, alerts, rollout, rollback, and automation behavior adequate at the reviewed boundary?
+8. **Delta and impact:** Is the exact delta complete, are direct and transitive consumers traced, are evidence reuse/invalidation states justified, and are convergence triggers explicit?
+9. **Evidence lineage:** Is every relevant attempt from the last accepted baseline to the exact target present, independently reconciled, and causally closed where proportionate?
+10. **Test adequacy:** Do tests exercise every invalidated/new claim at the matching boundary, avoid unrelated execution without reason, have a trustworthy oracle, and prove they can fail?
+11. **AI/ML complexity:** When applicable, is there a credible baseline, attributable experiment, and justified promotion after lifecycle cost and risk?
+12. **Simplicity:** Is every abstraction, dependency, layer, and line needed now?
 
 Report defects separately from optional improvements. Avoid drowning a blocking finding in style commentary.
 

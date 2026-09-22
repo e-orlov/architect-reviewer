@@ -16,13 +16,14 @@
 12. Hack23 risk-assessment skill
 13. AI/ML anti-overengineering sources
 14. Delta-first evidence sources
-15. Cross-source synthesis
-16. Practices intentionally not imported
-17. Verified source snapshots
+15. Next-safe-step and minimum-sufficient-gate sources
+16. Cross-source synthesis
+17. Practices intentionally not imported
+18. Verified source snapshots
 
 ## 1. Scope and method
 
-All nine sources requested by the user are represented in the active method. The review used each repository's canonical README plus the high-signal workflow, review, verification, planning, or risk files relevant to this skill. Four additional primary AI/ML sources support the Baseline, Experiment, and Complexity-Promotion gates: Google Rules of ML, the NIST AI RMF Generative AI Profile, OpenAI's eval guidance, and the FrugalGPT paper. Four primary engineering sources support delta-first impact analysis and test selection: Microsoft Test Impact Analysis, the Bazel Query Guide, the GitHub Compare Commits API, and Develocity Predictive Test Selection. This is a concept and control synthesis, not a claim that every historical file, issue, release, or empirical assertion in each source was exhaustively adopted.
+All nine sources requested by the user are represented in the active method. The review used each repository's canonical README plus the high-signal workflow, review, verification, planning, or risk files relevant to this skill. Four additional primary AI/ML sources support the Baseline, Experiment, and Complexity-Promotion gates: Google Rules of ML, the NIST AI RMF Generative AI Profile, OpenAI's eval guidance, and the FrugalGPT paper. Four primary engineering sources support delta-first impact analysis and test selection: Microsoft Test Impact Analysis, the Bazel Query Guide, the GitHub Compare Commits API, and Develocity Predictive Test Selection. AWS Well-Architected, DORA, and Google SRE guidance support small reversible transitions, bounded canaries, staged exposure, supervision, rollback, and actionable monitoring. This is a concept and control synthesis, not a claim that every historical file, issue, release, or empirical assertion in each source was exhaustively adopted.
 
 For each source:
 
@@ -32,7 +33,7 @@ For each source:
 4. reject stack-specific, product-specific, organization-specific, or weakly supported prescriptions;
 5. preserve primary links and content identities so later updates can be diffed.
 
-Sources were checked on 2026-09-21. Recheck live primary documentation before relying on current versions, commands, product behavior, repository state, or empirical performance claims.
+Sources were checked on 2026-09-21; the next-safe-step sources were checked on 2026-09-22. Recheck live primary documentation before relying on current versions, commands, product behavior, repository state, or empirical performance claims.
 
 ## 2. V-model basis
 
@@ -439,22 +440,54 @@ Not imported:
 
 - any required build system, CI product, repository host, or commercial test-selection service;
 - the claim that static dependency maps alone prove runtime impact completeness;
-- selective testing as a substitute for release, migration, deployment, A3/A4, or project-required convergence.
+- selective testing as a substitute for any named release, migration, deployment, A3/A4, or project-policy claim whose reachable risk requires broader convergence.
 
 Active locations: SKILL.md delta-first rule and workflow; references/delta-first.md; references/testing-strategy.md; references/v-model.md; Delta Evidence Plan in references/templates.md.
 
-## 15. Cross-source synthesis
+## 15. Next-safe-step and minimum-sufficient-gate sources
+
+Reviewed scope: [AWS Well-Architected: Make frequent, small, reversible changes](https://docs.aws.amazon.com/wellarchitected/latest/operational-excellence-pillar/ops_dev_integ_freq_sm_rev_chg.html), [DORA: Working in small batches](https://dora.dev/capabilities/working-in-small-batches/), [Google SRE Workbook: Canarying Releases](https://sre.google/workbook/canarying-releases/), [Google SRE: Production Services Best Practices](https://sre.google/sre-book/service-best-practices/), and [Google SRE: Monitoring Distributed Systems](https://sre.google/sre-book/monitoring-distributed-systems/).
+
+Adopted:
+
+- frequent small reversible changes reduce scope and impact and make troubleshooting and recovery easier;
+- small batches should be independently valuable, testable, and capable of producing rapid feedback and course correction;
+- canaries bound release risk by population and time and require an evaluation, hold, rollback, or expansion decision;
+- staged rollout may be supervised by a responsible engineer or reliable monitoring, depending on the reachable risk and operating boundary;
+- monitoring and alerting serve different purposes, and an alert or blocking check must be actionable against a named condition.
+
+Adapted:
+
+- every task separates `NEXT-STEP BLOCKERS` from `END-STATE HARDENING` and records when deferred controls become active;
+- a five-condition blocker-admission test prevents eventual usefulness from becoming an immediate gate;
+- applicable legal, contractual, governing-instruction, and explicit project-policy gates enter the same blocker list by precedence with their authority and boundary named;
+- residual risk is recalculated after each material control rather than inherited forever from the original incident;
+- bounded human supervision is permitted only with explicit caps, observable effects, fast proven stop/rollback, expiry, and no uncontrolled high-consequence side effect;
+- milestones count durable lifecycle transitions while tests, reviews, corrections, reruns, and evidence recovery remain inside the transition they prove;
+- a narrower transition-scoped verdict remains separate from the originally requested claim unless the accountable owner accepts the scope change;
+- automatically triggered checks are telemetry unless they prove a named blocker, including a governing-policy gate applicable at that boundary.
+
+Not imported:
+
+- a universal canary percentage, duration, batch size, or rollout cadence;
+- human supervision as a substitute for safeguards against security/privacy breach, irreversible mutation, unrecoverable data loss, unbounded paid effects, ambiguous external side effects, or absent rollback;
+- the claim that every release-stage check must block every earlier bounded transition;
+- alert volume, dashboard presence, or process activity as evidence of safety by itself.
+
+Active locations: SKILL.md non-negotiable rules and planning/review workflow; references/next-safe-step.md; references/delta-first.md; references/testing-strategy.md; references/evidence-and-gates.md; references/task-routes.md; Next-Safe-Step Record in references/templates.md.
+
+## 16. Cross-source synthesis
 
 The combined method is:
 
 1. **Establish truth and authority.** Recover exact live state and identify who may decide or mutate.
 2. **Route the work.** Choose idea, feature, bug, migration, incident, release, or review instead of a universal lifecycle.
-3. **Map the delta.** Bind baseline and target, trace direct and transitive impact, classify existing evidence, and select the smallest sufficient proof plus justified convergence gates.
+3. **Map the delta and next exposure.** Bind baseline and target, trace direct and transitive impact, identify risks reachable during the exact next transition, classify existing evidence, and select the minimum sufficient proof plus justified convergence gates.
 4. **Build the V trace.** Pair each definition with boundary-matched proof and connect requirement, risk, design owner, implementation, criterion, evidence, and state.
-5. **Define completeness.** Add reliability, security, privacy, data integrity, accessibility, compatibility, observability, recovery, and residual-risk requirements.
+5. **Define transition completeness.** Add the reliability, security, privacy, data integrity, accessibility, compatibility, observability, recovery, and residual-risk requirements needed before the next exposure; trace later hardening to its activation boundary.
 6. **Minimize safely.** Trace the actual path, use the narrow owning boundary, reuse existing/native mechanisms, and add minimum new code.
 7. **Gate AI/ML complexity.** Establish the simplest credible baseline, test a named hypothesis on controlled evidence, and promote added complexity only when it closes a measured gap after lifecycle cost and risk are counted.
-8. **Execute incrementally.** Use dependency-ordered vertical slices, checkpoints, and evidence reuse only when dependencies are unchanged.
+8. **Execute the next safe step.** Separate immediate blockers from later hardening, prefer the shortest reversible vertical path, and recompute residual risk after each material control.
 9. **Prove the proof.** Inventory surfaces, assert applicable nonzero expected counts, exercise the real path, record oracle independence, and demonstrate negative controls when assurance requires and safety permits.
 10. **Challenge independently.** Separate author and reviewer at A3/A4, bound the doubt cycle, and reconcile findings technically.
 11. **Release as an operational experiment.** Bind identity, expose gradually, monitor user-facing thresholds, abort or roll back on breach, and validate in the real environment.
@@ -462,7 +495,7 @@ The combined method is:
 
 The single canonical precedence ladder is [operating-model.md §1](operating-model.md#1-precedence). This synthesis does not maintain a second ladder; source-specific advice must be reconciled through that canonical order.
 
-## 16. Practices intentionally not imported
+## 17. Practices intentionally not imported
 
 | Rejected universal prescription | Reason |
 |---|---|
@@ -485,8 +518,10 @@ The single canonical precedence ladder is [operating-model.md §1](operating-mod
 | Blind retries | Ambiguous external effects require intent identity and reconciliation. |
 | Full-suite execution without an impact, convergence, or policy reason | PASS volume does not prove that affected claims were selected. |
 | Changed-file proximity as test impact | Contracts, schemas, configuration, generated artifacts, data, and runtime dependencies can affect unchanged consumers. |
+| Desired final controls as the admission price for every bounded step | Controls become blocking at the earliest boundary where their named risk is reachable, not merely because they are eventually useful. |
+| Every test, review, correction, or rerun as a milestone | Proof work belongs inside the durable lifecycle transition whose claim it establishes. |
 
-## 17. Verified source snapshots
+## 18. Verified source snapshots
 
 The identifiers below are Git blob SHAs observed through authenticated repository reads on 2026-09-21. They identify file content, not a repository commit or release. Branch links remain convenient; the SHA allows a later reader to detect content drift.
 
@@ -548,3 +583,8 @@ Authoritative web and publication sources do not expose comparable reviewed Git 
 | Bazel Query Guide | https://bazel.build/query/guide | 2026-09-21 |
 | GitHub Compare Commits API | https://docs.github.com/en/rest/commits/commits#compare-two-commits | 2026-09-21 |
 | Develocity Predictive Test Selection | https://docs.develocity.ai/2026.2/guides/predictive-test-selection/ | 2026-09-21 |
+| AWS Well-Architected: Make frequent, small, reversible changes | https://docs.aws.amazon.com/wellarchitected/latest/operational-excellence-pillar/ops_dev_integ_freq_sm_rev_chg.html | 2026-09-22 |
+| DORA: Working in small batches | https://dora.dev/capabilities/working-in-small-batches/ | 2026-09-22 |
+| Google SRE Workbook: Canarying Releases | https://sre.google/workbook/canarying-releases/ | 2026-09-22 |
+| Google SRE: Production Services Best Practices | https://sre.google/sre-book/service-best-practices/ | 2026-09-22 |
+| Google SRE: Monitoring Distributed Systems | https://sre.google/sre-book/monitoring-distributed-systems/ | 2026-09-22 |

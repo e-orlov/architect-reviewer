@@ -26,6 +26,8 @@ Do not equate a stage with a level. A contract test may run locally and in CI; a
 
 Apply [delta-first.md](delta-first.md) before selecting tests: establish the exact baseline-to-target delta, trace direct and transitive impact, classify prior evidence, then run the smallest sufficient proof at the matching boundary. A changed-file list is not an impact graph. A2+ work requires the Delta Evidence Plan from [templates.md](templates.md) before implementation or review.
 
+Scope the required proof with [next-safe-step.md](next-safe-step.md): name the exact next transition and reachable residual risks, prove every `NEXT-STEP BLOCKER`—including applicable gates with basis `GOVERNING_POLICY`—and defer unrelated `END-STATE HARDENING` to its activation boundary. Bounded exposure never excuses a missing affected test; eventual usefulness never makes an unrelated test blocking now.
+
 Prefer the repository's existing test tools and conventions. Do not introduce Playwright, Cypress, Cucumber, a SAST product, or another framework merely because it appears in an example. Add or replace tooling only when the current stack cannot prove a required invariant and the lifecycle, permissions, cost, maintenance, and rollback are acceptable.
 
 ## 2. Build the strategy from the V-model trace
@@ -42,6 +44,7 @@ For every blocking requirement or risk-control row, define:
 8. the logical counterexample and, when assurance requires and safety permits, a negative-control execution; otherwise the limitation and alternative evidence;
 9. the environment identity and known differences from the target environment;
 10. the evidence artifact, invalidation dependencies, owner, and next authority.
+11. whether the claim is a `NEXT-STEP BLOCKER` based on `REACHABLE_RISK` or `GOVERNING_POLICY`, or belongs to later hardening.
 
 For existing evidence, also assign exactly one delta state: `INVALIDATED`, `PARTIALLY_INVALIDATED`, `REUSABLE`, `NEWLY_REQUIRED`, `N/A`, or `UNKNOWN`. Cite dependency, identity, TTL, environment, and oracle rationale for reuse. Broaden inspection when impact is unknown.
 
@@ -53,7 +56,7 @@ Use this as the default pipeline, then tailor it to the repository and assurance
 
 | Stage | Primary purpose | Typical checks | Exit evidence |
 |---|---|---|---|
-| Specification and planning | Define proof before implementation | Exact delta, transitive-impact graph, Delta Evidence Plan, executable acceptance criteria, V-model trace, risk and affected-surface inventory, oracle and negative-control design | Every relevant claim has one evidence state; every invalidated/new claim has matching proof and expansion triggers |
+| Specification and planning | Define proof before implementation | Exact delta, transitive-impact graph, Delta Evidence Plan, Next-Safe-Step Record, executable acceptance criteria, V-model trace, risk and affected-surface inventory, oracle and negative-control design | Every relevant claim has one evidence state; every next-step blocker has matching proof; later hardening has an activation boundary |
 | Local inner loop | Find narrow defects quickly | Formatting, linting, compilation/type checks, configured SAST and secret checks, focused unit tests, component tests, lightweight contract tests | Named commands, target identity, applicable nonzero expected counts or justified `N/A`, raw failures or passes |
 | Pull request / CI | Reproduce the change in a clean, reviewable context | Deterministic local checks, affected and policy-required suites, component/API/contract/integration tests, migration checks, build/package checks, configured security and dependency scans | Authenticated forge evidence bound to exact repository/head SHA; all relevant run attempts, jobs, steps, expected counts, logs, results, and artifacts |
 | Shared integration environment | Prove composition across real boundaries | Service/database/queue integration, provider-consumer compatibility, auth and serialization, jobs, failure injection, restart and recovery | Deployed identities, dependency/config identity, reconciled data and side effects |
@@ -185,7 +188,7 @@ Include direct and transitive consumers reached through contracts, schemas, adap
 
 Do not rerun every expensive test by reflex when dependency analysis proves it unaffected. Do not narrow the suite merely to save time when the impact inventory is incomplete.
 
-Escalate to a full suite or broad convergence gate when a shared foundation, framework, adapter, schema, build system, lockfile, or global configuration changes; when the dependency graph is incomplete; when targeted tests expose unexpected coupling; when multiple components or persistence boundaries change together; when A3/A4 or a release/migration/deployment boundary requires system proof; or when project policy requires it. Record the reason and run the expensive broad gate once on the exact final target unless a later change invalidates it.
+Escalate to a full suite or broad convergence gate when a shared foundation, framework, adapter, schema, build system, lockfile, or global configuration changes; when the dependency graph is incomplete; when targeted tests expose unexpected coupling; when multiple components or persistence boundaries change together; when the residual A3/A4 risk or named release/migration/deployment claim requires system proof; or when project policy requires it. A lifecycle label alone is not a convergence rationale. Record the reason and run the expensive broad gate once on the exact final target unless a later change invalidates it.
 
 ## 11. Scale by assurance and close with evidence
 
@@ -199,9 +202,11 @@ Escalate to a full suite or broad convergence gate when a shared foundation, fra
 
 Close each blocking gate with the Gate Record from [templates.md](templates.md). Report the exact artifact and environment, applicable expected and actual counts or justified `N/A`, oracle and independence limits, logical counterexample, negative-control status, raw outcome, UTC time, invalidation dependencies, residual gaps, verdict, and next authority. A green local or CI suite leaves deployment and real-world acceptance open.
 
-Before an architect or reviewer accepts an executor's test result as the basis for the next implementation mandate or any merge/release/deployment/certification decision, complete the Result-Acceptance Gate in [evidence-and-gates.md](evidence-and-gates.md). Inventory every relevant attempt in the bounded baseline-to-target window and preserve failed, cancelled, timed-out, skipped, retried, rerun, superseded, expected RED, and mutation evidence until explicitly reconciled. For GitHub-backed evidence, use the mandatory authenticated GitHub connector; the latest check summary is insufficient.
+Before an architect or reviewer accepts an executor's test result as the basis for the next implementation mandate or any merge/release/deployment/certification decision, complete the Result-Acceptance Gate in [evidence-and-gates.md](evidence-and-gates.md) for the exact next transition. Inventory every relevant required attempt in the bounded baseline-to-target window and preserve failed, cancelled, timed-out, skipped, retried, rerun, superseded, expected RED, and mutation evidence until explicitly reconciled. For GitHub-backed evidence, use the mandatory authenticated GitHub connector; the latest check summary is insufficient.
 
 Order new execution by information value: static/structural, focused unit/regression, contract/integration, migration/recovery, system/E2E, then staged production or real-world acceptance. Stop after a blocking prerequisite failure unless a downstream action is specifically required for diagnosis. Preserve raw logs outside the active context; load summaries, counts, and relevant failure intervals first. Estimate expensive reads and runs in the Delta Evidence Plan and checkpoint before material budget expansion.
+
+Treat automatically triggered post-transition checks as telemetry unless a named blocker or governing policy maps to them. Do not wait for, poll, or inspect them merely because they exist. Run a convergence gate on the exact final artifact only when a named trigger or governing policy justifies one; repeat it only when a later change invalidates its evidence or an explicit independence claim requires another execution.
 
 ## 12. Primary references
 

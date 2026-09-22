@@ -18,7 +18,7 @@ Apply controls in this order:
 
 1. governing system/project instructions, law, regulation, contracts, and actor authority; accountable user or operator decisions apply within those bounds;
 2. safety, security, privacy, data integrity, accessibility, accounting, and trust-boundary controls;
-3. V-model completeness and reliability: traceability, bounded risk, observability, recovery, rollout, rollback, and decision-capable evidence;
+3. V-model completeness and reliability for the proposed transition: traceability, bounded risk, observability, recovery, rollout, rollback, decision-capable evidence, and explicit activation of later hardening;
 4. Baseline, Experiment, and Complexity-Promotion evidence when the AI/ML trigger applies;
 5. KISS, YAGNI, reuse, native capabilities, and minimum new code after completeness is defined;
 6. optional frameworks and templates as sources of selected practices.
@@ -58,7 +58,7 @@ A lower level cannot silently override a higher level. Record conflicts. For mut
 | 14 | A corrective slice closes one invariant | Make each repair independently understandable, testable, and reversible. |
 | 15 | Discovery can be parallel; shared integration must be serialized | Assign leases for shared integration, migration, release, and production lanes. |
 | 16 | User decisions are scarce | Ask for product choices and risk acceptance, not facts that tools can establish. |
-| 17 | Safety completeness precedes minimization | Define the full contract, then remove everything not required to satisfy it. |
+| 17 | Safety completeness precedes minimization | Define the complete contract for the next transition, trace later obligations to their activation boundary, then remove current complexity not required for that transition. |
 | 18 | Different work needs different workflows | Route ideas, features, bugs, incidents, releases, and audits separately. |
 | 19 | Process beats prose | Prefer steps, checkpoints, exit criteria, and red flags over a large passive document. |
 | 20 | Acceptance criteria must be falsifiable | A blocking check names the target defect or counterexample; execution depth follows assurance and safety. |
@@ -89,6 +89,11 @@ A lower level cannot silently override a higher level. Record conflicts. For mut
 | 45 | Evidence reuse is a claim that needs proof | Reuse only after identity, dependencies, TTL, environment, oracle, and target assumptions remain valid. |
 | 46 | Targeted testing and convergence serve different purposes | Prove invalidated claims narrowly first; run broad gates only for explicit uncertainty, shared impact, risk, lifecycle boundary, or policy. |
 | 47 | Context and test cost are governed resources | Preserve raw evidence externally, load decision-relevant slices first, estimate expensive work, and checkpoint before material expansion. |
+| 48 | Assurance is scoped to the next transition | Judge controls against the exposure reachable before the next checkpoint, not against an imagined final unattended state. |
+| 49 | End-state hardening is not automatically a blocker | Defer it with an activation boundary, owner, trigger, target, and review date unless its risk is reachable now. |
+| 50 | Controls change the risk that remains | Recompute residual risk after every accepted prevention, detection, containment, or recovery control. |
+| 51 | Proof work is not a milestone | Count durable lifecycle transitions; keep tests, reviews, corrections, and reruns inside the claim they establish. |
+| 52 | Human supervision is a bounded control | Use it only with capped exposure, an accountable operator, observable effects, proven stop/rollback, expiry, and no uncontrolled high-consequence risk. |
 
 ## 4. Status model
 
@@ -98,7 +103,7 @@ Use lifecycle states instead of overloaded words:
 |---|---|
 | `DISCOVERED` | Candidate issue or need identified; not yet assessed. |
 | `PROPOSED` | A possible solution exists; requirements or tradeoffs may remain open. |
-| `PLANNED` | Scope, owner, acceptance, safety contract, and required A2+ Delta Evidence Plan are defined. |
+| `PLANNED` | Scope, owner, acceptance, safety contract, next transition/blocker split, proportionate Next-Safe-Step record, and required A2+ Delta Evidence Plan are defined. |
 | `IMPLEMENTED_UNVERIFIED` | Code or configuration exists; required verification is incomplete. |
 | `VERIFIED_LOCAL` | Named local gates passed on an exact artifact. |
 | `VERIFIED_INTEGRATION` | Integration gates passed in the named environment. |
@@ -120,6 +125,17 @@ Keep four typed namespaces distinct:
 
 Never emit unqualified `READY`; use the exact scoped state such as `READY_FOR_MERGE`, `READY_FOR_EXPERIMENT`, or `READY_FOR_PROMOTION_REVIEW`. `BLOCKED` and `UNKNOWN` may appear in more than one namespace, so always label the namespace. Never infer a later lifecycle state from a gate or decision state.
 
+### Transition scope and milestone accounting
+
+For every proposed transition, maintain two disjoint lists:
+
+- `NEXT-STEP BLOCKERS`: controls required because an unacceptable failure mode is reachable before the next checkpoint and existing or bounded substitute controls are insufficient;
+- `END-STATE HARDENING`: valuable controls that become necessary only at a later exposure boundary.
+
+The blocker admission test, bounded-supervision contract, and deferral rules are in [next-safe-step.md](next-safe-step.md). `NEXT-STEP BLOCKERS` have basis `REACHABLE_RISK` or `GOVERNING_POLICY`; the latter requires an exact controlling authority and applicability at the next boundary. A missing hardening item does not justify `NOT CERTIFIED` for an earlier bounded transition whose scope cannot reach its risk. An unknown material dependency or reachable risk is not hardening; it remains `UNKNOWN` until bounded.
+
+Count milestones only for durable externally meaningful state transitions such as merged, released, deployed under containment, canary accepted, exposure expanded, production accepted, or closed. Freeze the denominator after the accountable owner accepts scope. Tests, reviews, corrections, evidence recovery, reruns, and clarifications are work inside a milestone, not new milestones. If evidence proves the accepted lifecycle topology materially wrong, permit only an owner-approved, non-retroactive rebaseline that preserves old/new denominators, reason, evidence, authority, and UTC date.
+
 ## 5. Role and authority boundaries
 
 Separate four authorities:
@@ -137,7 +153,10 @@ Keep the State Capsule short enough to read before acting. Store:
 
 - objective and current lifecycle state;
 - scoped route, AI, and review decisions where applicable;
+- original requested decision/claim and any owner-accepted scope change;
 - exact artifact/repository/branch/commit/build/runtime identity;
+- next proposed lifecycle transition, exposure cap, checkpoint, stop/rollback boundary, and residual-risk class;
+- `NEXT-STEP BLOCKERS`; `END-STATE HARDENING` with owner, activation trigger/boundary, target, and review date; and the frozen milestone denominator;
 - Delta Evidence Plan identity/revision, evidence budget, expansion triggers, and unresolved impact for A2+ work;
 - last accepted immutable baseline, bounded evidence window, connector state, and open attempt/anomaly identities when Result Acceptance applies;
 - completed gates and their freshness;
@@ -151,6 +170,7 @@ At every phase boundary, pass a structured contract:
 - inputs and immutable identities;
 - assumptions and preconditions;
 - exact delta, impact graph, evidence-state decisions, and expansion triggers when Delta-First applies;
+- next-transition scope, reachable risks, blocker-admission rationale, deferred hardening, observation point, and rollback boundary;
 - outputs and acceptance criteria;
 - evidence locations;
 - complete attempt inventory and errors/corrections when Result Acceptance applies;

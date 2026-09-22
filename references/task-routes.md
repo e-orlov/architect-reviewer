@@ -42,6 +42,7 @@ The route chooses the sequence; the V-model checks completeness inside it. For e
 5. reject a terminal claim while any blocking row is orphaned, uses the wrong proof level, or has stale evidence;
 6. use [delta-first.md](delta-first.md) to map the exact delta through direct and transitive impact, classify existing evidence, and select the smallest sufficient proof; record the Delta Evidence Plan before A2+ implementation or review;
 7. before using an executor result to authorize the next implementation task or any merge/release/deployment/certification decision, complete the Result-Acceptance Gate across the bounded evidence lineage in [evidence-and-gates.md](evidence-and-gates.md); only `PASS` permits progression, while a completed non-pass verdict permits only the bounded response defined by that contract.
+8. use [next-safe-step.md](next-safe-step.md) to scope controls and proof to the exact next lifecycle transition; separate `NEXT-STEP BLOCKERS` from `END-STATE HARDENING`, and recompute residual risk after each accepted control.
 
 Use [v-model.md](v-model.md) for the full traceability contract.
 
@@ -122,6 +123,8 @@ Use: `detect → stabilize → contain → recover → verify → learn`.
 5. Verify user-visible service, data integrity, and automation recovery.
 6. Write a blameless postmortem with owned preventive actions.
 
+After stabilization and after each material control lands, reassess the next proposed transition from the new residual risk. The original incident severity does not permanently set the assurance level or keep every desirable control on the critical path.
+
 Do not let deep root-cause exploration delay necessary containment.
 
 For urgent A2+ containment, record a minimal provisional Delta Evidence Plan before mutation: observed delta/state, suspected impact, protected boundaries, immediate proof, rollback, and expansion triggers. Complete the full plan after stabilization and before making the containment permanent, expanding it, or issuing release/acceptance authority.
@@ -133,12 +136,13 @@ If containment temporarily adds AI/ML lifecycle complexity before normal gates c
 Use: `identify → preflight → expose gradually → observe → accept or roll back`.
 
 1. Bind source, build, config, schema, and target-environment identities.
-2. Confirm the final Delta Evidence Plan covers the actual release-candidate delta, every invalidated/new claim, reused evidence, and justified convergence gate; then confirm required checks, ownership, change window, backup, rollback, and a `PASS` Result-Acceptance Gate. For GitHub-backed work, use the mandatory authenticated GitHub connector defined in [evidence-and-gates.md](evidence-and-gates.md).
-3. Start with the smallest meaningful exposure: dry run, canary, shadow, or cohort.
-4. Monitor user-facing invariants and failure signals at every stage.
-5. Hold or roll back automatically or manually on a predefined breach.
-6. Perform real-world acceptance on the deployed identity.
-7. Record the terminal state separately from merge and deployment.
+2. Define the exact next release transition, exposure cap, checkpoint, rollback boundary, reachable risks, `NEXT-STEP BLOCKERS`, and deferred `END-STATE HARDENING`; confirm every blocker passes the admission criteria in [next-safe-step.md](next-safe-step.md).
+3. Confirm the final Delta Evidence Plan covers the actual release-candidate delta, every invalidated/new claim, reused evidence, and justified convergence gate; then confirm required checks for this transition, ownership, change window, backup, rollback, and a `PASS` Result-Acceptance Gate. For GitHub-backed work, use the mandatory authenticated GitHub connector defined in [evidence-and-gates.md](evidence-and-gates.md).
+4. Start with the smallest meaningful exposure: dry run, canary, shadow, or cohort.
+5. Monitor user-facing invariants and failure signals at every stage.
+6. Hold or roll back automatically or manually on a predefined breach.
+7. Perform real-world acceptance on the deployed identity.
+8. Record the terminal state separately from merge and deployment; activate deferred hardening before the first later boundary where its risk becomes reachable.
 
 ## 9. Review and audit route
 
@@ -148,13 +152,14 @@ Use: `inventory → define evidence window → map delta and impact → select r
 2. Define the bounded evidence window from the last independently accepted immutable baseline to the exact target.
 3. Inspect or construct the Delta Evidence Plan; independently verify the exact delta, direct/transitive impact, evidence states, targeted proof, convergence reasons, expansion triggers, and budget.
 4. Extract explicit claims and map each to required evidence.
-5. Inspect the exact artifact, current mutable state, and every relevant execution attempt in the window. When the target or material evidence is forge-hosted, use the mandatory authenticated GitHub connector, or the equivalent native connector for another forge.
-6. Challenge correctness, safety, recovery, compatibility, observability, simplicity, test adequacy, delta coverage, and evidence-lineage completeness.
-7. For A2+ blocking test claims, run or inspect a safe negative control; when that is unsafe or unavailable, inspect the logical counterexample, alternative failure-detection evidence, and stated certification limit.
-8. Reconcile every failure, cancellation, skip, timeout, retry, rerun, superseded execution, expected RED, and mutation result; preserve corrections and invalidated evidence.
-9. Run the Result-Acceptance Gate. Executor feedback is input, never its verdict.
-10. Report findings by severity; distinguish defects from evidence gaps.
-11. Issue a typed, scoped verdict and name the next authority only when both Delta-First and Result-Acceptance consequences permit it.
+5. Inspect the Next-Safe-Step Record: challenge next-transition scope, reachable risks, blocker-admission reasoning, bounded substitutes, deferred-hardening triggers, milestone accounting, and residual-risk recomputation.
+6. Inspect the exact artifact, current mutable state, and every relevant execution attempt in the window. When the target or material evidence is forge-hosted, use the mandatory authenticated GitHub connector, or the equivalent native connector for another forge.
+7. Challenge correctness, safety, recovery, compatibility, observability, simplicity, test adequacy, delta coverage, and evidence-lineage completeness.
+8. For A2+ blocking test claims, run or inspect a safe negative control; when that is unsafe or unavailable, inspect the logical counterexample, alternative failure-detection evidence, and stated certification limit.
+9. Reconcile every failure, cancellation, skip, timeout, retry, rerun, superseded execution, expected RED, and mutation result; preserve corrections and invalidated evidence.
+10. Run the Result-Acceptance Gate for the reviewed next transition. Executor feedback is input, never its verdict.
+11. Report findings by severity; distinguish defects and evidence gaps from non-blocking hardening.
+12. Issue a typed, scoped verdict and name the next authority only when Next-Safe-Step, Delta-First, and Result-Acceptance consequences permit it. Do not return `NOT CERTIFIED` solely because later end-state hardening is incomplete outside the reviewed transition. Preserve the original requested decision; a narrower verdict is separate unless the accountable owner accepts the scope change.
 
 For code review, prioritize behavioral and operational consequences over formatting preferences.
 
@@ -180,6 +185,7 @@ Use [ai-complexity-strategy.md](ai-complexity-strategy.md) for the complete gate
 | Explicit objective and non-goals | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Current target identity | if mutable | ✓ | ✓ | ✓ | ✓ |
 | Delta Evidence Plan | optional | concise when impact is material | required | full + budget/expansion controls | full + strongest independent impact challenge |
+| Next-Safe-Step scope | two lists, may be empty; concise/inlined | two lists; concise/inlined | durable record required | full blocker-admission + bounded-exposure proof | full + strongest independent challenge and accountable risk decision |
 | Acceptance criteria | concise | ✓ | ✓ | ✓ | ✓ |
 | Automated verification | optional | targeted | targeted + integration | required | required + adversarial |
 | Negative control/falsifiability | logical counterexample; execution optional | execute when useful and safe | blocking test criteria; execute when safe | execute when safe, otherwise alternative proof + certification limit | strongest safe independent challenge; otherwise alternative proof, accountable exception, and no `CERTIFIED` if material capability remains unproven |
@@ -191,7 +197,7 @@ Use [ai-complexity-strategy.md](ai-complexity-strategy.md) for the complete gate
 | Completed Result-Acceptance Gate before triggered downstream authority | required | required | required | required | required + independent review |
 | Durable handoff/evidence | optional | concise | required | required | required + retention/integrity |
 
-These are minimums, not a substitute for domain controls. Promote a task when it touches security, privacy, money, persistent data, external side effects, shared systems, production, or irreversible state.
+These are minimums, not a substitute for domain controls. Classify assurance from the residual risk and exposure of the next transition after accepted controls. Promote when that transition can materially touch security, privacy, money, persistent data, external side effects, shared systems, production, or irreversible state; do not keep it promoted merely because an earlier uncontrolled incident was severe.
 
 ## 12. Proportionality and parallelism
 
@@ -200,5 +206,7 @@ Scale depth, not truthfulness:
 - A one-line A1 fix can use one criterion and one targeted test.
 - An A3 migration needs identity, risk, recovery, observability, independent review, and real-world acceptance even if the diff is small.
 - A broad diff can remain A1 if it is generated, reversible, and isolated, but verify that assumption.
+- A bounded supervised canary may defer unattended-operation hardening when exposure is capped, effects are observable, stop/rollback is proven, and no uncontrolled security, privacy, data-loss, irreversible, paid, or ambiguous external-side-effect risk remains.
+- Count tests, reviews, corrections, reruns, and evidence recovery inside the lifecycle transition they prove; they are not separate milestones.
 
 Parallelize research, inventory, and independent read-only reviews. Serialize conflicting edits and every unisolated shared mutation lane. Merge parallel evidence only after reconciling artifact identities and assumptions.

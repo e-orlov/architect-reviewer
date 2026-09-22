@@ -6,7 +6,7 @@ First determine what changed, what depends on it, which claims that change inval
 
 Use this sequence:
 
-`delta → transitive impact → invalidated claims → required proof → targeted execution → final convergence if justified`
+`delta → transitive impact → reachable risks → invalidated claims → required proof → targeted execution → final convergence if justified`
 
 Delta-first is dependency-based, not file-based. An unchanged file, test, or component may still be affected through a shared contract, schema, adapter, configuration, migration, workflow, generated artifact, or runtime dependency.
 
@@ -76,7 +76,7 @@ A full suite or broad convergence gate is required when:
 - targeted tests expose unexpected coupling;
 - the release policy explicitly requires final convergence;
 - A3/A4 risk requires system-level proof;
-- the target is a release, migration, deployment, or production acceptance boundary.
+- the next transition is a release, migration, deployment, or production acceptance boundary whose named reachable risk or explicit policy requires broad convergence.
 
 Record why broad testing is necessary. `More tests feel safer` is not sufficient justification.
 
@@ -117,6 +117,8 @@ Before implementation or review, record:
 | Target | Exact identity under work or review |
 | Delta | Source, schema, config, workflow, dependency, and environment changes |
 | Impact | Direct and transitive affected surfaces |
+| Next transition | Exact proposed lifecycle transition, exposure cap, checkpoint, and rollback boundary |
+| Reachable risks | Failure modes that can become real before that checkpoint after current controls |
 | Invalidated claims | Claims whose earlier evidence can no longer be reused |
 | Reused evidence | Exact evidence plus dependency-based reuse rationale |
 | Required tests | Smallest sufficient test set and matching V-model level |
@@ -126,7 +128,15 @@ Before implementation or review, record:
 
 No implementation, review certification, or downstream `GO` may proceed without this plan for A2+ work.
 
-## 9. Interaction with evidence lineage
+## 9. Interaction with next-step scope and evidence lineage
+
+Delta-First determines what changed and which proof was invalidated. [next-safe-step.md](next-safe-step.md) determines which of those controls and claims are required before the exact next transition rather than before a later unattended or scaled end state.
+
+- Select proof for every invalidated claim material to the next transition and every applicable governing-policy gate; record both in `NEXT-STEP BLOCKERS`.
+- Do not omit affected proof merely because exposure is bounded.
+- Do not add unrelated proof merely because the desired end state will eventually need it.
+- Recompute residual risk after each accepted control; a changed next transition or newly reachable risk invalidates the affected selection plan.
+- Automatically triggered post-transition checks are telemetry unless they prove a named blocker or policy claim.
 
 The Delta Evidence Plan is the prospective selection contract: it determines which claims and gates need new proof before work or review. The Result-Acceptance Gate in [evidence-and-gates.md](evidence-and-gates.md) is the retrospective acceptance contract: it reconciles what actually ran, including every relevant failure, skip, retry, rerun, correction, and invalidated result.
 

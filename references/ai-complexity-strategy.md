@@ -155,7 +155,7 @@ Require `PASS + READY_FOR_EXPERIMENT` from the Baseline Gate and `PASS + READY_F
 
 Choose the least-complex candidate on the admissible quality/cost/risk frontier. When candidates are practically equivalent within the predeclared margin or qualitative decision boundary and uncertainty, choose the one with lower lifecycle complexity. Do not equate simplicity only with parameter count, feature count, lines of code, or number of services.
 
-The Complexity-Promotion Gate criterion is: the measured benefit justifies the added lifecycle complexity for the stated scope, no acceptable lower-complexity candidate closes the gap, and required lifecycle controls are complete. Use these decision states:
+The Complexity-Promotion Gate criterion is: the measured benefit justifies the added lifecycle complexity for the stated scope, no acceptable lower-complexity candidate closes the gap, and lifecycle controls required for the exact proposed transition are complete. Use [next-safe-step.md](next-safe-step.md) to separate those blockers from hardening needed only before later unattended, scaled, or broader operation.
 
 | State | Meaning |
 |---|---|
@@ -164,12 +164,12 @@ The Complexity-Promotion Gate criterion is: the measured benefit justifies the a
 | `READY_FOR_EXPERIMENT` | The Baseline Gate established a material gap and permits a bounded experiment. |
 | `VALIDATED_NO_PROMOTION` | The scoped comparison claim passed and no lifecycle-complexity promotion gate applies. |
 | `READY_FOR_PROMOTION_REVIEW` | The Experiment Gate supported the hypothesis and permits complexity-promotion review, not adoption. |
-| `APPROVED_LIMITED` | Promotion is justified only for a bounded cohort, traffic slice, task class, or canary. |
+| `APPROVED_LIMITED` | Promotion is justified only for a bounded cohort, traffic slice, task class, or supervised canary with explicit cap, observation, expiry, stop/rollback, and later hardening triggers. |
 | `PROMOTED` | Benefit, lifecycle completeness, and risk controls are evidenced for the stated scope. |
 | `BLOCKED` | A known unmet prerequisite prevents the scoped decision. |
 | `UNKNOWN` | Evidence is missing, stale, ambiguous, contradictory, or insufficient to distinguish the decision. |
 
-Return `PASS + APPROVED_LIMITED` or `PASS + PROMOTED` only when the promotion criterion is met for the corresponding scope. Return `FAIL + STOP` or `FAIL + EXPERIMENT_ONLY` when decision-capable evidence does not justify adoption. Map known missing prerequisites to `BLOCKED + BLOCKED` and indeterminate evidence to `UNKNOWN + UNKNOWN`.
+Return `PASS + APPROVED_LIMITED` or `PASS + PROMOTED` only when the promotion criterion is met for the corresponding scope. `APPROVED_LIMITED` may defer controls whose risk is unreachable inside that bounded transition, but never safeguards needed before the first provider call, unbounded paid effect, security/privacy exposure, irreversible mutation, unrecoverable data loss, ambiguous external side effect, or operation without rollback. Return `FAIL + STOP` or `FAIL + EXPERIMENT_ONLY` when decision-capable evidence does not justify adoption. Map known missing prerequisites to `BLOCKED + BLOCKED` and indeterminate evidence to `UNKNOWN + UNKNOWN`.
 
 These are scoped AI-complexity decisions, not artifact lifecycle states. Continue to use the lifecycle model in [operating-model.md](operating-model.md) for implementation, verification, merge, release, and acceptance progress.
 
@@ -245,7 +245,7 @@ Apply assurance proportionately:
 
 - A0/A1 may use a concise record when no runtime or consequential decision is affected; omit an inapplicable gate with a reason rather than fabricating evidence.
 - A2 requires a durable decision record, versioned evidence, integration checks, and owned limitations.
-- A3/A4 requires target-like evaluation, independent review, staged exposure, monitoring, fallback/rollback, and accountable residual-risk acceptance.
+- A3/A4 requires target-like evaluation, independent review, staged exposure, monitoring, fallback/rollback, and accountable residual-risk acceptance proportionate to the exact next transition. Recompute assurance after accepted containment; do not make the final unattended operating model the admission price for a safer bounded learning step.
 
 Promotion evidence expires when a material identity or assumption changes. Invalidate only affected claims unless project policy requires broader revalidation.
 
@@ -259,7 +259,7 @@ Stop promotion or return the mapped `BLOCKED` or `UNKNOWN` gate verdict and deci
 - evaluation data is contaminated, unrepresentative, identity-unknown, or too weak for the claim;
 - improvement does not cross the practical-equivalence margin or qualitative decision boundary, or is indistinguishable from measurement uncertainty;
 - an average improvement hides a blocking slice or prohibited outcome;
-- lifecycle cost, ownership, fallback, rollback, or monitoring is missing;
+- lifecycle cost or ownership is unknown, or a fallback, rollback, monitoring, or other control required before the exact proposed transition is missing;
 - a cascade, agent, or tool can create unbounded calls, cost, state, or side effects;
 - complexity is justified only by novelty, flexibility, future use, benchmark prestige, or vendor claims.
 

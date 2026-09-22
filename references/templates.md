@@ -16,6 +16,7 @@
 12. AI Complexity Decision Record
 13. Result-Acceptance / Evidence-Lineage Record
 14. Delta Evidence Plan
+15. Next-Safe-Step Record
 
 Use only fields justified by the task. Preserve exact identities and raw evidence references. Delete instructional placeholders before delivery.
 
@@ -25,6 +26,8 @@ Use only fields justified by the task. Preserve exact identities and raw evidenc
 # State Capsule
 
 - Objective:
+- Original requested decision/claim:
+- Accepted scope change, if any: <authority/evidence>
 - Task type / assurance: <type> / A0–A4
 - Lifecycle state: <exact state from operating-model.md>
 - Scoped route/AI decision state(s):
@@ -33,6 +36,11 @@ Use only fields justified by the task. Preserve exact identities and raw evidenc
 - Target identity: <repo/branch/SHA/build/config/schema/runtime as applicable>
 - Evidence window: <last independently accepted immutable baseline or NO_PRIOR_ACCEPTED_BASELINE → exact target>
 - Delta Evidence Plan: <identity, revision, COMPLETE | BLOCKED | UNKNOWN | NOT_REQUIRED>
+- Next transition: <exact durable lifecycle transition, exposure cap, checkpoint, stop/rollback boundary>
+- Next-Safe-Step Record: <identity, revision, COMPLETE | BLOCKED | UNKNOWN | NOT_REQUIRED>
+- NEXT-STEP BLOCKERS:
+- END-STATE HARDENING: <item, activation boundary/trigger, owner, target, review date>
+- Milestones: <frozen denominator, completed durable transitions>
 - Forge connector: GITHUB_AUTHENTICATED | NATIVE_AUTHENTICATED | NOT_APPLICABLE | UNAVAILABLE
 - Open attempt/anomaly IDs:
 - Result-Acceptance Gate: PASS | FAIL | BLOCKED | UNKNOWN | NOT_YET_REQUIRED
@@ -61,6 +69,8 @@ Use only fields justified by the task. Preserve exact identities and raw evidenc
 ## Current state and evidence
 
 ## Delta Evidence Plan or reference
+
+## Next-Safe-Step Record or reference
 
 ## Actors, data, trust boundaries, and real execution path
 
@@ -103,6 +113,13 @@ Use only fields justified by the task. Preserve exact identities and raw evidenc
 - Negative-control status: NOT_REQUIRED | REQUIRED | EXECUTED | UNSAFE | UNAVAILABLE
 - Negative-control or alternative evidence / limitation:
 - Environment/config identity:
+- Next transition / checkpoint / exposure cap / rollback boundary:
+- Critical-path class: NEXT_STEP_BLOCKER | END_STATE_HARDENING
+- Blocker basis: REACHABLE_RISK | GOVERNING_POLICY | N/A
+- Reachable risk / five-condition admission rationale:
+- Governing policy and applicable boundary, if used:
+- Expected time / execution / context cost:
+- Evidence that retires the uncertainty:
 - Command/probe:
 - Collected result:
 - UTC timestamp / TTL:
@@ -120,11 +137,18 @@ Use only fields justified by the task. Preserve exact identities and raw evidenc
 # Review Verdict
 
 - Review type: SELF-REVIEW | INDEPENDENT REVIEW
+- Original requested decision/claim:
+- Reviewed decision/claim:
+- Scope change from original request: NONE | PROPOSED | ACCEPTED
+- Scope-change authority / acceptance evidence:
 - Scope and exact artifact identity:
 - Task type / assurance:
 - Last independently accepted immutable baseline, or `NO_PRIOR_ACCEPTED_BASELINE` plus justified start boundary:
 - Evidence window and exact final target:
 - Delta Evidence Plan identity/revision and status:
+- Reviewed next transition and Next-Safe-Step Record:
+- NEXT-STEP BLOCKERS reviewed:
+- END-STATE HARDENING and activation boundaries reviewed:
 - Forge connector and observed repository/account identity:
 - Result-Acceptance Record / gate verdict:
 - Evidence reviewed:
@@ -144,6 +168,8 @@ Use only fields justified by the task. Preserve exact identities and raw evidenc
 ## Assumptions and unknowns
 
 ## Residual risk
+
+## Non-blocking end-state hardening
 
 ## Verdict
 
@@ -201,6 +227,7 @@ If findings are absent, write `No findings within the reviewed scope` and still 
 - Schema/migration head:
 - Feature-flag state:
 - Target environment/topology:
+- Next bounded transition / exposure cap / checkpoint:
 - Rollout/canary cohort:
 - Required checks and evaluated SHA:
 - Forge connector / observed account and UTC:
@@ -275,12 +302,14 @@ Evidence and UTC time:
 # Handoff
 
 - Objective:
+- Original requested decision/claim and any accepted scope change:
 - Lifecycle state: <exact state from operating-model.md>
 - Scoped route/AI decision state(s):
 - Review verdict, if any: CERTIFIED | NOT CERTIFIED | UNKNOWN
 - Exact target and artifact identities:
 - Evidence window and last accepted immutable baseline:
 - Delta Evidence Plan identity/revision, reuse decisions, and expansion triggers:
+- Next-Safe-Step Record, blockers, deferred hardening, milestone denominator, and next checkpoint:
 - Forge connector state and observed identity:
 - Result-Acceptance Record / gate verdict:
 - What changed / what did not change:
@@ -300,9 +329,9 @@ Evidence and UTC time:
 ```markdown
 # V-model Trace Matrix
 
-| ID | Need / rationale | Requirement or control | Risk / prohibited outcome | Design owner | Implementation slice | Verification level | Falsifiable criterion / oracle | Scope / expected count | Environment identity | Evidence / UTC | Invalidation dependencies | Owner | State |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| REQ-001 |  |  |  |  |  | UNIT / COMPONENT / CONTRACT / INTEGRATION / SYSTEM / ACCEPTANCE |  |  |  |  |  |  | DISCOVERED / PROPOSED / PLANNED / IMPLEMENTED_UNVERIFIED / VERIFIED_LOCAL / VERIFIED_INTEGRATION / READY_FOR_MERGE / MERGED_UNRELEASED / RELEASED_UNACCEPTED / ACCEPTED / BLOCKED / UNKNOWN |
+| ID | Need / rationale | Requirement or control | Risk / prohibited outcome | Design owner | Implementation slice | Verification level | Falsifiable criterion / oracle | Scope / expected count | Environment identity | Evidence / UTC | Invalidation dependencies | Lifecycle activation | Owner | State |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| REQ-001 |  |  |  |  |  | UNIT / COMPONENT / CONTRACT / INTEGRATION / SYSTEM / ACCEPTANCE |  |  |  |  |  | NEXT_STEP_BLOCKER:REACHABLE_RISK / NEXT_STEP_BLOCKER:GOVERNING_POLICY / END_STATE_HARDENING:<boundary> |  | DISCOVERED / PROPOSED / PLANNED / IMPLEMENTED_UNVERIFIED / VERIFIED_LOCAL / VERIFIED_INTEGRATION / READY_FOR_MERGE / MERGED_UNRELEASED / RELEASED_UNACCEPTED / ACCEPTED / BLOCKED / UNKNOWN |
 
 ## Orphan check
 
@@ -387,10 +416,16 @@ Evidence and UTC time:
 # Result-Acceptance Gate
 
 - Decision being authorized: NEXT_IMPLEMENTATION_MANDATE | MERGE_GO | RELEASE_GO | DEPLOYMENT_GO | CERTIFICATION | OTHER
+- Original requested decision/claim:
+- Reviewed transition and owner-accepted scope change, if any:
 - Architect/reviewer:
 - Independence status: INDEPENDENT | SELF_REVIEW_ONLY
 - Last independently accepted immutable baseline, or `NO_PRIOR_ACCEPTED_BASELINE` plus justified start boundary:
 - Exact final target identity:
+- Exact next transition / checkpoint / exposure cap / rollback boundary:
+- Next-Safe-Step Record identity / final revision:
+- Required gate scope: <NEXT-STEP BLOCKERS, including applicable GOVERNING_POLICY blockers>
+- Deferred END-STATE HARDENING and activation boundaries:
 - Evidence window: <baseline → target>
 - Delta Evidence Plan identity / final revision:
 - Relevant source/configuration/schema/workflow/environment revisions:
@@ -434,7 +469,7 @@ Evidence and UTC time:
 
 ## Final-head completeness
 
-- All required gates ran:
+- All NEXT-STEP BLOCKERS, including applicable governing-policy gates, ran:
 - Discovery counts nonzero and exact where known:
 - No required step skipped or silently tolerated:
 - Logs and artifacts match the exact target:
@@ -465,6 +500,8 @@ Evidence and UTC time:
 - Last accepted immutable baseline, or `NO_PRIOR_ACCEPTED_BASELINE` plus justified start boundary:
 - Exact target identity:
 - Decision boundary: IMPLEMENTATION | REVIEW | MERGE | RELEASE | DEPLOYMENT | ACCEPTANCE
+- Exact next transition / exposure cap / checkpoint / rollback boundary:
+- Reachable residual risks after current controls:
 
 ## Exact delta
 
@@ -517,9 +554,82 @@ Evidence and UTC time:
 
 - Every changed artifact has an impact path or explicit uncertainty: YES | NO
 - Every relevant claim has exactly one evidence state: YES | NO
-- Every invalidated/new claim has matching proof: YES | NO
+- Every invalidated/new claim required for the exact next transition or applicable governing policy has matching proof: YES | NO
+- Every deferred invalidated/new claim has END-STATE HARDENING classification, activation boundary/trigger, owner, target, and review date: YES | NO
 - Every reuse claim has dependency/identity/TTL/oracle rationale: YES | NO
 - Every broad gate has a stated justification: YES | NO
 - A2+ implementation/review/downstream authority allowed by this plan: YES | NO
 - Remaining unknowns:
+```
+
+## 15. Next-Safe-Step Record
+
+```markdown
+# Next-Safe-Step Record
+
+- Task / decision:
+- Original requested decision/claim:
+- Proposed narrower transition and scope-change acceptance, if any:
+- Architect/reviewer and UTC:
+- Record identity / revision:
+- Exact accepted artifact/build/config/environment:
+- Current lifecycle state:
+- Exact next durable lifecycle transition:
+- Exposure cap: <time, population, calls, cost, data volume, or N/A>
+- Observation checkpoint and accountable operator:
+- Stop condition / proven rollback boundary:
+- Frozen milestone denominator / completed durable transitions:
+- Rebaseline, if any: <old denominator, new denominator, lifecycle-topology evidence, owner approval, UTC date>
+
+## Residual-risk recomputation
+
+| Material control accepted | Failure modes prevented, detected, contained, or made recoverable | Evidence | Residual risk before next transition | Controls demoted/promoted |
+|---|---|---|---|---|
+|  |  |  |  |  |
+
+## Reachable-risk inventory
+
+| Failure mode | Reachable before checkpoint? | Existing preventive/detective/containment/recovery controls | Residual consequence | Evidence / unknowns |
+|---|---|---|---|---|
+|  | YES / NO / UNKNOWN |  |  |  |
+
+## NEXT-STEP BLOCKERS
+
+| Control/gate | Basis | Named reachable risk or governing policy/boundary | Why existing controls are insufficient | Why no bounded substitute is safe | Harm before checkpoint | Proportionate proof / V level | Cost | Owner / state |
+|---|---|---|---|---|---|---|---|---|
+|  | REACHABLE_RISK / GOVERNING_POLICY |  |  |  |  |  |  | OPEN / PASS / RECLASSIFIED_WITH_RATIONALE / BLOCKED / UNKNOWN |
+
+## END-STATE HARDENING
+
+| Control | Later risk reduced | Earliest activation boundary / trigger | Target outcome | Owner | Review date | Why non-blocking now |
+|---|---|---|---|---|---|---|
+|  |  |  |  |  |  |  |
+
+## Bounded-supervision exception, if used
+
+- Exposure cap:
+- Accountable operator:
+- Observable signals and threshold:
+- Stop/rollback proof:
+- Security/privacy/data-loss/irreversibility/paid-effect/side-effect check:
+- Expiry and next decision point:
+
+## Minimum-sufficient evidence plan
+
+- Delta and transitive impact reference:
+- Invalidated claims material to this transition:
+- Required targeted proof:
+- Governing-policy blockers:
+- Convergence gate, only if a named trigger or policy justifies one:
+- Post-transition telemetry not treated as blocking proof:
+- Evidence budget / expansion trigger:
+
+## Critical-path and milestone decision
+
+- Activities combined because they share artifact/environment/authority/observation/rollback:
+- Activities split because independently useful/releasable or materially risk-isolating:
+- Next authorized transition: GO | BLOCKED | UNKNOWN
+- Authority still required:
+- Hardening activation reminders/checkpoints:
+- Rationale:
 ```

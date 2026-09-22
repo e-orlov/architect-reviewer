@@ -9,13 +9,14 @@
 - an iterative V-model that designs the matching proof with each requirement;
 - different routes for ideas, features, bugs, migrations, incidents, releases, and audits;
 - assurance levels that scale controls to uncertainty, blast radius, reversibility, and exposure;
+- next-safe-step gates that separate controls needed now from end-state hardening needed only before later exposure;
 - exact artifact and environment identity instead of narrative “green” claims;
 - delta-first evidence selection from transitive impact rather than file proximity or indiscriminate full-suite execution;
 - bounded evidence-lineage reconciliation from the last accepted immutable baseline to the exact target;
 - independent challenge for high-risk work;
 - explicit reliability, recovery, residual-risk, and real-world acceptance controls;
 - Baseline, Experiment, and Complexity-Promotion gates against AI overengineering;
-- KISS and YAGNI only after safety, correctness, observability, and recovery are complete.
+- KISS and YAGNI only after safety, correctness, observability, and recovery are complete for the exact next transition and later obligations are explicitly activated at their boundary.
 
 That combination makes the skill a strong candidate when the cost of a plausible but unproved answer is higher than the cost of disciplined evidence.
 
@@ -23,12 +24,13 @@ That combination makes the skill a strong candidate when the cost of a plausible
 
 Architecture and review often fail in predictable ways: requirements are not testable, tests prove the wrong boundary, changed files are mistaken for complete impact, full suites are repeated without information value, a green CI result is treated as production acceptance, reviewers inspect only the diff, operational risk is deferred, and AI complexity is promoted because it is impressive rather than necessary.
 
-Architect Reviewer turns those failure modes into explicit controls. It asks four separate questions:
+Architect Reviewer turns those failure modes into explicit controls. It asks five separate questions:
 
 1. **What state is the work actually in?**
 2. **What claim is being made, at which system boundary?**
 3. **What evidence could falsify or support that claim?**
-4. **Who has authority to approve the next lifecycle transition or accept residual risk?**
+4. **Which risks are reachable during the next bounded transition, after current controls?**
+5. **Who has authority to approve that transition or accept residual risk?**
 
 It never treats implementation, verification, merge, release, deployment, and real-world acceptance as synonyms.
 
@@ -98,6 +100,10 @@ This is a synthesis, not a wholesale copy of any framework. Source-specific comm
 | [NIST AI RMF Generative AI Profile](https://doi.org/10.6028/NIST.AI.600-1) | Risk-proportionate AI controls, provenance, deployment-relevant measurement, baseline comparison, lifecycle TEVV evidence, documented limitations, monitoring, fallback, and recovery. The skill does not claim NIST certification. |
 | [OpenAI eval guidance](https://developers.openai.com/api/docs/guides/evals) | Describe the task and expected behavior, run versioned test inputs, analyze results, and iterate from evaluation evidence rather than anecdotal demonstrations. |
 | [FrugalGPT](https://arxiv.org/abs/2305.05176) | Treat routing and model cascades as empirical cost/quality candidates. A cascade is never presumed simpler: router errors, fallback, latency, operational cost, and recovery are part of the comparison. |
+| [AWS Well-Architected: frequent, small, reversible changes](https://docs.aws.amazon.com/wellarchitected/latest/operational-excellence-pillar/ops_dev_integ_freq_sm_rev_chg.html) | Prefer small reversible transitions that bound scope, impact, troubleshooting, and recovery. |
+| [DORA: Working in small batches](https://dora.dev/capabilities/working-in-small-batches/) | Use independently valuable, testable increments to shorten feedback and course correction. |
+| [Google SRE Workbook: Canarying Releases](https://sre.google/workbook/canarying-releases/) | Bound release risk by time and population; define evaluation, hold, rollback, and expansion decisions. |
+| [Google SRE: Production Services Best Practices](https://sre.google/sre-book/service-best-practices/) | Use staged rollout, deliberate supervision, rollback-first preparation, and signals appropriate to operational urgency. |
 
 The detailed source ledger records what was adopted, adapted, and intentionally rejected, together with reviewed repository blob identities: [references/source-synthesis.md](references/source-synthesis.md).
 
@@ -118,17 +124,39 @@ The comparison is project-specific. The skill deliberately rejects universal cla
 Before implementation or review, the skill applies:
 
 ```text
-delta → transitive impact → invalidated claims → required proof →
+delta → transitive impact → reachable risks → invalidated claims → required proof →
 targeted execution → final convergence if justified
 ```
 
 The analysis is dependency-based rather than file-based. It includes source, schemas, configuration, workflows, dependencies, generated artifacts, environment state, external interfaces, direct consumers, and transitive consumers. Every relevant claim is classified as `INVALIDATED`, `PARTIALLY_INVALIDATED`, `REUSABLE`, `NEWLY_REQUIRED`, `N/A`, or `UNKNOWN`.
 
-For A2+ work, a Delta Evidence Plan is mandatory before implementation, review certification, or downstream `GO`. It records the exact baseline and target, impact graph, evidence-reuse rationale, smallest sufficient test set, justified broad gates, expansion triggers, and expected evidence/context cost. A full suite is still required when shared foundations, incomplete dependency knowledge, multiple persistence boundaries, A3/A4 exposure, release boundaries, or project policy justify convergence. It is not run merely to produce a larger `PASS` count.
+For A2+ work, a Delta Evidence Plan is mandatory before implementation, review certification, or downstream `GO`. It records the exact baseline and target, impact graph, evidence-reuse rationale, smallest sufficient test set, justified broad gates, expansion triggers, and expected evidence/context cost. A full suite is still required when shared foundations, incomplete dependency knowledge, multiple persistence boundaries, residual A3/A4 exposure, a named release-boundary risk, or project policy justifies convergence. A lifecycle label alone is not enough, and the suite is not run merely to produce a larger `PASS` count.
 
 This design is consistent with dependency-based selection and safe fallback described by [Microsoft Test Impact Analysis](https://learn.microsoft.com/en-us/azure/devops/pipelines/test/test-impact-analysis?view=azure-devops), direct/transitive/reverse-dependency analysis in the [Bazel Query Guide](https://bazel.build/query/guide), immutable baseline comparison through the [GitHub Compare Commits API](https://docs.github.com/en/rest/commits/commits#compare-two-commits), and lifecycle-aware selective/comprehensive execution in [Develocity Predictive Test Selection](https://docs.develocity.ai/2026.2/guides/predictive-test-selection/). These are supporting mechanics, not required products.
 
 The full rule is in [references/delta-first.md](references/delta-first.md).
+
+## Next safe step and minimum sufficient gates
+
+The skill never makes the final unattended operating model the admission price for learning from the next small, reversible step. For every material task it records two scopes:
+
+- `NEXT-STEP BLOCKERS`: controls whose absence exposes an unacceptable risk before the next checkpoint;
+- `END-STATE HARDENING`: controls required only before later unattended, broader, or scaled exposure, with an activation boundary, owner, trigger, target, and review date.
+
+A proposed risk control enters the critical path only when its named risk is reachable during the next transition, current controls are insufficient, a bounded substitute such as a supervised canary or proven rollback is not safe enough, harm could occur before the checkpoint, and the proof is proportionate. A named legal, contractual, governing-instruction, or project-policy gate applicable at that boundary also enters `NEXT-STEP BLOCKERS` with basis `GOVERNING_POLICY`. Residual risk is recomputed after every accepted control; the original incident severity does not permanently determine process severity.
+
+The preferred path is:
+
+```text
+accepted artifact → exact build → reversible bounded exposure →
+observation → expand or rollback
+```
+
+Human supervision may temporarily replace unfinished automation only with capped exposure, an accountable operator, observable effects, proven stop/rollback, an expiry, and no uncontrolled security, privacy, data-loss, irreversible, unbounded-paid, or ambiguous external-side-effect risk. Milestones count durable lifecycle transitions—not tests, reviews, corrections, reruns, or evidence packaging.
+
+A narrower canary verdict never silently replaces a requested unattended-production verdict. Scope can change only with explicit owner acceptance; otherwise both verdicts remain visible.
+
+This rule builds on small-batch and reversible-change guidance from [DORA](https://dora.dev/capabilities/working-in-small-batches/) and [AWS Well-Architected](https://docs.aws.amazon.com/wellarchitected/latest/operational-excellence-pillar/ops_dev_integ_freq_sm_rev_chg.html), plus bounded canary and supervised rollout practices from the [Google SRE Workbook](https://sre.google/workbook/canarying-releases/) and [Google SRE production practices](https://sre.google/sre-book/service-best-practices/). The complete contract is in [references/next-safe-step.md](references/next-safe-step.md).
 
 ## Testing and acceptance
 
@@ -173,6 +201,9 @@ This requirement follows the evidence surfaces and semantics documented by GitHu
 ## What the skill deliberately refuses
 
 - One heavyweight workflow for every task.
+- End-state hardening used to block a bounded transition whose exposure cannot reach the corresponding risk.
+- “Useful,” “best practice,” or “we will eventually need it” used as a blocking rationale.
+- Tests, reviews, corrections, reruns, or evidence packaging counted as lifecycle milestones.
 - Late, sequential V-model testing.
 - Same-author “independent” certification for A3/A4 work.
 - “Run everything to be safe” without a convergence, risk, boundary, or policy reason.
@@ -196,6 +227,7 @@ This requirement follows the evidence surfaces and semantics documented by GitHu
 | [references/v-model.md](references/v-model.md) | Continuous V-model trace and route overlays |
 | [references/task-routes.md](references/task-routes.md) | Idea, feature, bug, migration, incident, release, and review routes |
 | [references/delta-first.md](references/delta-first.md) | Exact-delta analysis, transitive impact, evidence states, targeted selection, convergence triggers, and cost controls |
+| [references/next-safe-step.md](references/next-safe-step.md) | Next-step blockers, deferred hardening, blocker admission, residual-risk recomputation, bounded supervision, and milestone discipline |
 | [references/testing-strategy.md](references/testing-strategy.md) | Delta-driven test selection, test levels, execution pipeline, scenario design, environment differences, and acceptance |
 | [references/ai-complexity-strategy.md](references/ai-complexity-strategy.md) | Baseline, Experiment, and Complexity-Promotion gates |
 | [references/evidence-and-gates.md](references/evidence-and-gates.md) | Evidence contracts, mandatory forge connection, failure reconciliation, Result-Acceptance, risk, production, and review gates |

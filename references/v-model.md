@@ -57,6 +57,7 @@ Create one row per blocking requirement, risk control, or operational invariant:
 | Evidence | Exact artifact/result identity, raw output location, UTC time |
 | Invalidation dependencies | Changes that require this evidence to be refreshed |
 | Delta evidence state | `INVALIDATED`, `PARTIALLY_INVALIDATED`, `REUSABLE`, `NEWLY_REQUIRED`, `N/A`, or `UNKNOWN`, with rationale |
+| Lifecycle activation | `NEXT-STEP BLOCKER` with basis `REACHABLE_RISK` or `GOVERNING_POLICY`, or later hardening boundary where the row becomes required |
 | Owner | Person/system responsible for closure |
 | State | One exact lifecycle state from [operating-model.md](operating-model.md) |
 
@@ -74,12 +75,13 @@ For each safe vertical slice:
 1. Select one user-visible behavior, boundary contract, or risk reduction.
 2. Write or refine its left-side trace rows.
 3. For A2+ work, establish the exact baseline-to-target delta, trace direct and transitive impact, and record the [Delta Evidence Plan](delta-first.md).
-4. Design right-side criteria before changing implementation.
-5. Confirm the criteria observe the real boundary and name a falsifying defect; execute a safe negative control when required by assurance.
-6. Implement the minimum complete slice.
-7. Run the earliest matching checks immediately: local, component, contract, then higher-level when justified by impact or policy.
-8. Preserve exact evidence and update lifecycle state.
-9. Reconcile new evidence into requirements, design, risk, the Delta Evidence Plan, and the next slice.
+4. Define the [next safe step](next-safe-step.md): exact transition, reachable residual risks, exposure cap, checkpoint, rollback, blockers, and later hardening.
+5. Design right-side criteria before changing implementation.
+6. Confirm the criteria observe the real boundary and name a falsifying defect; execute a safe negative control when required by assurance.
+7. Implement the minimum complete slice.
+8. Run the earliest matching checks immediately: local, component, contract, then higher-level when justified by impact, reachable risk, or policy.
+9. Preserve exact evidence and update lifecycle state.
+10. Reconcile new evidence into requirements, design, residual risk, the Delta Evidence Plan, the Next-Safe-Step Record, and the next slice.
 
 Clarification is allowed at any point. When evidence contradicts a requirement or design, return to the affected left-side row, change it explicitly, and invalidate only dependent proof. Do not patch the implementation while leaving the governing contract stale.
 
@@ -159,6 +161,8 @@ Run the smallest test set that proves all invalidated and newly required rows at
 | CI result belongs to another SHA | Evidence and artifact identities do not match | Read live forge state for the exact head and required checks |
 | Only tests near changed files are selected | File proximity misses shared contracts, schemas, configuration, generated artifacts, and transitive consumers | Build the impact graph and test every invalidated trace row |
 | Every available test is run without rationale | PASS volume spends time and context without proving that affected claims were selected | Use the Delta Evidence Plan; reserve broad convergence for explicit triggers or policy |
+| Desired unattended controls block a bounded supervised transition | It confuses later reachable risk with the next checkpoint's residual risk | Separate next-step blockers from hardening and apply the blocker-admission test |
+| Tests, reviews, corrections, and reruns are counted as milestones | Proof activity inflates perceived lifecycle progress and destabilizes the denominator | Count only durable externally meaningful transitions |
 | Worktree treated as environment isolation | Shared ports, services, data, quotas, and schedulers can interfere | Inventory and isolate or serialize shared resources |
 | V-model treated as a one-way stage gate | Learning is suppressed and verification arrives too late | Use recursive vertical slices and explicit backtracking |
 
