@@ -3,7 +3,7 @@ interface:
   short_description: V-model, next-safe gates, evidence, risk, and AI review
   default_prompt: Use $architect-reviewer to map this change through the V-model,
     build the Delta Evidence Plan, define the next safe transition and separate next-step
-    blockers from end-state hardening, apply proportionate risk and AI complexity
+    blockers from end-state hardening, challenge worst-case-derived gates, apply proportionate risk and AI complexity
     gates, reconcile the bounded evidence lineage through the authenticated forge
     connector when relevant, and issue an evidence-backed verdict.
   icon_small: assets/icon.svg

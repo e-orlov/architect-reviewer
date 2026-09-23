@@ -10,6 +10,7 @@
 - different routes for ideas, features, bugs, migrations, incidents, releases, and audits;
 - assurance levels that scale controls to uncertainty, blast radius, reversibility, and exposure;
 - next-safe-step gates that separate controls needed now from end-state hardening needed only before later exposure;
+- a worst-case gate challenge that treats ceilings as bounds and STOP triggers, not automatic waiting periods;
 - exact artifact and environment identity instead of narrative “green” claims;
 - delta-first evidence selection from transitive impact rather than file proximity or indiscriminate full-suite execution;
 - bounded evidence-lineage reconciliation from the last accepted immutable baseline to the exact target;
@@ -130,7 +131,7 @@ targeted execution → final convergence if justified
 
 The analysis is dependency-based rather than file-based. It includes source, schemas, configuration, workflows, dependencies, generated artifacts, environment state, external interfaces, direct consumers, and transitive consumers. Every relevant claim is classified as `INVALIDATED`, `PARTIALLY_INVALIDATED`, `REUSABLE`, `NEWLY_REQUIRED`, `N/A`, or `UNKNOWN`.
 
-For A2+ work, a Delta Evidence Plan is mandatory before implementation, review certification, or downstream `GO`. It records the exact baseline and target, impact graph, evidence-reuse rationale, smallest sufficient test set, justified broad gates, expansion triggers, and expected evidence/context cost. A full suite is still required when shared foundations, incomplete dependency knowledge, multiple persistence boundaries, residual A3/A4 exposure, a named release-boundary risk, or project policy justifies convergence. A lifecycle label alone is not enough, and the suite is not run merely to produce a larger `PASS` count.
+For A2+ work, a Delta Evidence Plan is mandatory before implementation, review certification, or downstream `GO`. It records the exact baseline and target, impact graph, evidence-reuse rationale, smallest sufficient test set, justified broad gates, expansion triggers, and expected evidence/context cost. Shared foundations, incomplete dependency knowledge, multiple persistence boundaries, residual A3/A4 exposure, or a release-boundary risk trigger broader impact analysis. A full suite is required only when the affected boundary cannot be bounded more narrowly, its breadth proves a named claim, or applicable project policy requires it. A lifecycle label alone is not enough, and the suite is not run merely to produce a larger `PASS` count.
 
 This design is consistent with dependency-based selection and safe fallback described by [Microsoft Test Impact Analysis](https://learn.microsoft.com/en-us/azure/devops/pipelines/test/test-impact-analysis?view=azure-devops), direct/transitive/reverse-dependency analysis in the [Bazel Query Guide](https://bazel.build/query/guide), immutable baseline comparison through the [GitHub Compare Commits API](https://docs.github.com/en/rest/commits/commits#compare-two-commits), and lifecycle-aware selective/comprehensive execution in [Develocity Predictive Test Selection](https://docs.develocity.ai/2026.2/guides/predictive-test-selection/). These are supporting mechanics, not required products.
 
@@ -140,10 +141,12 @@ The full rule is in [references/delta-first.md](references/delta-first.md).
 
 The skill never makes the final unattended operating model the admission price for learning from the next small, reversible step. For every material task it records two scopes:
 
-- `NEXT-STEP BLOCKERS`: controls whose absence exposes an unacceptable risk before the next checkpoint;
+- `NEXT-STEP BLOCKERS`: admitted risk controls whose absence exposes an unacceptable risk before the next checkpoint, plus applicable governing-policy gates;
 - `END-STATE HARDENING`: controls required only before later unattended, broader, or scaled exposure, with an activation boundary, owner, trigger, target, and review date.
 
 A proposed risk control enters the critical path only when its named risk is reachable during the next transition, current controls are insufficient, a bounded substitute such as a supervised canary or proven rollback is not safe enough, harm could occur before the checkpoint, and the proof is proportionate. A named legal, contractual, governing-instruction, or project-policy gate applicable at that boundary also enters `NEXT-STEP BLOCKERS` with basis `GOVERNING_POLICY`. Residual risk is recomputed after every accepted control; the original incident severity does not permanently determine process severity.
+
+A timeout, retry horizon, capacity ceiling, or sum of worst cases does not establish a minimum wait or release gate. Proposed risk blockers require a traced failure path, counterfactual harm before the checkpoint, an assessment of existing containment and bounded substitutes, and a delay/cost decision. State-based guards, exposure caps, and STOP triggers often fit the actual boundary better. A rejected gate does not erase material uncertainty; a separately bounded diagnostic step can resolve it without certifying the original larger claim. The complete rule and record are in [references/worst-case-gates.md](references/worst-case-gates.md).
 
 The preferred path is:
 
@@ -203,6 +206,7 @@ This requirement follows the evidence surfaces and semantics documented by GitHu
 - One heavyweight workflow for every task.
 - End-state hardening used to block a bounded transition whose exposure cannot reach the corresponding risk.
 - “Useful,” “best practice,” or “we will eventually need it” used as a blocking rationale.
+- Theoretical maxima or their sum used as mandatory idle time without a reachable residual failure and a recorded counterfactual.
 - Tests, reviews, corrections, reruns, or evidence packaging counted as lifecycle milestones.
 - Late, sequential V-model testing.
 - Same-author “independent” certification for A3/A4 work.
@@ -228,6 +232,7 @@ This requirement follows the evidence surfaces and semantics documented by GitHu
 | [references/task-routes.md](references/task-routes.md) | Idea, feature, bug, migration, incident, release, and review routes |
 | [references/delta-first.md](references/delta-first.md) | Exact-delta analysis, transitive impact, evidence states, targeted selection, convergence triggers, and cost controls |
 | [references/next-safe-step.md](references/next-safe-step.md) | Next-step blockers, deferred hardening, blocker admission, residual-risk recomputation, bounded supervision, and milestone discipline |
+| [references/worst-case-gates.md](references/worst-case-gates.md) | Worst-case gate challenge, dynamic boundaries, counterfactual, and proposal record |
 | [references/testing-strategy.md](references/testing-strategy.md) | Delta-driven test selection, test levels, execution pipeline, scenario design, environment differences, and acceptance |
 | [references/ai-complexity-strategy.md](references/ai-complexity-strategy.md) | Baseline, Experiment, and Complexity-Promotion gates |
 | [references/evidence-and-gates.md](references/evidence-and-gates.md) | Evidence contracts, mandatory forge connection, failure reconciliation, Result-Acceptance, risk, production, and review gates |

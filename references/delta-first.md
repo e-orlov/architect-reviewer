@@ -51,7 +51,7 @@ Hash equality proves artifact identity, not relevance. A sealed artifact need no
 
 ## 4. Select only necessary tests
 
-Run the smallest test set that proves every invalidated or newly introduced claim at its matching V-model boundary:
+Run the smallest test set that proves every invalidated or newly introduced claim required for the exact next transition at its matching V-model boundary. Trace other affected claims to their later activation boundary and owner; do not silently discard them:
 
 - changed local logic → focused unit and regression tests;
 - changed component contract → component and contract tests;
@@ -68,17 +68,17 @@ Do not omit affected tests merely because their source files were unchanged.
 
 ## 5. Escalate to broader testing only when justified
 
-A full suite or broad convergence gate is required when:
+A shared change or uncertainty is a reason to examine broader impact, not automatic proof that a full suite must run. Consider a broad convergence gate when:
 
 - a shared foundation, framework, adapter, schema, build system, lockfile, or global configuration changed;
 - the dependency graph is incomplete or unreliable;
 - multiple components or persistence boundaries changed together;
 - targeted tests expose unexpected coupling;
 - the release policy explicitly requires final convergence;
-- A3/A4 risk requires system-level proof;
+- residual A3/A4 risk requires system-level proof;
 - the next transition is a release, migration, deployment, or production acceptance boundary whose named reachable risk or explicit policy requires broad convergence.
 
-Record why broad testing is necessary. `More tests feel safer` is not sufficient justification.
+Require the smallest broad test set that closes a named dependency uncertainty or reachable claim; require the full suite only when the affected boundary cannot be bounded more narrowly, a policy explicitly requires it, or that breadth is itself necessary for the next transition. Apply [the worst-case gate rule](worst-case-gates.md) to any proposed delay or gate inferred from a maximum. Record why the chosen breadth is necessary. `More tests feel safer` is not sufficient justification.
 
 Run an expensive broad gate once on the exact final target unless a later change invalidates it.
 
@@ -132,8 +132,8 @@ No implementation, review certification, or downstream `GO` may proceed without 
 
 Delta-First determines what changed and which proof was invalidated. [next-safe-step.md](next-safe-step.md) determines which of those controls and claims are required before the exact next transition rather than before a later unattended or scaled end state.
 
-- Select proof for every invalidated claim material to the next transition and every applicable governing-policy gate; record both in `NEXT-STEP BLOCKERS`.
-- Do not omit affected proof merely because exposure is bounded.
+- Select proof for every invalidated claim material to the next transition and every applicable governing-policy gate. Record only admitted risk controls and applicable policy gates in `NEXT-STEP BLOCKERS`; supporting tests remain traced evidence for those claims, not independent blockers by default.
+- Do not omit affected proof for a claim required at this boundary merely because exposure is bounded; trace other affected claims to their later activation boundary.
 - Do not add unrelated proof merely because the desired end state will eventually need it.
 - Recompute residual risk after each accepted control; a changed next transition or newly reachable risk invalidates the affected selection plan.
 - Automatically triggered post-transition checks are telemetry unless they prove a named blocker or policy claim.
@@ -151,7 +151,7 @@ The Delta Evidence Plan is the prospective selection contract: it determines whi
 - An invalidated gate that was not rerun remains `IMPLEMENTED_UNVERIFIED`.
 - Unexplained selection of only nearby tests is insufficient for shared or transitive changes.
 - Repeating unaffected tests does not compensate for a missing affected test.
-- If all invalidated claims receive matching proof and reusable evidence remains valid, unrelated tests and documents should not be reread or rerun.
+- If all claims required for this transition receive matching proof and reusable evidence remains valid, unrelated tests and documents should not be reread or rerun; defer other affected claims explicitly to their activation boundary.
 
 ## Anti-rationalization rule
 
@@ -163,7 +163,7 @@ Neither of these statements is acceptable:
 
 The required statement is:
 
-> Run every test needed to prove the claims invalidated by the transitive impact of the change, and no unrelated test without a stated convergence or policy reason.
+> Run every test needed to prove the claims invalidated by the transitive impact of the change **and required for this transition**. Trace later affected claims to their activation boundary. Do not run unrelated tests without a stated convergence or policy reason.
 
 ## Primary references
 

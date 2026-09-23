@@ -137,7 +137,7 @@ Use: `identify → preflight → expose gradually → observe → accept or roll
 
 1. Bind source, build, config, schema, and target-environment identities.
 2. Define the exact next release transition, exposure cap, checkpoint, rollback boundary, reachable risks, `NEXT-STEP BLOCKERS`, and deferred `END-STATE HARDENING`; confirm every blocker passes the admission criteria in [next-safe-step.md](next-safe-step.md).
-3. Confirm the final Delta Evidence Plan covers the actual release-candidate delta, every invalidated/new claim, reused evidence, and justified convergence gate; then confirm required checks for this transition, ownership, change window, backup, rollback, and a `PASS` Result-Acceptance Gate. For GitHub-backed work, use the mandatory authenticated GitHub connector defined in [evidence-and-gates.md](evidence-and-gates.md).
+3. Confirm the final Delta Evidence Plan covers the actual release-candidate delta, every claim required for this transition, deferred affected claims, reused evidence, and justified convergence gates. Confirm ownership, required checks, rollback, and a `PASS` Result-Acceptance Gate; require a change window or backup where a named reachable risk or applicable policy makes it necessary at this boundary. Challenge any fixed wait derived only from a worst-case ceiling under [worst-case-gates.md](worst-case-gates.md). For GitHub-backed work, use the authenticated GitHub connector defined in [evidence-and-gates.md](evidence-and-gates.md).
 4. Start with the smallest meaningful exposure: dry run, canary, shadow, or cohort.
 5. Monitor user-facing invariants and failure signals at every stage.
 6. Hold or roll back automatically or manually on a predefined breach.

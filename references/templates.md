@@ -117,8 +117,11 @@ Use only fields justified by the task. Preserve exact identities and raw evidenc
 - Critical-path class: NEXT_STEP_BLOCKER | END_STATE_HARDENING
 - Blocker basis: REACHABLE_RISK | GOVERNING_POLICY | N/A
 - Reachable risk / five-condition admission rationale:
+- Reachable causal path / counterfactual harm before checkpoint (risk-control gate):
+- Existing containment, bounded substitutes, and incremental risk reduction (risk-control gate):
+- Worst-case bound versus observed state; dynamic guard or STOP trigger, if relevant:
 - Governing policy and applicable boundary, if used:
-- Expected time / execution / context cost:
+- Expected delay / execution / context cost and proportionality:
 - Evidence that retires the uncertainty:
 - Command/probe:
 - Collected result:
@@ -555,7 +558,7 @@ Evidence and UTC time:
 - Every changed artifact has an impact path or explicit uncertainty: YES | NO
 - Every relevant claim has exactly one evidence state: YES | NO
 - Every invalidated/new claim required for the exact next transition or applicable governing policy has matching proof: YES | NO
-- Every deferred invalidated/new claim has END-STATE HARDENING classification, activation boundary/trigger, owner, target, and review date: YES | NO
+- Every deferred invalidated/new claim has a justified later activation boundary/trigger, owner, target, and review date (and `END-STATE HARDENING` classification if it is a control): YES | NO
 - Every reuse claim has dependency/identity/TTL/oracle rationale: YES | NO
 - Every broad gate has a stated justification: YES | NO
 - A2+ implementation/review/downstream authority allowed by this plan: YES | NO
@@ -593,11 +596,24 @@ Evidence and UTC time:
 |---|---|---|---|---|
 |  | YES / NO / UNKNOWN |  |  |  |
 
+## Proposed risk-blocker admission (one record per proposal, including rejected proposals)
+
+- Proposal ID / source bound, if worst-case-derived:
+- `next transition → named failure → reachable causal path → existing containment → residual harm before checkpoint → why no bounded substitute works → gate cost/delay → decision`:
+- Counterfactual with the proposed gate removed and all existing bounded controls retained:
+- Representative observed behavior and what the maximum actually bounds:
+- Incremental risk reduction after other controls; duplicate protection check:
+- Five conditions: REACHABILITY / RESIDUAL HARM / NO BOUNDED SUBSTITUTE / BOUNDARY FIT / PROPORTIONALITY:
+- Decision: ADMIT_BLOCKER | EXPOSURE_CAP | DEADLINE | DYNAMIC_GUARD | STOP_TRIGGER | ROLLBACK_TRIGGER | MONITOR | DEFER_TO_NAMED_BOUNDARY | RETIRE | UNKNOWN_UNDERLYING_RISK
+- If non-blocking, replacement control or reason for retirement; if uncertainty remains, targeted evidence-recovery transition:
+
+An unsupported proposed risk gate is non-blocking by default; an independently applicable `GOVERNING_POLICY` gate remains in `NEXT-STEP BLOCKERS` with its authority and boundary. A rejected gate does not by itself prove the underlying transition safe.
+
 ## NEXT-STEP BLOCKERS
 
-| Control/gate | Basis | Named reachable risk or governing policy/boundary | Why existing controls are insufficient | Why no bounded substitute is safe | Harm before checkpoint | Proportionate proof / V level | Cost | Owner / state |
-|---|---|---|---|---|---|---|---|---|
-|  | REACHABLE_RISK / GOVERNING_POLICY |  |  |  |  |  |  | OPEN / PASS / RECLASSIFIED_WITH_RATIONALE / BLOCKED / UNKNOWN |
+| Control/gate | Basis | Admission record ID or governing policy/boundary | Boundary-matched proof / V level | Delay and cost | Owner / state |
+|---|---|---|---|---|---|
+|  | REACHABLE_RISK / GOVERNING_POLICY |  |  |  | OPEN / PASS / RECLASSIFIED_WITH_RATIONALE / BLOCKED / UNKNOWN |
 
 ## END-STATE HARDENING
 

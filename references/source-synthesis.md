@@ -476,6 +476,8 @@ Not imported:
 
 Active locations: SKILL.md non-negotiable rules and planning/review workflow; references/next-safe-step.md; references/delta-first.md; references/testing-strategy.md; references/evidence-and-gates.md; references/task-routes.md; Next-Safe-Step Record in references/templates.md.
 
+The [Worst-Case Is Not a Blocking Gate rule](worst-case-gates.md) is a user-supplied project rule, not a quotation or attributed requirement from these sources. It operationalizes the next-boundary risk test with a causal counterfactual, incremental-control analysis, and preference for dynamic limits; the sources above support bounded exposure and proportionality but do not themselves prescribe this exact five-condition test and gate record. Applicable law, contract, governing instruction, and explicit project policy retain precedence.
+
 ## 16. Cross-source synthesis
 
 The combined method is:

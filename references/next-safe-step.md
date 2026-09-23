@@ -22,7 +22,7 @@ A desirable control is not automatically a release gate. Place each control at t
 
 For every task, keep separate lists:
 
-- **NEXT-STEP BLOCKERS** — controls without which the next proposed transition would expose an unacceptable, insufficiently contained risk.
+- **NEXT-STEP BLOCKERS** — admitted risk controls without which the next proposed transition would expose an unacceptable, insufficiently contained risk, plus applicable `GOVERNING_POLICY` gates.
 - **END-STATE HARDENING** — controls valuable for sustained, unattended, or larger-scale operation but unnecessary for the next bounded and reversible transition.
 
 Only the first list may block the next transition. The second becomes owned follow-up work with a trigger, target boundary, and review date.
@@ -45,9 +45,11 @@ A proposed risk control may become a blocking gate only when all of the followin
 4. Its absence could cause unacceptable harm before the next checkpoint.
 5. The required proof is proportionate to the residual risk and observes the correct boundary.
 
-If any condition is false, defer the control to the boundary where it becomes necessary.
+If any condition is false, the proposed risk control is non-blocking. Defer it to a named later activation boundary when useful, convert it into a bounded guard or observation condition, or retire it if existing controls already cover the failure. Rejecting a proposed gate does not make an unresolved material risk safe.
 
 `Useful`, `best practice`, `we will eventually need it`, and `it would make us safer` are not sufficient blocking rationales.
+
+For every proposed risk blocker, record the next transition, named failure, reachable causal path, existing containment, residual harm before the checkpoint, why a bounded substitute fails, gate delay/cost, counterfactual without the gate, and decision—even when the proposal is rejected. An unsupported proposal is non-blocking by default; a separate material unknown may still make the transition `UNKNOWN`. Apply [Worst-Case Is Not a Blocking Gate](worst-case-gates.md) whenever the proposal starts from a ceiling, timeout, retry horizon, capacity limit, possible overlap, or sum of worst cases. Its record does not substitute for an applicable `GOVERNING_POLICY` gate.
 
 ## 3. Recompute residual risk after every material control
 
@@ -157,6 +159,7 @@ The desired final operating model must not become the admission price for learni
 - **V-model completeness is scoped, not abandoned.** Every blocking claim for the next transition still needs proof at the correct boundary. End-state requirements remain traced with their activation boundary, owner, and review date.
 - **Project policy still applies through the blocker list.** A mandatory gate in named law, contract, governing instructions, or project policy is a `NEXT-STEP BLOCKER` when that policy applies at the exact next boundary. Record basis `GOVERNING_POLICY`; `best practice` is not a substitute.
 - **Unknown reachable risk broadens or blocks.** If material impact or reachability cannot be established, broaden inspection or return `UNKNOWN`; do not use minimum-sufficient language to hide uncertainty.
+- **Unknowns can be investigated within a separate safe transition.** A bounded diagnostic exposure with its own controls can gather evidence; it does not change an `UNKNOWN` verdict on the original larger claim. A theoretical maximum alone neither proves residual harm nor mandates waiting.
 
 Use the Next-Safe-Step Record in [templates.md](templates.md) before assigning blockers, assurance, gates, milestones, or the next authority.
 

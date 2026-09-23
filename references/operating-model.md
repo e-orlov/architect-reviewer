@@ -94,6 +94,7 @@ A lower level cannot silently override a higher level. Record conflicts. For mut
 | 50 | Controls change the risk that remains | Recompute residual risk after every accepted prevention, detection, containment, or recovery control. |
 | 51 | Proof work is not a milestone | Count durable lifecycle transitions; keep tests, reviews, corrections, and reruns inside the claim they establish. |
 | 52 | Human supervision is a bounded control | Use it only with capped exposure, an accountable operator, observable effects, proven stop/rollback, expiry, and no uncontrolled high-consequence risk. |
+| 53 | A ceiling is not a waiting period | Challenge worst-case-derived gates with causal reachability, counterfactual harm before the checkpoint, existing controls, dynamic substitutes, incremental benefit, and delay cost. |
 
 ## 4. Status model
 
@@ -129,10 +130,10 @@ Never emit unqualified `READY`; use the exact scoped state such as `READY_FOR_ME
 
 For every proposed transition, maintain two disjoint lists:
 
-- `NEXT-STEP BLOCKERS`: controls required because an unacceptable failure mode is reachable before the next checkpoint and existing or bounded substitute controls are insufficient;
+- `NEXT-STEP BLOCKERS`: admitted risk controls required because an unacceptable failure mode is reachable before the next checkpoint and existing or bounded substitute controls are insufficient, plus applicable `GOVERNING_POLICY` gates;
 - `END-STATE HARDENING`: valuable controls that become necessary only at a later exposure boundary.
 
-The blocker admission test, bounded-supervision contract, and deferral rules are in [next-safe-step.md](next-safe-step.md). `NEXT-STEP BLOCKERS` have basis `REACHABLE_RISK` or `GOVERNING_POLICY`; the latter requires an exact controlling authority and applicability at the next boundary. A missing hardening item does not justify `NOT CERTIFIED` for an earlier bounded transition whose scope cannot reach its risk. An unknown material dependency or reachable risk is not hardening; it remains `UNKNOWN` until bounded.
+The blocker admission test, bounded-supervision contract, and deferral rules are in [next-safe-step.md](next-safe-step.md); challenge theoretical maxima with [worst-case-gates.md](worst-case-gates.md). `NEXT-STEP BLOCKERS` have basis `REACHABLE_RISK` or `GOVERNING_POLICY`; the latter requires an exact controlling authority and applicability at the next boundary. A missing hardening item does not justify `NOT CERTIFIED` for an earlier bounded transition whose scope cannot reach its risk. An unsupported proposed risk gate is non-blocking; an unknown material dependency or reachable risk is not hardening and remains `UNKNOWN` for the claimed transition until bounded. A separately safe diagnostic transition may recover that evidence without changing the original verdict.
 
 Count milestones only for durable externally meaningful state transitions such as merged, released, deployed under containment, canary accepted, exposure expanded, production accepted, or closed. Freeze the denominator after the accountable owner accepts scope. Tests, reviews, corrections, evidence recovery, reruns, and clarifications are work inside a milestone, not new milestones. If evidence proves the accepted lifecycle topology materially wrong, permit only an owner-approved, non-retroactive rebaseline that preserves old/new denominators, reason, evidence, authority, and UTC date.
 

@@ -145,7 +145,7 @@ Apply [delta-first evidence selection](delta-first.md) before rereading artifact
 - A deployment change invalidates real-world acceptance for the prior deployed identity.
 - A requirement change invalidates every downstream row that depends on it.
 
-Run the smallest test set that proves all invalidated and newly required rows at their matching V-model boundaries. Broaden to a full suite or system convergence gate only for an explicit dependency, uncertainty, assurance, release, or policy reason. Do not rerun unrelated expensive gates solely because a file changed elsewhere. Conversely, do not reuse a green report because its timestamp looks recent or its artifact hash is unchanged.
+Run the smallest test set that proves all invalidated and newly required rows **material to the exact next transition** at their matching V-model boundaries. Keep other affected rows traced to their later activation boundary. Broaden to a full suite or system convergence gate only when a named dependency uncertainty or reachable claim cannot be bounded more narrowly, or when applicable policy requires it. Do not rerun unrelated expensive gates solely because a file changed elsewhere. Conversely, do not reuse a green report because its timestamp looks recent or its artifact hash is unchanged.
 
 ## 8. Review rules and failure patterns
 
@@ -159,9 +159,10 @@ Run the smallest test set that proves all invalidated and newly required rows at
 | Brownfield spec generated from prose | It may contradict live behavior and consumers | Validate executable criteria against the actual system |
 | Same author declares independent success | Correlated assumptions remain unchallenged | Use separate context/reviewer or label self-review |
 | CI result belongs to another SHA | Evidence and artifact identities do not match | Read live forge state for the exact head and required checks |
-| Only tests near changed files are selected | File proximity misses shared contracts, schemas, configuration, generated artifacts, and transitive consumers | Build the impact graph and test every invalidated trace row |
+| Only tests near changed files are selected | File proximity misses shared contracts, schemas, configuration, generated artifacts, and transitive consumers | Build the impact graph; test every invalidated row required now and trace later affected rows to their activation boundary |
 | Every available test is run without rationale | PASS volume spends time and context without proving that affected claims were selected | Use the Delta Evidence Plan; reserve broad convergence for explicit triggers or policy |
 | Desired unattended controls block a bounded supervised transition | It confuses later reachable risk with the next checkpoint's residual risk | Separate next-step blockers from hardening and apply the blocker-admission test |
+| Summed worst cases create a fixed idle gate | An upper bound does not establish likely consumption or harm before the next checkpoint | Trace the counterfactual and use a dynamic guard or STOP trigger when it contains the risk |
 | Tests, reviews, corrections, and reruns are counted as milestones | Proof activity inflates perceived lifecycle progress and destabilizes the denominator | Count only durable externally meaningful transitions |
 | Worktree treated as environment isolation | Shared ports, services, data, quotas, and schedulers can interfere | Inventory and isolate or serialize shared resources |
 | V-model treated as a one-way stage gate | Learning is suppressed and verification arrives too late | Use recursive vertical slices and explicit backtracking |

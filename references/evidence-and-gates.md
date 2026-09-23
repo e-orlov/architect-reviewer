@@ -37,8 +37,8 @@ Every blocking gate must answer:
 | Dependencies | Changes that invalidate this evidence |
 | Delta selection | Delta Evidence Plan identity, evidence state, impact rationale, and why this gate is run, reused, or `N/A` |
 | Transition scope | Exact next lifecycle transition, checkpoint, exposure cap, and rollback boundary this gate protects |
-| Critical-path rationale | `NEXT-STEP BLOCKER` or `END-STATE HARDENING`; for a blocker, basis `REACHABLE_RISK` with five-condition rationale or `GOVERNING_POLICY` with exact authority and applicable boundary |
-| Governance cost | Expected time, execution, and context cost, plus the evidence that retires the uncertainty |
+| Critical-path rationale | `NEXT-STEP BLOCKER` or `END-STATE HARDENING`; for a risk blocker, traced causal path, counterfactual harm before checkpoint, existing containment, bounded-substitute analysis, and five-condition rationale; for `GOVERNING_POLICY`, exact authority and applicable boundary |
+| Governance cost | Expected delay, execution, context, and complexity cost; incremental risk reduction over existing controls; evidence that retires the uncertainty |
 | Owner | Person/system responsible for the gate |
 | Verdict | `PASS`, `FAIL`, `BLOCKED`, or `UNKNOWN` for this gate only |
 | Next authority | Action now allowed, still forbidden, or requiring approval |
@@ -116,7 +116,7 @@ For any GitHub-backed target or GitHub-hosted material evidence, establish an au
 - jobs, steps, conclusions, discovered test counts, logs, and artifacts for those attempts;
 - check name, status, conclusion, evaluated SHA, run/attempt identity, and UTC observation time.
 
-Confirm the connector can read every material surface needed by the claim. Access to a PR summary without Actions logs and artifacts is not sufficient when those logs or artifacts are material. Public search, cached pages, screenshots, local status files, generated indexes, the current check summary, or an executor's narrative cannot replace primary authenticated evidence. If the connector is unavailable, points at the wrong account/repository, or cannot expose a material surface, the affected claim is `UNKNOWN`; do not issue a downstream implementation mandate, merge/release/deployment `GO`, or `CERTIFIED` from that evidence.
+Confirm the connector can read every material surface needed by the claim. Access to a PR summary without Actions logs and artifacts is not sufficient **when those logs or artifacts are material**; a repository with no applicable Actions run does not need invented job evidence. Public search, cached pages, screenshots, local status files, generated indexes, the current check summary, or an executor's narrative cannot replace primary authenticated evidence. If the connector is unavailable, points at the wrong account/repository, or cannot expose a material surface, the affected claim is `UNKNOWN`; do not issue a downstream implementation mandate, merge/release/deployment `GO`, or `CERTIFIED` from that evidence.
 
 For a non-GitHub forge, require the equivalent authenticated native connector or API and the same evidence capabilities. A mandatory connection is read-only by default: it does not imply authority to rerun workflows, edit the repository, merge, release, deploy, or accept risk. Obtain those permissions separately.
 
@@ -181,11 +181,11 @@ This obligation belongs to the architect or reviewer. It cannot be delegated to,
    - removing the correction makes the relevant gate fail again;
    - unrelated assertions, counts, and safety boundaries were not weakened.
 
-   A rerun on the same SHA can provide evidence about nondeterminism or environment, but it cannot prove that a source correction fixed the defect. A pass on a new SHA requires inspection of the intervening diff and rerunning every invalidated gate.
+   A rerun on the same SHA can provide evidence about nondeterminism or environment, but it cannot prove that a source correction fixed the defect. A pass on a new SHA requires inspection of the intervening diff and rerunning every invalidated gate material to the reviewed transition; trace other affected gates to their later boundary.
 
 6. **Verify final-head completeness.** Before acceptance, prove on the exact target:
    - the final Delta Evidence Plan matches the actual delta and includes every unplanned change or discovered coupling;
-   - every invalidated, partially invalidated, or newly required claim received its matching proof, and every reused or `N/A` claim retains a valid rationale;
+   - every invalidated, partially invalidated, or newly required claim **material to this transition** received its matching proof, other affected claims have a justified later activation boundary, and every reused or `N/A` claim retains a valid rationale;
    - every `NEXT-STEP BLOCKER`, including applicable governing-policy gates, ran;
    - expected discovery counts are nonzero and exact where known;
    - no required step was skipped or silently tolerated;
@@ -205,7 +205,7 @@ This obligation belongs to the architect or reviewer. It cannot be delegated to,
 - Any failure still reproducible on the exact target makes the affected gate `FAIL` and the lifecycle state `BLOCKED`.
 - The architect or reviewer must not reconstruct missing evidence optimistically or defer reconciliation to a later task.
 
-Gate completion and a `PASS` verdict are distinct. A completed `FAIL` or `BLOCKED` gate may authorize only a bounded diagnostic or corrective task that names and directly addresses the reconciled evidence item; it cannot authorize normal progression or acceptance. `UNKNOWN` permits evidence recovery or an access request, not implementation based on the unknown claim. An incomplete gate authorizes neither.
+Gate completion and a `PASS` verdict are distinct. A completed `FAIL` or `BLOCKED` gate may authorize only a bounded diagnostic or corrective task that names and directly addresses the reconciled evidence item; it cannot authorize normal progression or acceptance. `UNKNOWN` permits evidence recovery or an access request, not implementation based on the unknown claim. Evidence recovery may be a **separately defined** bounded diagnostic exposure with its own admitted blockers, applicable policy gates, checkpoint, and stop/rollback controls; it does not certify or progress the original claim. An incomplete gate authorizes neither.
 
 The Delta Evidence Plan is prospective and the Result-Acceptance Gate is retrospective. The plan selects the necessary reads and proof; Result Acceptance reconciles the complete actual attempt history. Neither substitutes for the other. A broad passing suite cannot compensate for an omitted affected gate, and targeted execution cannot waive an explicitly justified convergence or governing-policy gate. The required-gate set is scoped by the exact next transition in [next-safe-step.md](next-safe-step.md): deferred hardening is not silently promoted into a blocker, while every reachable material risk and governing-policy gate applicable at that boundary is recorded in `NEXT-STEP BLOCKERS`.
 
@@ -322,9 +322,9 @@ Stop or return `UNKNOWN/BLOCKED` when:
 - the bounded evidence window is undefined, a relevant attempt is missing, or a historical failure, cancellation, skip, timeout, rerun, or anomaly remains unreconciled;
 - a material log or artifact is inaccessible or expired and no independent primary evidence can establish the affected claim;
 - A2+ implementation or review lacks a complete Delta Evidence Plan, or the plan does not cover the actual final delta;
-- transitive impact is unknown but inspection/testing was not broadened, or an invalidated/newly required claim has no matching proof;
+- transitive impact material to the next transition is unknown but inspection/testing was not broadened, or a claim required at that boundary has no matching proof or justified evidence-recovery path;
 - the Result-Acceptance Gate is incomplete for a requested downstream implementation mandate, merge/release/deployment `GO`, or certification;
-- the next transition, checkpoint, reachable risks, or blocker/hardening split is undefined; a proposed blocker lacks the admission rationale in [next-safe-step.md](next-safe-step.md); or a material reachability question remains `UNKNOWN`;
+- the next transition, checkpoint, reachable risks, or blocker/hardening split is undefined; an unsupported proposed risk gate is treated as blocking rather than rejected or reclassified under [next-safe-step.md](next-safe-step.md) and [worst-case-gates.md](worst-case-gates.md); or a material reachability question remains `UNKNOWN` for the transition being claimed;
 - a blocker is marked accepted without evidence-based residual-risk recomputation or an accountable, policy-permitted reclassification, especially where an explicit non-substitutable safety boundary applies;
 - canonical and superseded instructions cannot be distinguished.
 
@@ -341,7 +341,7 @@ Review in this order:
 7. **Operability:** Are identity, logs, metrics, alerts, rollout, rollback, and automation behavior adequate at the reviewed boundary?
 8. **Delta and impact:** Is the exact delta complete, are direct and transitive consumers traced, are evidence reuse/invalidation states justified, and are convergence triggers explicit?
 9. **Evidence lineage:** Is every relevant attempt from the last accepted baseline to the exact target present, independently reconciled, and causally closed where proportionate?
-10. **Test adequacy:** Do tests exercise every invalidated/new claim at the matching boundary, avoid unrelated execution without reason, have a trustworthy oracle, and prove they can fail?
+10. **Test adequacy:** Do tests exercise every invalidated/new claim required at this boundary, trace later affected claims, avoid unrelated execution without reason, have a trustworthy oracle, and prove they can fail?
 11. **AI/ML complexity:** When applicable, is there a credible baseline, attributable experiment, and justified promotion after lifecycle cost and risk?
 12. **Simplicity:** Is every abstraction, dependency, layer, and line needed now?
 

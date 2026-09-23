@@ -26,7 +26,7 @@ Do not equate a stage with a level. A contract test may run locally and in CI; a
 
 Apply [delta-first.md](delta-first.md) before selecting tests: establish the exact baseline-to-target delta, trace direct and transitive impact, classify prior evidence, then run the smallest sufficient proof at the matching boundary. A changed-file list is not an impact graph. A2+ work requires the Delta Evidence Plan from [templates.md](templates.md) before implementation or review.
 
-Scope the required proof with [next-safe-step.md](next-safe-step.md): name the exact next transition and reachable residual risks, prove every `NEXT-STEP BLOCKER`—including applicable gates with basis `GOVERNING_POLICY`—and defer unrelated `END-STATE HARDENING` to its activation boundary. Bounded exposure never excuses a missing affected test; eventual usefulness never makes an unrelated test blocking now.
+Scope the required proof with [next-safe-step.md](next-safe-step.md): name the exact next transition and reachable residual risks, prove every `NEXT-STEP BLOCKER`—including applicable gates with basis `GOVERNING_POLICY`—and defer unrelated `END-STATE HARDENING` to its activation boundary. Bounded exposure does not excuse missing proof for a claim required now; other affected claims retain a named later activation boundary. A theoretical maximum does not make an otherwise unrelated test blocking; apply [the worst-case gate challenge](worst-case-gates.md).
 
 Prefer the repository's existing test tools and conventions. Do not introduce Playwright, Cypress, Cucumber, a SAST product, or another framework merely because it appears in an example. Add or replace tooling only when the current stack cannot prove a required invariant and the lifecycle, permissions, cost, maintenance, and rollback are acceptable.
 
@@ -52,7 +52,7 @@ Choose tests from requirements and risks, not from a desire to fill every layer.
 
 ## 3. Stage-by-stage pipeline
 
-Use this as the default pipeline, then tailor it to the repository and assurance level. Record every omitted stage or check with a reason.
+Use this as a menu of execution stages, then select those needed by the affected claims, next transition, and policy. Record an omission when an otherwise applicable claim, risk, or policy makes that stage a reasonable candidate; do not create a waiver for every irrelevant row.
 
 | Stage | Primary purpose | Typical checks | Exit evidence |
 |---|---|---|---|
@@ -181,14 +181,14 @@ Build regression scope from the affected-surface inventory:
 2. enumerate callers, consumers, routes, schemas, jobs, UI surfaces, configuration writers, and release paths affected by the change;
 3. add focused tests at the owning boundary and representative tests across changed contracts;
 4. run the project's required baseline suite;
-5. expand to a full suite when policy requires it or when a shared contract, schema, foundational utility, cross-cutting configuration, security boundary, or broad refactor makes impact uncertain;
+5. expand impact analysis when a shared contract, schema, foundational utility, cross-cutting configuration, security boundary, or broad refactor makes the affected boundary uncertain; run the necessary broad tests or full suite only if the uncertainty cannot be bounded more narrowly or policy requires it;
 6. record exclusions and the evidence used to justify them.
 
 Include direct and transitive consumers reached through contracts, schemas, adapters, configuration, migrations, workflows, generated artifacts, build/release machinery, and runtime dependencies even when their files are unchanged. Do not use directory proximity as a substitute for impact analysis.
 
 Do not rerun every expensive test by reflex when dependency analysis proves it unaffected. Do not narrow the suite merely to save time when the impact inventory is incomplete.
 
-Escalate to a full suite or broad convergence gate when a shared foundation, framework, adapter, schema, build system, lockfile, or global configuration changes; when the dependency graph is incomplete; when targeted tests expose unexpected coupling; when multiple components or persistence boundaries change together; when the residual A3/A4 risk or named release/migration/deployment claim requires system proof; or when project policy requires it. A lifecycle label alone is not a convergence rationale. Record the reason and run the expensive broad gate once on the exact final target unless a later change invalidates it.
+These changes or discoveries trigger a broader impact review: shared foundations, frameworks, adapters, schemas, build systems, lockfiles, global configuration, incomplete dependency graphs, unexpected coupling, or multiple changed persistence boundaries. Escalate testing only to the breadth needed to close a named residual risk or uncertainty; use a full suite when no narrower boundary is defensible or when applicable policy requires it. A named release/migration/deployment claim or residual A3/A4 exposure can justify system proof without automatically justifying every test. Record the reason and run an expensive broad gate once on the exact final target unless a later change invalidates it.
 
 ## 11. Scale by assurance and close with evidence
 
