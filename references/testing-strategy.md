@@ -24,7 +24,7 @@ Use this reference whenever executable behavior changes or test adequacy is revi
 
 Do not equate a stage with a level. A contract test may run locally and in CI; a system test may run in an isolated local stack and again against a release candidate. Run each check at the earliest environment where its claim is credible, then rerun it only when a changed boundary, environment, or policy invalidates the earlier evidence.
 
-Apply [delta-first.md](delta-first.md) before selecting tests: establish the exact baseline-to-target delta, trace direct and transitive impact, classify prior evidence, then run the smallest sufficient proof at the matching boundary. A changed-file list is not an impact graph. A2+ work requires the Delta Evidence Plan from [templates.md](templates.md) before implementation or review.
+Apply [delta-first.md](delta-first.md) before selecting tests: establish the exact baseline-to-target delta, trace direct and transitive impact, classify prior evidence, then run the smallest sufficient proof at the matching boundary. A changed-file list is not an impact graph. Ordinary A2+ implementation or review requires the full Delta Evidence Plan from [templates.md](templates.md); necessary incident containment may use a minimal provisional record, and only an immediately necessary authorized, bounded, reversible STOP follows the narrower documentation timing exception in [task-routes.md](task-routes.md#7-incident-route).
 
 Scope the required proof with [next-safe-step.md](next-safe-step.md): name the exact next transition and reachable residual risks, prove every `NEXT-STEP BLOCKER`—including applicable gates with basis `GOVERNING_POLICY`—and defer unrelated `END-STATE HARDENING` to its activation boundary. Bounded exposure does not excuse missing proof for a claim required now; other affected claims retain a named later activation boundary. A theoretical maximum does not make an otherwise unrelated test blocking; apply [the worst-case gate challenge](worst-case-gates.md).
 
@@ -191,6 +191,8 @@ Do not rerun every expensive test by reflex when dependency analysis proves it u
 These changes or discoveries trigger a broader impact review: shared foundations, frameworks, adapters, schemas, build systems, lockfiles, global configuration, incomplete dependency graphs, unexpected coupling, or multiple changed persistence boundaries. Escalate testing only to the breadth needed to close a named residual risk or uncertainty; use a full suite when no narrower boundary is defensible or when applicable policy requires it. A named release/migration/deployment claim or residual A3/A4 exposure can justify system proof without automatically justifying every test. Record the reason and run an expensive broad gate once on the exact final target unless a later change invalidates it.
 
 ## 11. Scale by assurance and close with evidence
+
+The table describes proof across the lifecycle. Activate each check at the boundary where its claim or risk becomes reachable; the A3/A4 real-world acceptance obligation applies to deployed exposure, not to a pre-merge decision.
 
 | Assurance | Minimum testing posture |
 |---|---|

@@ -126,7 +126,7 @@ Before implementation or review, record:
 | Expansion triggers | Conditions that require broader inspection or testing |
 | Evidence budget | Expected expensive reads, executions, and context load |
 
-No implementation, review certification, or downstream `GO` may proceed without this plan for A2+ work.
+No ordinary A2+ implementation, review certification, or downstream `GO` may proceed without the full plan. Necessary incident containment may start with the minimal provisional plan in [task-routes.md](task-routes.md#7-incident-route); only an immediately necessary authorized, bounded, reversible incident STOP may precede even that provisional record when writing it would increase harm. Record it as soon as safe, and complete the full plan before permanence, expansion, or release/acceptance authority.
 
 ## 9. Interaction with next-step scope and evidence lineage
 
@@ -148,7 +148,7 @@ The Delta Evidence Plan is the prospective selection contract: it determines whi
 ## Verdict consequences
 
 - Missing impact analysis makes reuse claims `UNKNOWN`.
-- An invalidated gate that was not rerun remains `IMPLEMENTED_UNVERIFIED`.
+- An invalidated gate required at the reviewed boundary that was not rerun leaves its claim `IMPLEMENTED_UNVERIFIED` and prevents progression on that claim. Affected gates validly deferred to a later activation boundary do not downgrade the current transition's lifecycle state; keep their own claims unverified until that boundary.
 - Unexplained selection of only nearby tests is insufficient for shared or transitive changes.
 - Repeating unaffected tests does not compensate for a missing affected test.
 - If all claims required for this transition receive matching proof and reusable evidence remains valid, unrelated tests and documents should not be reread or rerun; defer other affected claims explicitly to their activation boundary.
