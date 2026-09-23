@@ -127,7 +127,7 @@ After stabilization and after each material control lands, reassess the next pro
 
 Do not let deep root-cause exploration delay necessary containment.
 
-For urgent A2+ containment, record a minimal provisional Delta Evidence Plan before mutation: observed delta/state, suspected impact, protected boundaries, immediate proof, rollback, and expansion triggers. Complete the full plan after stabilization and before making the containment permanent, expanding it, or issuing release/acceptance authority.
+For A2+ containment mutation, use the full Delta Evidence Plan if it does not delay necessary containment; otherwise record a minimal provisional plan before acting: observed delta/state, suspected impact, protected boundaries, immediate proof, rollback, and expansion triggers. Only if even that recording would delay an immediately necessary **authorized, bounded, reversible STOP or isolation action** and increase harm, stabilize first after identifying the exact target and stop/recovery boundary; record the action, state, and provisional plan as soon as safe. These exceptions authorize only necessary containment, never expansion or permanent implementation. Complete the full plan after stabilization and before permanence, expansion, or release/acceptance authority.
 
 If containment temporarily adds AI/ML lifecycle complexity before normal gates can run, record a break-glass exception with incident/owner, exact identity, narrow scope, start/expiry, monitoring and abort thresholds, fallback/rollback, and post-stabilization gate owner. The exception cannot justify permanent adoption, expansion, reuse, or operation past expiry; remove it or complete the normal gates first.
 
@@ -136,7 +136,7 @@ If containment temporarily adds AI/ML lifecycle complexity before normal gates c
 Use: `identify → preflight → expose gradually → observe → accept or roll back`.
 
 1. Bind source, build, config, schema, and target-environment identities.
-2. Define the exact next release transition, exposure cap, checkpoint, rollback boundary, reachable risks, `NEXT-STEP BLOCKERS`, and deferred `END-STATE HARDENING`; confirm every blocker passes the admission criteria in [next-safe-step.md](next-safe-step.md).
+2. Define the exact next release transition, exposure cap, checkpoint, rollback boundary, reachable risks, `NEXT-STEP BLOCKERS`, and deferred `END-STATE HARDENING`. Apply the five-condition admission test to proposed `REACHABLE_RISK` blockers; for `GOVERNING_POLICY` blockers, verify the controlling authority and applicability at this boundary under [next-safe-step.md](next-safe-step.md).
 3. Confirm the final Delta Evidence Plan covers the actual release-candidate delta, every claim required for this transition, deferred affected claims, reused evidence, and justified convergence gates. Confirm ownership, required checks, rollback, and a `PASS` Result-Acceptance Gate; require a change window or backup where a named reachable risk or applicable policy makes it necessary at this boundary. Challenge any fixed wait derived only from a worst-case ceiling under [worst-case-gates.md](worst-case-gates.md). For GitHub-backed work, use the authenticated GitHub connector defined in [evidence-and-gates.md](evidence-and-gates.md).
 4. Start with the smallest meaningful exposure: dry run, canary, shadow, or cohort.
 5. Monitor user-facing invariants and failure signals at every stage.
@@ -170,15 +170,17 @@ When review scope is budgeted, list inspected candidates and carry all remaining
 Apply this overlay to every primary route, including bug and incident work, according to the trigger matrix in [ai-complexity-strategy.md](ai-complexity-strategy.md):
 
 1. When AI/ML is introduced or lifecycle complexity materially increases, run `Baseline → Experiment → Complexity-Promotion` before durable operational adoption.
-2. For a material AI behavior, configuration, or data change without a complexity increase, run the Baseline comparison and Experiment needed to support the claimed improvement, equivalence, or preserved behavior; do not invent a promotion gate.
-3. For removal or simplification, use ordinary V-model regression, safety, compatibility, and acceptance proof; a promotion gate is not required merely to reduce complexity.
+2. For a material AI behavior, configuration, or data change at roughly unchanged lifecycle complexity, record the present change driver and incumbent comparator; use `READY_FOR_COMPARISON` and the Experiment Gate for the claimed improvement, equivalence, or preserved behavior. Do not invent a promotion gate.
+3. For material removal or simplification, use ordinary V-model regression, safety, compatibility, and acceptance proof; substantiate an improvement or equivalence claim with predeclared, decision-capable comparison evidence. This path takes precedence over step 2 and needs no complexity-promotion gate merely to reduce complexity.
 4. A bug fix follows the trigger matching its actual change. During an incident, containment may use only the bounded, expiring break-glass exception defined above; normal gates are required before permanence, expansion, reuse, or expiry.
-5. Stop when the baseline already meets the validated need. Treat equivalent results within the predeclared margin and uncertainty as a reason to prefer lower lifecycle complexity.
+5. Stop a proposed complexity increase when the baseline already meets the validated need. A sufficient incumbent may still be compared with a necessary replacement or maintenance change without adding complexity. Treat equivalent results within the predeclared margin and uncertainty as a reason to prefer lower lifecycle complexity.
 6. Do not treat RAG, an agent, multi-agent coordination, a cascade, fine-tuning, a larger model, or a data-only change as self-justifying. Each is a candidate mechanism whose claims need evidence.
 
 Use [ai-complexity-strategy.md](ai-complexity-strategy.md) for the complete gate contracts and [templates.md](templates.md) for the decision record.
 
 ## 11. Assurance controls
+
+The table describes obligations across the relevant lifecycle, activated at the boundary where their risk or claim becomes reachable. It does not require deployment evidence or real-world acceptance before a pre-merge transition. Applicable governing policy may require an earlier gate.
 
 | Control | A0 | A1 | A2 | A3 | A4 |
 |---|:---:|:---:|:---:|:---:|:---:|
@@ -193,7 +195,7 @@ Use [ai-complexity-strategy.md](ai-complexity-strategy.md) for the complete gate
 | Rollback/recovery | n/a | simple | defined | tested | rehearsed or formally justified |
 | Observability | n/a | result evidence | relevant signals | rollout + user signals | continuous + escalation |
 | Independent review | no | optional | recommended for material boundaries | required | required, strongest available independence |
-| Real-world acceptance | n/a | if user-facing | if environment-sensitive | required | required with explicit owner |
+| Real-world acceptance at deployed/user exposure boundary | n/a | if user-facing | if environment-sensitive | required at that boundary | required at that boundary with explicit owner |
 | Completed Result-Acceptance Gate before triggered downstream authority | required | required | required | required | required + independent review |
 | Durable handoff/evidence | optional | concise | required | required | required + retention/integrity |
 
@@ -204,7 +206,7 @@ These are minimums, not a substitute for domain controls. Classify assurance fro
 Scale depth, not truthfulness:
 
 - A one-line A1 fix can use one criterion and one targeted test.
-- An A3 migration needs identity, risk, recovery, observability, independent review, and real-world acceptance even if the diff is small.
+- An A3 migration needs identity, risk, recovery, observability, and independent review before the corresponding risky transition, plus real-world acceptance after the deployed identity is exposed, even if the diff is small.
 - A broad diff can remain A1 if it is generated, reversible, and isolated, but verify that assumption.
 - A bounded supervised canary may defer unattended-operation hardening when exposure is capped, effects are observable, stop/rollback is proven, and no uncontrolled security, privacy, data-loss, irreversible, paid, or ambiguous external-side-effect risk remains.
 - Count tests, reviews, corrections, reruns, and evidence recovery inside the lifecycle transition they prove; they are not separate milestones.

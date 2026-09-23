@@ -186,7 +186,7 @@ This obligation belongs to the architect or reviewer. It cannot be delegated to,
 6. **Verify final-head completeness.** Before acceptance, prove on the exact target:
    - the final Delta Evidence Plan matches the actual delta and includes every unplanned change or discovered coupling;
    - every invalidated, partially invalidated, or newly required claim **material to this transition** received its matching proof, other affected claims have a justified later activation boundary, and every reused or `N/A` claim retains a valid rationale;
-   - every `NEXT-STEP BLOCKER`, including applicable governing-policy gates, ran;
+   - every `NEXT-STEP BLOCKER` closed with matching evidence: executable checks ran, and applicable governing-policy approvals or other non-executable conditions were satisfied at their boundary;
    - expected discovery counts are nonzero and exact where known;
    - no required step was skipped or silently tolerated;
    - logs and artifacts belong to that target;
@@ -305,7 +305,9 @@ A 5×5 score can prioritize discussion, but it is not a measured probability. De
 
 ## 12. STOP conditions
 
-Stop or return `UNKNOWN/BLOCKED` when:
+Stop the **claimed transition**, or return a scoped `UNKNOWN/BLOCKED`, when an applicable item below is material at its boundary. An inapplicable stage, absent optional actor, or unneeded authority is not itself a blocker. An immediately necessary authorized, bounded, reversible incident STOP may precede a provisional Delta Evidence Plan under [task-routes.md](task-routes.md#7-incident-route); it does not authorize expansion or acceptance.
+
+Applicable conditions include:
 
 - current target, branch, commit, build, environment, or executor state is ambiguous;
 - destructive, paid, external, merge, migration, release, or production authority is absent;
@@ -321,7 +323,7 @@ Stop or return `UNKNOWN/BLOCKED` when:
 - the required GitHub or native-forge connector is unauthenticated, points to the wrong identity, or cannot expose material repository/CI evidence for a live verdict;
 - the bounded evidence window is undefined, a relevant attempt is missing, or a historical failure, cancellation, skip, timeout, rerun, or anomaly remains unreconciled;
 - a material log or artifact is inaccessible or expired and no independent primary evidence can establish the affected claim;
-- A2+ implementation or review lacks a complete Delta Evidence Plan, or the plan does not cover the actual final delta;
+- ordinary A2+ implementation or review lacks a complete Delta Evidence Plan; necessary incident containment lacks even a minimal provisional plan outside the immediate STOP exception above; or the full plan does not cover the actual final delta before permanence, expansion, or release/acceptance authority;
 - transitive impact material to the next transition is unknown but inspection/testing was not broadened, or a claim required at that boundary has no matching proof or justified evidence-recovery path;
 - the Result-Acceptance Gate is incomplete for a requested downstream implementation mandate, merge/release/deployment `GO`, or certification;
 - the next transition, checkpoint, reachable risks, or blocker/hardening split is undefined; an unsupported proposed risk gate is treated as blocking rather than rejected or reclassified under [next-safe-step.md](next-safe-step.md) and [worst-case-gates.md](worst-case-gates.md); or a material reachability question remains `UNKNOWN` for the transition being claimed;

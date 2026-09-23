@@ -365,13 +365,14 @@ Evidence and UTC time:
 - Primary metric and project-defined acceptance threshold:
 - Safety/quality/cost/latency/operational guardrails:
 - Raw result and uncertainty:
-- Named unmet gap:
+- Named unmet gap (complexity increase), or present change driver and preservation/equivalence claim (roughly unchanged complexity):
 - Gate verdict: PASS | FAIL | BLOCKED | UNKNOWN
-- Decision: STOP | READY_FOR_EXPERIMENT | BLOCKED | UNKNOWN
+- Decision: STOP | READY_FOR_EXPERIMENT | READY_FOR_COMPARISON | BLOCKED | UNKNOWN
 
 ## Experiment Gate
 
 - Predeclared hypothesis:
+- Path: COMPLEXITY_INCREASE_FROM_READY_FOR_EXPERIMENT | ROUGHLY_UNCHANGED_COMPLEXITY_FROM_READY_FOR_COMPARISON
 - Baseline arm identity:
 - Candidate arm identity:
 - Primary changed mechanism:
@@ -472,7 +473,7 @@ Evidence and UTC time:
 
 ## Final-head completeness
 
-- All NEXT-STEP BLOCKERS, including applicable governing-policy gates, ran:
+- All NEXT-STEP BLOCKERS closed: executable checks ran; applicable policy approvals/non-executable conditions satisfied:
 - Discovery counts nonzero and exact where known:
 - No required step skipped or silently tolerated:
 - Logs and artifacts match the exact target:

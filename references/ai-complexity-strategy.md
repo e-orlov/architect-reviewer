@@ -35,8 +35,8 @@ Apply this trigger matrix:
 | Change class | Required path | Boundary |
 |---|---|---|
 | Introduces AI/ML or materially increases lifecycle complexity | `Baseline → Experiment → Complexity-Promotion` | Complete all three before durable operational adoption. |
-| Material AI behavior, configuration, threshold, prompt, model, retrieval, or data change without a material complexity increase | Baseline comparison plus Experiment when claiming improvement, equivalence, or preserved behavior | Do not run a promotion gate unless lifecycle complexity also increases. Ordinary release and risk gates still apply. |
-| Removes AI/ML or materially simplifies the lifecycle | V-model regression, safety, compatibility, and acceptance proof | No complexity-promotion gate is needed merely to approve less complexity. |
+| Material AI behavior, configuration, threshold, prompt, model, retrieval, or data change at roughly unchanged lifecycle complexity | Baseline Gate with an incumbent comparator and present change driver, then a scoped Experiment for the claimed improvement, equivalence, or preserved behavior | A sufficient incumbent does not forbid a necessary replacement or maintenance change. Do not run a promotion gate unless lifecycle complexity also increases. Ordinary release and risk gates still apply. |
+| Removes AI/ML or materially simplifies the lifecycle | V-model regression, safety, compatibility, and acceptance proof; substantiate any improvement or equivalence claim with a predeclared comparator and decision-capable evidence | This row takes precedence over the roughly unchanged-complexity row. No complexity-promotion gate is needed merely to approve less complexity. |
 | Repairs a bug | Apply the row matching what the repair actually changes | A bug label never exempts added complexity from the full three-gate path. |
 | Contains an active incident | Stabilize and contain first; use the break-glass contract below if the temporary repair adds ungated complexity | The exception is temporary and cannot establish durable promotion. |
 
@@ -63,11 +63,11 @@ The total transition contract is:
 
 | Gate | `PASS` decisions | `FAIL` decisions | `BLOCKED` decision | `UNKNOWN` decision |
 |---|---|---|---|---|
-| Baseline | `STOP` or `READY_FOR_EXPERIMENT` | `STOP` | `BLOCKED` | `UNKNOWN` |
+| Baseline | `STOP`, `READY_FOR_EXPERIMENT`, or `READY_FOR_COMPARISON` | `STOP` | `BLOCKED` | `UNKNOWN` |
 | Experiment | `VALIDATED_NO_PROMOTION` or `READY_FOR_PROMOTION_REVIEW` | `STOP` or `EXPERIMENT_ONLY` | `BLOCKED` | `UNKNOWN` |
 | Complexity-Promotion | `APPROVED_LIMITED` or `PROMOTED` | `STOP` or `EXPERIMENT_ONLY` | `BLOCKED` | `UNKNOWN` |
 
-`EXPERIMENT_ONLY` permits only bounded evaluation; it does not permit operational adoption. A later gate may run only from a mapped predecessor decision. Do not encode progression in a bare `PASS` or `READY`.
+`EXPERIMENT_ONLY` permits only bounded evaluation; it does not permit operational adoption. The Experiment Gate follows `READY_FOR_EXPERIMENT` for a proposed complexity increase or `READY_FOR_COMPARISON` for a roughly unchanged-complexity change. The Complexity-Promotion Gate follows only `READY_FOR_PROMOTION_REVIEW` from the complexity-increase path. Do not encode progression in a bare `PASS` or `READY`.
 
 Do not use these gates to simplify away security, privacy, accessibility, data integrity, human oversight, observability, fallback, rollback, or an explicit requirement.
 
@@ -75,7 +75,7 @@ Do not use these gates to simplify away security, privacy, accessibility, data i
 
 Answer:
 
-> What is the least-complex credible way to address the need, and what measured gap remains?
+> What is the least-complex credible comparator, and what gap or present change driver justifies the proposed path?
 
 Select the simplest credible comparator; do not implement every possible rung. Depending on the task, use one of:
 
@@ -94,19 +94,21 @@ The Baseline Gate criterion is: the comparator and evidence are decision-capable
 - evaluation-set identity, provenance, scope, exclusions, and known limitations;
 - primary outcome metric plus safety, quality, cost, latency, and operational guardrails that matter;
 - raw baseline result and uncertainty;
-- the named acceptance gap, if one remains.
+- the named acceptance gap for a proposed complexity increase, or the present change driver and preservation/equivalence claim for a change without one.
 
-Return `PASS + STOP` when the decision-capable baseline already meets the validated need and guardrails. Return `PASS + READY_FOR_EXPERIMENT` when the same quality of evidence establishes a material unmet gap. Return `FAIL + STOP` when valid evidence disproves the claimed comparator or the proposed next step violates a non-negotiable constraint. Return `BLOCKED + BLOCKED` for a known unmet prerequisite and `UNKNOWN + UNKNOWN` for missing, stale, ambiguous, contradictory, or non-decision-capable evidence. Do not invent a universal target such as “the baseline must solve 70%.”
+For a proposed **complexity increase**, return `PASS + STOP` when the decision-capable baseline already meets the validated need and guardrails; return `PASS + READY_FOR_EXPERIMENT` only for a material unmet gap. For a material change at **roughly unchanged** complexity, return `PASS + READY_FOR_COMPARISON` when the incumbent is a credible comparator and a present reason for the change is documented—even if the incumbent already meets quality targets. Return `PASS + STOP` if there is no present reason to change. `READY_FOR_COMPARISON` permits a bounded comparison, not adoption. Material removal or simplification follows the distinct V-model row above.
+
+Return `FAIL + STOP` when decision-capable evidence refutes the proposed path or it violates a non-negotiable constraint; this stops that proposal, not all future alternatives. An invalid or missing comparator whose quality cannot be established is `UNKNOWN` until repaired, not evidence that the need itself should be abandoned. Return `BLOCKED + BLOCKED` for a known unmet prerequisite and `UNKNOWN + UNKNOWN` for missing, stale, ambiguous, contradictory, or non-decision-capable evidence. Do not invent a universal target such as “the baseline must solve 70%.”
 
 ## 4. Experiment Gate
 
 Answer:
 
-> Does the candidate close the named gap, and can the observed difference be attributed as claimed?
+> Does the candidate close the named gap or meet the predeclared preservation/equivalence claim, and can the observed result be attributed as claimed?
 
 State the hypothesis before interpreting results:
 
-`Changing <primary mechanism> is expected to improve <metric/gap> for <scope> without breaching <guardrails>.`
+`Changing <primary mechanism> is expected to <improve metric/gap OR preserve specified behavior within a predeclared margin> for <scope> without breaching <guardrails>.`
 
 Bind each experiment arm to the relevant identities:
 
@@ -133,7 +135,7 @@ Before running or accepting the comparison:
 
 A data-centric experiment is one valid route when error analysis points to coverage, labels, duplication, freshness, leakage, or representativeness. Do not turn “data-centric” into a rule that code and model must always remain fixed; change the axis supported by evidence.
 
-The Experiment Gate criterion is: the evidence supports the predeclared hypothesis strongly enough for the project-defined decision, and no blocking guardrail is breached. When the trigger matrix says no promotion gate applies, return `PASS + VALIDATED_NO_PROMOTION`; this supports only the scoped comparison claim and leaves ordinary lifecycle gates open. When complexity promotion is required, return `PASS + READY_FOR_PROMOTION_REVIEW`. Return `FAIL + STOP` when the candidate is disproved or no further evaluation is justified, or `FAIL + EXPERIMENT_ONLY` when a bounded follow-up experiment remains justified but operational adoption is forbidden. Map known missing prerequisites to `BLOCKED + BLOCKED` and indeterminate evidence to `UNKNOWN + UNKNOWN`.
+The Experiment Gate criterion is: the evidence supports the predeclared improvement or preservation/equivalence hypothesis strongly enough for the project-defined decision, and no blocking guardrail is breached. From `READY_FOR_COMPARISON`, return `PASS + VALIDATED_NO_PROMOTION` when the scoped claim holds; this leaves ordinary lifecycle gates open and does not imply release or production acceptance. From `READY_FOR_EXPERIMENT`, return `PASS + READY_FOR_PROMOTION_REVIEW` when the complexity-increase hypothesis holds. Return `FAIL + STOP` when the candidate is disproved or no further evaluation is justified, or `FAIL + EXPERIMENT_ONLY` when a bounded follow-up experiment remains justified but operational adoption is forbidden. Map known missing prerequisites to `BLOCKED + BLOCKED` and indeterminate evidence to `UNKNOWN + UNKNOWN`.
 
 ## 5. Complexity-Promotion Gate
 
@@ -162,6 +164,7 @@ The Complexity-Promotion Gate criterion is: the measured benefit justifies the a
 | `STOP` | The baseline is sufficient or the added mechanism has no evidenced need. |
 | `EXPERIMENT_ONLY` | Evidence is promising but insufficient for operational adoption. |
 | `READY_FOR_EXPERIMENT` | The Baseline Gate established a material gap and permits a bounded experiment. |
+| `READY_FOR_COMPARISON` | A present change driver permits a bounded comparison without claiming a need for more lifecycle complexity. |
 | `VALIDATED_NO_PROMOTION` | The scoped comparison claim passed and no lifecycle-complexity promotion gate applies. |
 | `READY_FOR_PROMOTION_REVIEW` | The Experiment Gate supported the hypothesis and permits complexity-promotion review, not adoption. |
 | `APPROVED_LIMITED` | Promotion is justified only for a bounded cohort, traffic slice, task class, or supervised canary with explicit cap, observation, expiry, stop/rollback, and later hardening triggers. |
@@ -253,11 +256,11 @@ Promotion evidence expires when a material identity or assumption changes. Inval
 
 Stop promotion or return the mapped `BLOCKED` or `UNKNOWN` gate verdict and decision when:
 
-- no credible baseline or named gap exists;
+- no credible baseline exists, or a proposed complexity increase lacks a named gap; a roughly unchanged-complexity change instead needs a present change driver and predeclared comparison claim;
 - metrics or thresholds were chosen after seeing results without disclosure and revalidation;
 - experiment arms differ in material undisclosed ways;
 - evaluation data is contaminated, unrepresentative, identity-unknown, or too weak for the claim;
-- improvement does not cross the practical-equivalence margin or qualitative decision boundary, or is indistinguishable from measurement uncertainty;
+- a claimed improvement does not cross its predeclared decision boundary, or a preservation/equivalence claim falls outside its predeclared margin or remains indeterminate under measurement uncertainty;
 - an average improvement hides a blocking slice or prohibited outcome;
 - lifecycle cost or ownership is unknown, or a fallback, rollback, monitoring, or other control required before the exact proposed transition is missing;
 - a cascade, agent, or tool can create unbounded calls, cost, state, or side effects;

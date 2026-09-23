@@ -110,15 +110,15 @@ The detailed source ledger records what was adopted, adapted, and intentionally 
 
 ## Controls against AI overengineering
 
-AI/ML introduction or a material increase in lifecycle complexity must pass three gates:
+AI/ML introduction or a material increase in lifecycle complexity must pass all three gates. Material changes at roughly unchanged complexity use the Baseline and Experiment comparison path shown in the same table; material removal or simplification follows V-model regression and acceptance proof:
 
 | Gate | Required question | Possible decision |
 |---|---|---|
-| Baseline | What is the simplest credible comparator, and what material gap remains? | `STOP` if the baseline already meets the validated need; otherwise `READY_FOR_EXPERIMENT` |
-| Experiment | Does a predeclared candidate close that gap on decision-capable, versioned evidence without hiding regressions or contamination? | `VALIDATED_NO_PROMOTION`, `READY_FOR_PROMOTION_REVIEW`, `EXPERIMENT_ONLY`, `STOP`, `BLOCKED`, or `UNKNOWN` |
+| Baseline | What is the simplest credible comparator, and what gap or present change driver remains? | For added complexity, `STOP` if the baseline suffices or `READY_FOR_EXPERIMENT` for a material gap; for roughly unchanged complexity, `READY_FOR_COMPARISON` when a present driver exists |
+| Experiment | Does a predeclared candidate improve the named gap or preserve the claimed behavior on decision-capable, versioned evidence without hiding regressions or contamination? | `VALIDATED_NO_PROMOTION`, `READY_FOR_PROMOTION_REVIEW`, `EXPERIMENT_ONLY`, `STOP`, `BLOCKED`, or `UNKNOWN` |
 | Complexity Promotion | Is the demonstrated benefit still material after total lifecycle cost, latency, safety, ownership, monitoring, fallback, rollback, and retirement are counted? | `APPROVED_LIMITED`, `PROMOTED`, `EXPERIMENT_ONLY`, `STOP`, `BLOCKED`, or `UNKNOWN` |
 
-The comparison is project-specific. The skill deliberately rejects universal claims such as “70% is enough,” “agents are more flexible,” “a larger model is safer,” “data-centric means change only data,” or “a cascade is automatically cheaper.” Read [references/ai-complexity-strategy.md](references/ai-complexity-strategy.md) for the full protocol.
+The comparison is project-specific. A sufficient incumbent stops an unjustified complexity increase; it does not prevent a necessary replacement or maintenance change from being tested for equivalence. The skill deliberately rejects universal claims such as “70% is enough,” “agents are more flexible,” “a larger model is safer,” “data-centric means change only data,” or “a cascade is automatically cheaper.” Read [references/ai-complexity-strategy.md](references/ai-complexity-strategy.md) for the full protocol.
 
 ## Delta-first evidence and test selection
 
@@ -131,7 +131,7 @@ targeted execution → final convergence if justified
 
 The analysis is dependency-based rather than file-based. It includes source, schemas, configuration, workflows, dependencies, generated artifacts, environment state, external interfaces, direct consumers, and transitive consumers. Every relevant claim is classified as `INVALIDATED`, `PARTIALLY_INVALIDATED`, `REUSABLE`, `NEWLY_REQUIRED`, `N/A`, or `UNKNOWN`.
 
-For A2+ work, a Delta Evidence Plan is mandatory before implementation, review certification, or downstream `GO`. It records the exact baseline and target, impact graph, evidence-reuse rationale, smallest sufficient test set, justified broad gates, expansion triggers, and expected evidence/context cost. Shared foundations, incomplete dependency knowledge, multiple persistence boundaries, residual A3/A4 exposure, or a release-boundary risk trigger broader impact analysis. A full suite is required only when the affected boundary cannot be bounded more narrowly, its breadth proves a named claim, or applicable project policy requires it. A lifecycle label alone is not enough, and the suite is not run merely to produce a larger `PASS` count.
+For A2+ work, a full Delta Evidence Plan is mandatory before ordinary implementation, review certification, or downstream `GO`. Necessary incident containment may use a minimal provisional plan; only an immediately necessary authorized, bounded, reversible STOP may precede even that record under the narrow exception in [references/task-routes.md](references/task-routes.md#7-incident-route). The plan records the exact baseline and target, impact graph, evidence-reuse rationale, smallest sufficient test set, justified broad gates, expansion triggers, and expected evidence/context cost. Shared foundations, incomplete dependency knowledge, multiple persistence boundaries, residual A3/A4 exposure, or a release-boundary risk trigger broader impact analysis. A full suite is required only when the affected boundary cannot be bounded more narrowly, its breadth proves a named claim, or applicable project policy requires it. A lifecycle label alone is not enough, and the suite is not run merely to produce a larger `PASS` count.
 
 This design is consistent with dependency-based selection and safe fallback described by [Microsoft Test Impact Analysis](https://learn.microsoft.com/en-us/azure/devops/pipelines/test/test-impact-analysis?view=azure-devops), direct/transitive/reverse-dependency analysis in the [Bazel Query Guide](https://bazel.build/query/guide), immutable baseline comparison through the [GitHub Compare Commits API](https://docs.github.com/en/rest/commits/commits#compare-two-commits), and lifecycle-aware selective/comprehensive execution in [Develocity Predictive Test Selection](https://docs.develocity.ai/2026.2/guides/predictive-test-selection/). These are supporting mechanics, not required products.
 
